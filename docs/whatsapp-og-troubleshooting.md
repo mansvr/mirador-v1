@@ -66,12 +66,17 @@ Host a tiny HTML file on **R2** (same bucket as splats). Meta scrapes `*.r2.dev`
 From repo `mirador/`:
 
 ```bash
-# Workshop photo for og:image (if not already on R2)
+# Workshop photo for og:image
 wrangler r2 object put mirador-scenes/og/scene_best50000.jpg --file=public/og/scene_best50000.jpg --content-type=image/jpeg
 
-# Share landing page (OG tags + redirect to mirador.lat)
+# Share page (OG only — no meta-refresh to mirador.lat; Meta follows that and gets 403)
 wrangler r2 object put mirador-scenes/share/scene_best50000.html --file=r2-share/scene_best50000.html --content-type=text/html
+
+# robots.txt at bucket root (Debugger checks this on r2.dev)
+wrangler r2 object put mirador-scenes/robots.txt --file=r2-share/robots.txt --content-type=text/plain
 ```
+
+**Important:** Do not use `<meta http-equiv="refresh" href="https://mirador.lat/...">` on the share page. Facebook follows it, hits Vercel, sees **403**, and the Debugger blames the R2 URL.
 
 ### Links
 
