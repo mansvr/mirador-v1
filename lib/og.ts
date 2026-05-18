@@ -46,31 +46,9 @@ export function buildOpenGraphImages(
   siteUrl: string,
   alt: string
 ): NonNullable<import("next").Metadata["openGraph"]>["images"] {
-  const thumb = ogThumbnailAbsoluteUrl(sceneId, siteUrl);
   const card = ogCardApiUrl(sceneId, siteUrl);
 
-  // Static JPG first — CDN file, best chance when Meta is blocked on dynamic /api/og.
-  if (thumb) {
-    return [
-      {
-        url: thumb,
-        secureUrl: thumb,
-        width: 1200,
-        height: 630,
-        type: "image/jpeg",
-        alt,
-      },
-      {
-        url: card,
-        secureUrl: card,
-        width: 1200,
-        height: 630,
-        type: "image/png",
-        alt,
-      },
-    ];
-  }
-
+  // Composite PNG (photo + gradient + title) — used by /v/, /umbral/…, and share pages.
   return [
     {
       url: card,
