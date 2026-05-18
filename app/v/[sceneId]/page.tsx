@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import { fetchScene } from "@/lib/scene";
 import { getSiteUrl } from "@/lib/site-url";
+import {
+  buildOpenGraphImages,
+  ogCardApiUrl,
+  shareDescription,
+  shareTitle,
+} from "@/lib/og";
 import { ViewerPageShell } from "@/components/viewer/ViewerPageShell";
 
 interface Props {
@@ -12,22 +18,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   try {
     const scene = await fetchScene(sceneId);
+    const siteUrl = await getSiteUrl();
+    const title = shareTitle(scene);
+    const description = shareDescription(scene);
+    const ogImage = ogCardApiUrl(sceneId, siteUrl);
 
     return {
-      title: scene.title,
-      description:
-        scene.listing?.description_md?.slice(0, 160) ??
-        `Tour virtual 3D de ${scene.title}`,
+      title,
+      description,
       openGraph: {
-        title: scene.title,
-        description:
-          scene.listing?.description_md?.slice(0, 160) ??
-          `Tour virtual 3D de ${scene.title}`,
+        title,
+        description,
         type: "website",
+        url: `${siteUrl}/v/${sceneId}`,
+        siteName: "Mirador",
+        locale: "es_CO",
+        images: buildOpenGraphImages(sceneId, siteUrl, title),
       },
       twitter: {
         card: "summary_large_image",
-        title: scene.title,
+        title,
+        description,
+        images: [ogImage],
       },
     };
   } catch {
