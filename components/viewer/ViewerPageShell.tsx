@@ -34,6 +34,15 @@ export function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) {
         <MetricBadge metric={scene.metric} />
         <WaypointNav waypoints={scene.waypoints ?? []} sceneId={scene.id} />
         <BrandingBadge branding={scene.branding} />
+
+        <div className="pointer-events-none absolute bottom-16 right-4 z-20 hidden max-w-sm md:block">
+          <div className="pointer-events-auto rounded-xl border border-white/10 bg-black/80 p-3 shadow-xl backdrop-blur-md">
+            <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-white/50">
+              Embed en tu web
+            </p>
+            <EmbedSnippet sceneId={scene.id} siteUrl={siteUrl} compact />
+          </div>
+        </div>
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col bg-white text-gray-900 md:hidden">

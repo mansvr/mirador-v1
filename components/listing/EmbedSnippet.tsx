@@ -7,9 +7,11 @@ interface EmbedSnippetProps {
   sceneId: string;
   /** Must come from the server (e.g. getSiteUrl()) so SSR matches hydration. */
   siteUrl: string;
+  /** Desktop overlay: iframe snippet + copy only (no QR block). */
+  compact?: boolean;
 }
 
-export function EmbedSnippet({ sceneId, siteUrl }: EmbedSnippetProps) {
+export function EmbedSnippet({ sceneId, siteUrl, compact = false }: EmbedSnippetProps) {
   const [copied, setCopied] = useState(false);
 
   const origin = siteUrl.replace(/\/$/, "");
@@ -24,16 +26,50 @@ export function EmbedSnippet({ sceneId, siteUrl }: EmbedSnippetProps) {
     setTimeout(() => setCopied(false), 2000);
   }
 
+  if (compact) {
+    return (
+      <div>
+        <p className="mb-2 text-[10px] text-white/40">
+          Tour{" "}
+          <span className="text-white/60">/v/{sceneId}</span>
+          {" · iframe "}
+          <span className="text-white/60">/e/{sceneId}</span>
+        </p>
+        <div className="flex gap-2 items-start">
+          <code className="flex-1 max-h-24 overflow-y-auto text-[10px] bg-white/5 border border-white/10 rounded-lg p-2 font-mono text-white/80 break-all leading-relaxed">
+            {snippet}
+          </code>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="shrink-0 px-2.5 py-1.5 text-[10px] font-medium rounded-lg bg-[var(--mirador-primary,#FF6A00)] text-white hover:opacity-90 transition-opacity"
+          >
+            {copied ? "✓" : "Copiar"}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-4 py-4 md:px-6 border-t border-gray-100">
       <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wider">
         Embed
+      </p>
+      <p className="text-xs text-gray-600 mb-2">
+        Pega este código en tu sitio. El iframe apunta a{" "}
+        <span className="font-mono text-gray-800">/e/{sceneId}</span> (solo visor).
+        Enlace directo al tour:{" "}
+        <a href={tourUrl} className="font-mono text-blue-600 hover:underline break-all">
+          /v/{sceneId}
+        </a>
       </p>
       <div className="flex gap-2 items-start">
         <code className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg p-2.5 font-mono text-gray-700 break-all leading-relaxed">
           {snippet}
         </code>
         <button
+          type="button"
           onClick={handleCopy}
           className="shrink-0 px-3 py-2 text-xs font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition-colors"
         >
@@ -45,7 +81,6 @@ export function EmbedSnippet({ sceneId, siteUrl }: EmbedSnippetProps) {
         QR · tour completo
       </p>
       <div className="flex flex-wrap items-center gap-4">
-        {/* v0: third-party QR; swap for self-hosted / canvas in v1 if policy requires */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={qrSrc}
@@ -55,7 +90,9 @@ export function EmbedSnippet({ sceneId, siteUrl }: EmbedSnippetProps) {
           className="rounded-lg border border-gray-200 bg-white p-1"
         />
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-gray-600 mb-1">Abre en el móvil (página con tour + detalle)</p>
+          <p className="text-xs text-gray-600 mb-1">
+            Abre en el móvil (página con tour + detalle)
+          </p>
           <a
             href={tourUrl}
             className="text-xs text-blue-600 hover:underline break-all font-mono"

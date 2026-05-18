@@ -24,7 +24,6 @@ const nextConfig: NextConfig = {
         // Allow any origin to embed the /e/* viewer as an iframe
         source: "/e/:sceneId*",
         headers: [
-          { key: "X-Frame-Options", value: "ALLOWALL" },
           { key: "Content-Security-Policy", value: "frame-ancestors *" },
         ],
       },

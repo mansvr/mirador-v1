@@ -10,9 +10,33 @@ npm run dev
 ```
 
 - Default redirect: `/` → `/v/scene_best50000` (see `app/page.tsx`).
-- Local scenes live in `scenes/<sceneId>/scene.json` when `NEXT_PUBLIC_R2_URL` is unset or placeholder (see `lib/scene.ts`).
+- Local scenes load from `scenes/<sceneId>/scene.json` when that file exists (see `lib/scene.ts`). Splats can use same-origin paths in `render.url` (e.g. `/best-splat_50000.sog` in `public/`).
+- Do **not** set `NEXT_PUBLIC_R2_URL` in `.env.local` unless you need to test R2 (`MIRADOR_USE_R2=1` + CORS for `http://localhost:3000`).
 
 Copy `.env.example` → `.env.local` and adjust.
+
+### Embed vs tour URL
+
+| Route | Use |
+|-------|-----|
+| `/v/<sceneId>` | Full tour page (listing on mobile, share/QR, OG). Open this link directly. |
+| `/e/<sceneId>` | **Iframe only** — fullscreen viewer, no listing chrome, `frame-ancestors *`. |
+
+Paste on your site (replace host and scene id):
+
+```html
+<div style="position:relative;width:100%;aspect-ratio:16/9;max-height:min(85dvh,900px);min-height:200px">
+  <iframe
+    src="https://mirador.lat/e/scene_best50000"
+    title="Mirador"
+    style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:12px;display:block"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+</div>
+```
+
+On desktop, `/v/…` and `/e/…` both look like “only 3D” until you scroll (mobile listing) or use the **Embed** card (desktop, bottom-right on `/v/`).
 
 ## Environment variables
 
@@ -39,7 +63,10 @@ Do this when you are ready to ship a **preview** or **production** URL.
 ### 1. Vercel project
 
 1. Import the `mirador/` directory (or monorepo root with **Root Directory** = `mirador`).
-2. **Environment variables** (Production + Preview): set the table above. **`NEXT_PUBLIC_SITE_URL`** must match the URL you use in the browser for that environment (e.g. `https://mirador-xxxx.vercel.app` on Preview, `https://tours.yourdomain.com` in prod).
+2. **Environment variables**
+   - **Production:** `NEXT_PUBLIC_SITE_URL` + `NEXT_PUBLIC_R2_URL` (see `vercel-import.env`).
+   - **Preview:** at minimum `NEXT_PUBLIC_R2_URL` (`vercel-import-preview.env`). `NEXT_PUBLIC_SITE_URL` is optional on Preview — if unset, embed/OG use the deployment hostname automatically.
+   - CLI cannot add Preview vars for “all branches” without an interactive prompt; use the dashboard **Import** or add each key with environment **Preview → All Previews**.
 3. Deploy; confirm `npm run build` already passes locally.
 
 ### 2. R2 CORS (browser loads `.sog` / images from R2)

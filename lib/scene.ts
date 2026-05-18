@@ -12,12 +12,27 @@ import { sceneJsonUrl } from "@/lib/r2";
  *
  * In production: fetches from the R2 public bucket with 60s ISR revalidation.
  */
+async function localSceneExists(sceneId: string): Promise<boolean> {
+  const fs = await import("fs/promises");
+  const path = await import("path");
+  try {
+    await fs.access(path.join(process.cwd(), "scenes", sceneId, "scene.json"));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function fetchScene(sceneId: string): Promise<Scene> {
   const isDev = process.env.NODE_ENV === "development";
+  const forceR2 =
+    process.env.MIRADOR_USE_R2 === "1" || process.env.MIRADOR_USE_R2 === "true";
   const r2Url_ = process.env.R2_PUBLIC_URL ?? process.env.NEXT_PUBLIC_R2_URL ?? "";
   const isPlaceholder = !r2Url_ || r2Url_.includes("placeholder");
 
-  if (isDev && isPlaceholder) {
+  // Local dev: use scenes/<id>/scene.json when present (public/ splats via render.url paths).
+  // Set MIRADOR_USE_R2=1 to test against the real bucket from localhost.
+  if (isDev && !forceR2 && (isPlaceholder || (await localSceneExists(sceneId)))) {
     return fetchLocalScene(sceneId);
   }
 
