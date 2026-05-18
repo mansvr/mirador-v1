@@ -82,9 +82,13 @@ wrangler r2 object put mirador-scenes/robots.txt --file=r2-share/robots.txt --co
 
 | Use | URL |
 |-----|-----|
-| **Paste in WhatsApp** (preview) | `https://pub-709488f795594fd1bbdf827d49a5ff63.r2.dev/share/scene_best50000.html` |
+| **Paste in WhatsApp** (preferred) | `https://mirador.lat/share/scene_best50000.html` |
 | **Opens tour** (after tap) | `https://mirador.lat/v/scene_best50000` |
 
-Debugger test: paste the **R2 share** URL → Scrape Again → expect **200** + image.
+Static file lives in `public/share/` (no Next.js SSR). `/og/scene_best50000.jpg` is also static.
 
-CORS on R2 does **not** apply to this (server-side scrape, not browser).
+**Note:** `pub-….r2.dev/share/…` often returns **403 for Meta’s IPs** even when your browser shows 200. Use **mirador.lat** for link previews; keep R2 for `.sog` assets only.
+
+Debugger: `https://mirador.lat/share/scene_best50000.html` → **Scrape Again**.
+
+CORS on R2 does **not** apply to OG scrape (server-side fetch).
