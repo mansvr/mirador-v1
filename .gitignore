@@ -39,3 +39,17 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Mirador — splat assets (large binary files, stored in R2)
+scenes/**/*.sog
+scenes/**/*.spz
+scenes/**/*.ply
+scenes/**/*.splat
+scenes/**/*.ksplat
+
+# Mirador — generated thumbnails (tracked in R2, not git)
+scenes/**/*.webp
+scenes/**/*.png
+
+# Keep scene.json metadata files in git
+!scenes/**/scene.json

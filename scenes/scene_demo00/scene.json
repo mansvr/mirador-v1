@@ -1,0 +1,71 @@
+{
+  "$schema": "../../schemas/scene.v1.schema.json",
+  "schema_version": "1",
+  "id": "scene_demo00",
+  "title": "Demo — Apto 502 Chapinero",
+  "metric": {
+    "area_m2": 87.4,
+    "ceiling_m": 2.65,
+    "rooms": 3,
+    "bathrooms": 2,
+    "verified_by": "apriltag",
+    "verified_at": "2026-05-15"
+  },
+  "render": {
+    "format": "sog",
+    "url": "https://sparkjs.dev/assets/splats/butterfly.spz",
+    "splat_budget_desktop": 2000000,
+    "splat_budget_mobile": 750000,
+    "up_axis": [0, 1, 0]
+  },
+  "waypoints": [
+    {
+      "id": "w_sala",
+      "label": "Sala",
+      "pos": [0, 1.6, 3],
+      "quat": [0, 0, 0, 1],
+      "transition_ms": 1200
+    },
+    {
+      "id": "w_cocina",
+      "label": "Cocina",
+      "pos": [2, 1.6, 0],
+      "quat": [0, -0.383, 0, 0.924],
+      "transition_ms": 1400
+    }
+  ],
+  "hotspots": [
+    {
+      "id": "h_marmol",
+      "pos": [1.2, 1.5, -2.0],
+      "type": "info",
+      "payload": {
+        "title": "Mesones en mármol Calacatta",
+        "body_md": "Losa de 3 cm, instalada 2025. Incluye enchape de pared a tono.",
+        "cta_label": "Consultar disponibilidad",
+        "cta_href": "https://wa.me/573001234567"
+      }
+    }
+  ],
+  "listing": {
+    "address": "Cra 7 # 45-12, Apto 502",
+    "neighborhood": "Chapinero Alto",
+    "city": "Bogotá",
+    "description_md": "Apartamento renovado con acabados de lujo. Piso 5 con vista despejada hacia los cerros. Incluye parqueadero y depósito.",
+    "agent_name": "Carlos Umbral",
+    "agent_whatsapp": "+573001234567"
+  },
+  "branding": {
+    "tenant_id": "umbral",
+    "show_mirador_badge": true,
+    "primary_color": "#FF6A00"
+  },
+  "access": {
+    "visibility": "public"
+  },
+  "attribution": {
+    "capture_date": "2026-05-15",
+    "pipeline": "Postshot + kotohibi COLMAP",
+    "converter": "splat-transform 1.x"
+  }
+}

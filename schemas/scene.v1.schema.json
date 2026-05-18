@@ -1,0 +1,307 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://mirador.umbraltech.co/schemas/scene.v1.schema.json",
+  "title": "Mirador Scene",
+  "description": "Scene configuration for the Mirador 3DGS viewer. The source of truth for scene.json files.",
+  "type": "object",
+  "required": ["schema_version", "id", "title", "render"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1",
+      "description": "Schema version. Always '1' for this version."
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^scene_[a-z0-9]{8,}$",
+      "description": "Unique scene identifier, e.g. scene_abc12345"
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 200,
+      "description": "Human-readable scene title used in OG cards and page titles."
+    },
+    "metric": {
+      "type": "object",
+      "description": "Verified physical measurements from the capture pipeline.",
+      "additionalProperties": false,
+      "properties": {
+        "area_m2": { "type": "number", "minimum": 0 },
+        "ceiling_m": { "type": "number", "minimum": 0 },
+        "rooms": { "type": "integer", "minimum": 0 },
+        "bathrooms": { "type": "integer", "minimum": 0 },
+        "verified_by": {
+          "type": "string",
+          "enum": ["apriltag", "lidar", "manual", "unverified"]
+        },
+        "verified_at": { "type": "string", "format": "date" }
+      }
+    },
+    "render": {
+      "type": "object",
+      "description": "Splat render asset configuration.",
+      "required": ["format", "url"],
+      "additionalProperties": false,
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["sog", "spz", "ply"],
+          "description": "Asset format. 'sog' (SOGS) is the default and preferred format."
+        },
+        "url": {
+          "type": "string",
+          "description": "Filename relative to the scene's R2 folder, e.g. 'scene.sog'."
+        },
+        "splat_budget_desktop": {
+          "type": "integer",
+          "minimum": 100000,
+          "maximum": 5000000,
+          "default": 2000000,
+          "description": "Max splats rendered per frame on desktop. Spark LoD keeps FPS stable."
+        },
+        "splat_budget_mobile": {
+          "type": "integer",
+          "minimum": 100000,
+          "maximum": 2000000,
+          "default": 750000,
+          "description": "Max splats rendered per frame on mobile."
+        },
+        "up_axis": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 3,
+          "maxItems": 3,
+          "default": [0, 1, 0],
+          "description": "World-space up vector. [0,1,0] when the capture pipeline has gravity-aligned the scene."
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "description": "Cross-scale context layers (macro neighbourhood, meso panoramas). Added in v3.",
+      "additionalProperties": false,
+      "properties": {
+        "macro": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": { "type": "string", "enum": ["mapbox3d", "google3d"] },
+            "lat": { "type": "number" },
+            "lng": { "type": "number" },
+            "zoom": { "type": "number" }
+          }
+        },
+        "meso": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["type", "url"],
+            "additionalProperties": false,
+            "properties": {
+              "type": { "type": "string", "enum": ["pano360"] },
+              "url": { "type": "string" },
+              "label": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "waypoints": {
+      "type": "array",
+      "description": "Named camera positions. The viewer animates between them.",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "pos", "quat"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "pos": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "[x, y, z] camera position in world space."
+          },
+          "quat": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 4,
+            "maxItems": 4,
+            "description": "[x, y, z, w] camera orientation quaternion."
+          },
+          "transition_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 1200,
+            "description": "Camera tween duration in milliseconds."
+          },
+          "thumbnail_url": {
+            "type": "string",
+            "description": "Filename relative to the scene's R2 folder, e.g. 'thumb_living.webp'."
+          }
+        }
+      }
+    },
+    "hotspots": {
+      "type": "array",
+      "description": "Interactive 3D pins anchored to world-space positions.",
+      "items": {
+        "type": "object",
+        "required": ["id", "pos", "type"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "pos": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "type": {
+            "type": "string",
+            "enum": ["info", "cta", "media"],
+            "description": "info = text/md panel; cta = button only; media = image/video."
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": { "type": "string" },
+              "body_md": { "type": "string", "description": "Markdown rendered in the hotspot panel." },
+              "image_urls": { "type": "array", "items": { "type": "string" } },
+              "pdf_url": { "type": ["string", "null"] },
+              "video_url": { "type": ["string", "null"] },
+              "cta_label": { "type": "string" },
+              "cta_href": { "type": "string", "format": "uri" }
+            }
+          }
+        }
+      }
+    },
+    "portals": {
+      "type": "array",
+      "description": "Doorway links between scenes. Click a portal to navigate to another scene.",
+      "items": {
+        "type": "object",
+        "required": ["id", "pos", "target_scene_id"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "pos": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "normal": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 3,
+            "maxItems": 3,
+            "description": "Face direction of the portal for icon orientation."
+          },
+          "label": { "type": "string" },
+          "target_scene_id": { "type": "string" }
+        }
+      }
+    },
+    "listing": {
+      "type": "object",
+      "description": "Real estate listing metadata displayed in the property strip.",
+      "additionalProperties": false,
+      "properties": {
+        "address": { "type": "string" },
+        "neighborhood": { "type": "string" },
+        "city": { "type": "string" },
+        "description_md": { "type": "string" },
+        "agent_name": { "type": "string" },
+        "agent_whatsapp": {
+          "type": "string",
+          "description": "Phone number in E.164 format, e.g. +573001234567. Used to build wa.me link."
+        },
+        "floorplan_svg_url": {
+          "type": "string",
+          "description": "Filename relative to the scene's R2 folder, e.g. 'floorplan.svg'."
+        }
+      }
+    },
+    "branding": {
+      "type": "object",
+      "description": "Tenant branding tokens applied as CSS custom properties.",
+      "additionalProperties": false,
+      "properties": {
+        "tenant_id": { "type": "string" },
+        "logo_url": { "type": ["string", "null"] },
+        "primary_color": {
+          "type": "string",
+          "pattern": "^#[0-9a-fA-F]{6}$",
+          "default": "#FF6A00"
+        },
+        "show_mirador_badge": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show the Mirador watermark. Set to false for white-label embeds."
+        }
+      }
+    },
+    "access": {
+      "type": "object",
+      "description": "Scene visibility and access control.",
+      "additionalProperties": false,
+      "properties": {
+        "visibility": {
+          "type": "string",
+          "enum": ["public", "password"],
+          "default": "public"
+        },
+        "password_hash": { "type": ["string", "null"] },
+        "embed_domains": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Allowlist of domains that may embed this scene in an iframe. Empty = all domains."
+        }
+      }
+    },
+    "unit_selector": {
+      "type": "object",
+      "description": "Constructora pre-sales unit selector overlay (v3+).",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "default": false },
+        "units": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "label", "scene_id"],
+            "properties": {
+              "id": { "type": "string" },
+              "label": { "type": "string" },
+              "scene_id": { "type": "string" },
+              "status": { "type": "string", "enum": ["available", "reserved", "sold"] }
+            }
+          }
+        }
+      }
+    },
+    "analytics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": "boolean", "default": true },
+        "posthog_key": { "type": ["string", "null"] }
+      }
+    },
+    "attribution": {
+      "type": "object",
+      "description": "Capture pipeline provenance.",
+      "additionalProperties": false,
+      "properties": {
+        "capture_date": { "type": "string", "format": "date" },
+        "pipeline": { "type": "string" },
+        "converter": { "type": "string" }
+      }
+    }
+  }
+}
