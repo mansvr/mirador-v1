@@ -2,6 +2,19 @@
 
 If [Sharing Debugger](https://developers.facebook.com/tools/debug/) shows **403** and only `mirador.lat` as title (no `og:image`), Meta’s crawler is being blocked **before** Next.js runs — not an OG markup bug.
 
+Your custom **Bypass** rule can be correct and Meta may still get **403** (Vercel edge blocks Meta’s datacenter IPs, not your PC). `curl -A facebookexternalhit` returning 200 does **not** mean the Debugger will pass.
+
+## Quick test — is it only `mirador.lat`?
+
+In Sharing Debugger, try:
+
+`https://mirador-v1-six.vercel.app/v/scene_best50000`
+
+| Result | Meaning |
+|--------|---------|
+| **200** on vercel.app, **403** on mirador.lat | Custom domain / extra proxy layer — see Fix 2 (Cloudflare) and Fix 1b |
+| **403** on both | Vercel Bot Protection / DDoS layer — Fix 1b |
+
 ## Fix 1 — Vercel Firewall (most common on `*.vercel.app` / custom domains)
 
 1. [Vercel Dashboard](https://vercel.com) → project **mirador-v1** → **Firewall** (or **Security**).
@@ -13,6 +26,13 @@ If [Sharing Debugger](https://developers.facebook.com/tools/debug/) shows **403*
 4. **Redeploy** production after changes.
 
 Known issue: Meta’s datacenter IPs are sometimes blocked by Vercel DDoS mitigation while `curl -A facebookexternalhit` from your PC returns 200. See [Vercel community thread](https://community.vercel.com/t/facebook-sharing-debugger-returns-403-meta-crawler-blocked-by-vercel-ddos-mitigation/41737).
+
+### Fix 1b — If Bypass rule still shows 403
+
+1. **Firewall → Bot Protection** (managed): set to **Off** for Production (not only a custom Allow rule).
+2. Confirm the Bypass rule is enabled for **Production** and ordered **above** Deny/Challenge rules.
+3. **Settings → Deployment Protection**: Production = **not** password-protected.
+4. Optional: open a [Vercel support](https://vercel.com/help) ticket: “Meta crawler AS32934 gets 403 on HTML for OG scrape.”
 
 ## Fix 2 — Cloudflare (only if `mirador.lat` is proxied orange-cloud)
 
@@ -36,3 +56,30 @@ Known issue: Meta’s datacenter IPs are sometimes blocked by Vercel DDoS mitiga
 | `og:image` | `https://mirador.lat/og/scene_best50000.jpg` |
 
 Composite card (photo + title overlay): https://mirador.lat/api/og/scene_best50000
+
+## Fix 4 — R2 share page (works while Vercel blocks Meta)
+
+Host a tiny HTML file on **R2** (same bucket as splats). Meta scrapes `*.r2.dev` without hitting Vercel.
+
+### Upload once (dashboard or Wrangler)
+
+From repo `mirador/`:
+
+```bash
+# Workshop photo for og:image (if not already on R2)
+wrangler r2 object put mirador-scenes/og/scene_best50000.jpg --file=public/og/scene_best50000.jpg --content-type=image/jpeg
+
+# Share landing page (OG tags + redirect to mirador.lat)
+wrangler r2 object put mirador-scenes/share/scene_best50000.html --file=r2-share/scene_best50000.html --content-type=text/html
+```
+
+### Links
+
+| Use | URL |
+|-----|-----|
+| **Paste in WhatsApp** (preview) | `https://pub-709488f795594fd1bbdf827d49a5ff63.r2.dev/share/scene_best50000.html` |
+| **Opens tour** (after tap) | `https://mirador.lat/v/scene_best50000` |
+
+Debugger test: paste the **R2 share** URL → Scrape Again → expect **200** + image.
+
+CORS on R2 does **not** apply to this (server-side scrape, not browser).
