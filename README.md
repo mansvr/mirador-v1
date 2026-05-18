@@ -96,6 +96,8 @@ In **Cloudflare Dashboard → R2 → your bucket → Settings → CORS policy**,
 
 ### 3. OG and unfurl checks
 
+If Facebook Sharing Debugger shows **403**, fix [docs/whatsapp-og-troubleshooting.md](docs/whatsapp-og-troubleshooting.md) (Vercel Firewall / Deployment Protection) before scraping again.
+
 After deploy, with `NEXT_PUBLIC_SITE_URL` correct:
 
 | Check | URL / tool |
