@@ -1,18 +1,21 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { fetchScene } from "@/lib/scene";
 import { getSiteUrl } from "@/lib/site-url";
+import { resolveSceneIdFromSlugs } from "@/lib/tenants";
 import { ViewerPageShell } from "@/components/viewer/ViewerPageShell";
 
 interface Props {
-  params: Promise<{ sceneId: string }>;
+  params: Promise<{ tenant: string; property: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { sceneId } = await params;
+  const { tenant, property } = await params;
+  const sceneId = resolveSceneIdFromSlugs(tenant, property);
+  if (!sceneId) return { title: "Mirador" };
 
   try {
     const scene = await fetchScene(sceneId);
-
     return {
       title: scene.title,
       description:
@@ -35,8 +38,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function ViewerPage({ params }: Props) {
-  const { sceneId } = await params;
+export default async function TenantPropertyPage({ params }: Props) {
+  const { tenant, property } = await params;
+  const sceneId = resolveSceneIdFromSlugs(tenant, property);
+  if (!sceneId) notFound();
+
   const scene = await fetchScene(sceneId);
   const siteUrl = await getSiteUrl();
 

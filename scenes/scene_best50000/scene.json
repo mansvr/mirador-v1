@@ -1,0 +1,51 @@
+{
+  "$schema": "../../schemas/scene.v1.schema.json",
+  "schema_version": "1",
+  "id": "scene_best50000",
+  "title": "Best splat — 50k (local .sog)",
+  "metric": {
+    "verified_by": "unverified"
+  },
+  "render": {
+    "format": "sog",
+    "url": "/best-splat_50000.sog",
+    "splat_budget_desktop": 2000000,
+    "splat_budget_mobile": 750000,
+    "up_axis": [0, 1, 0],
+    "yaw_correction_deg": 0,
+    "pitch_correction_deg": 180
+  },
+  "waypoints": [
+    {
+      "id": "w_entry",
+      "label": "Entrada",
+      "pos": [0, 1.6, 3],
+      "quat": [0, 0, 0, 1],
+      "transition_ms": 1200
+    },
+    {
+      "id": "w_corner",
+      "label": "Esquina",
+      "pos": [2.5, 1.6, -1.5],
+      "quat": [0, 0.924, 0, -0.383],
+      "transition_ms": 1400
+    }
+  ],
+  "hotspots": [],
+  "listing": {
+    "description_md": "Vista local de `best-splat_50000.sog` (hard link en `public/`). Corrección de orientación solo en visor: `pitch_correction_deg: 180` (boca abajo → Y-up), `yaw_correction_deg` para giro en planta. No altera el `.sog`. Revisa waypoints/cámara tras cambiar ángulos."
+  },
+  "branding": {
+    "tenant_id": "umbral",
+    "show_mirador_badge": true,
+    "primary_color": "#FF6A00"
+  },
+  "access": {
+    "visibility": "public"
+  },
+  "attribution": {
+    "capture_date": "2026-05-18",
+    "pipeline": "local SOG",
+    "converter": "splat-transform"
+  }
+}

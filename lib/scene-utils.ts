@@ -7,15 +7,25 @@ import type { Scene } from "@/lib/types/scene";
 import { r2Url } from "@/lib/r2";
 
 /**
+ * Resolve a scene-relative asset URL (thumbnail, floorplan, etc.).
+ * Same rules as splatUrl: absolute http(s), leading `/`, else R2.
+ */
+export function sceneAssetUrl(sceneId: string, filename: string): string {
+  if (filename.startsWith("http") || filename.startsWith("/")) {
+    return filename;
+  }
+  return r2Url(sceneId, filename);
+}
+
+/**
  * Resolve the full public URL for the scene's splat asset.
- * Handles absolute URLs (for dev/demo) and relative filenames (R2).
+ *
+ * - `https://...` — external CDN (e.g. Spark demo asset)
+ * - `/file.sog` — same-origin static file from `public/` (no R2)
+ * - `scene.sog` — relative filename on R2 at `/<scene-id>/scene.sog`
  */
 export function splatUrl(scene: Scene): string {
-  const { render } = scene;
-  if (render.url.startsWith("http")) {
-    return render.url;
-  }
-  return r2Url(scene.id, render.url);
+  return sceneAssetUrl(scene.id, scene.render.url);
 }
 
 /**

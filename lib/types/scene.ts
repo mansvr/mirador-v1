@@ -22,6 +22,18 @@ export interface SceneRender {
   splat_budget_mobile?: number;
   /** World-space up vector, defaults to [0, 1, 0] */
   up_axis?: [number, number, number];
+  /**
+   * Extra rotation around world +Y (degrees) on the splat root in Three.js.
+   * Use 180 when the scene faces “backward” vs orbit controls / marketing north.
+   */
+  yaw_correction_deg?: number;
+  /**
+   * Extra rotation around world +X (degrees). Use 180 when the splat reads
+   * upside-down (training vs Three.js Y-up); does not modify the asset file.
+   */
+  pitch_correction_deg?: number;
+  /** Extra rotation around world +Z (degrees); rare, for rolled exports. */
+  roll_correction_deg?: number;
 }
 
 export interface SceneContextMacro {

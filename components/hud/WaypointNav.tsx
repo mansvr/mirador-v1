@@ -2,7 +2,7 @@
 
 import { useViewerStore } from "@/lib/store";
 import { trackWaypointReached } from "@/lib/analytics";
-import { r2Url } from "@/lib/r2";
+import { sceneAssetUrl } from "@/lib/scene-utils";
 import type { SceneWaypoint } from "@/lib/types/scene";
 
 interface WaypointNavProps {
@@ -39,7 +39,7 @@ export function WaypointNav({ waypoints, sceneId }: WaypointNavProps) {
             {wp.thumbnail_url && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={r2Url(sceneId, wp.thumbnail_url)}
+                src={sceneAssetUrl(sceneId, wp.thumbnail_url)}
                 alt=""
                 className="w-5 h-5 rounded-full object-cover"
               />

@@ -21,14 +21,24 @@ export function initPosthog() {
   initialized = true;
 }
 
+export function capturePageView(url: string) {
+  if (typeof window === "undefined" || !initialized) return;
+  posthog.capture("$pageview", { $current_url: url });
+}
+
 // ─── Typed event helpers ──────────────────────────────────────────────────────
 
+function capture(event: string, props: Record<string, unknown>) {
+  if (!initialized) return;
+  posthog.capture(event, props);
+}
+
 export function trackSceneLoaded(sceneId: string, title: string) {
-  posthog.capture("scene_loaded", { scene_id: sceneId, title });
+  capture("scene_loaded", { scene_id: sceneId, title });
 }
 
 export function trackWaypointReached(sceneId: string, waypointId: string, label: string) {
-  posthog.capture("waypoint_reached", {
+  capture("waypoint_reached", {
     scene_id: sceneId,
     waypoint_id: waypointId,
     label,
@@ -36,7 +46,7 @@ export function trackWaypointReached(sceneId: string, waypointId: string, label:
 }
 
 export function trackHotspotClicked(sceneId: string, hotspotId: string, type: string) {
-  posthog.capture("hotspot_clicked", {
+  capture("hotspot_clicked", {
     scene_id: sceneId,
     hotspot_id: hotspotId,
     type,
@@ -44,7 +54,7 @@ export function trackHotspotClicked(sceneId: string, hotspotId: string, type: st
 }
 
 export function trackCTAClicked(sceneId: string, hotspotId: string, href: string) {
-  posthog.capture("cta_clicked", {
+  capture("cta_clicked", {
     scene_id: sceneId,
     hotspot_id: hotspotId,
     href,
@@ -52,9 +62,9 @@ export function trackCTAClicked(sceneId: string, hotspotId: string, href: string
 }
 
 export function trackVREntered(sceneId: string) {
-  posthog.capture("vr_entered", { scene_id: sceneId });
+  capture("vr_entered", { scene_id: sceneId });
 }
 
 export function trackEmbedCopied(sceneId: string) {
-  posthog.capture("embed_copied", { scene_id: sceneId });
+  capture("embed_copied", { scene_id: sceneId });
 }

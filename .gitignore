@@ -36,20 +36,26 @@ yarn-error.log*
 # vercel
 .vercel
 
+# graphify (local code graph; optional in CI)
+/graphify-out/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# Mirador — splat assets (large binary files, stored in R2)
+# Mirador — splat assets in scenes/ (large binaries, usually R2-only)
 scenes/**/*.sog
 scenes/**/*.spz
 scenes/**/*.ply
 scenes/**/*.splat
 scenes/**/*.ksplat
-
-# Mirador — generated thumbnails (tracked in R2, not git)
 scenes/**/*.webp
 scenes/**/*.png
+
+# Mirador — large splats in public/ (local hard link; do not commit)
+public/**/*.sog
+public/**/*.spz
+public/**/*.ply
 
 # Keep scene.json metadata files in git
 !scenes/**/scene.json

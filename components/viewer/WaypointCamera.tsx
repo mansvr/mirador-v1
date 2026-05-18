@@ -2,16 +2,20 @@
 
 /**
  * WaypointCamera — animates the camera to the active waypoint's pos/quat.
- * Uses a smooth spring-like interpolation via useFrame.
+ * Ease-in-out cubic interpolation; only reacts when `activeWaypointId` changes.
+ * Disables OrbitControls while tweening so the two don't fight.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useViewerStore, getActiveWaypoint } from "@/lib/store";
+import type { SceneWaypoint } from "@/lib/types/scene";
 
 export function WaypointCamera() {
   const { camera } = useThree();
+  const setCameraTweening = useViewerStore((s) => s.setCameraTweening);
+
   const targetPos = useRef(new THREE.Vector3());
   const targetQuat = useRef(new THREE.Quaternion());
   const isAnimating = useRef(false);
@@ -19,47 +23,74 @@ export function WaypointCamera() {
   const startPos = useRef(new THREE.Vector3());
   const startQuat = useRef(new THREE.Quaternion());
   const transitionMs = useRef(1200);
+  const prevWaypointId = useRef<string | null>(null);
 
-  // Subscribe to active waypoint changes
-  useEffect(() => {
-    return useViewerStore.subscribe((state) => {
-      const wp = getActiveWaypoint(state);
-      if (!wp) return;
-
-      // Capture current camera position as the animation start
+  const beginTweenToWaypoint = useCallback(
+    (wp: SceneWaypoint) => {
       startPos.current.copy(camera.position);
       startQuat.current.copy(camera.quaternion);
 
-      // Set the target
       const [tx, ty, tz] = wp.pos;
       const [qx, qy, qz, qw] = wp.quat;
       targetPos.current.set(tx, ty, tz);
       targetQuat.current.set(qx, qy, qz, qw);
       transitionMs.current = wp.transition_ms ?? 1200;
 
-      // Reset progress and start animation
       animationProgress.current = 0;
       isAnimating.current = true;
+      setCameraTweening(true);
+    },
+    [camera, setCameraTweening]
+  );
+
+  useEffect(() => {
+    const unsub = useViewerStore.subscribe((state) => {
+      const id = state.activeWaypointId;
+      if (id === prevWaypointId.current) return;
+      prevWaypointId.current = id;
+      const wp = getActiveWaypoint(state);
+      if (wp) beginTweenToWaypoint(wp);
     });
-  }, [camera]);
+
+    const wp0 = getActiveWaypoint(useViewerStore.getState());
+    if (wp0) {
+      prevWaypointId.current = wp0.id;
+      beginTweenToWaypoint(wp0);
+    } else {
+      prevWaypointId.current = null;
+    }
+
+    return unsub;
+  }, [beginTweenToWaypoint]);
+
+  useEffect(
+    () => () => {
+      useViewerStore.getState().setCameraTweening(false);
+    },
+    []
+  );
 
   useFrame((_, delta) => {
     if (!isAnimating.current) return;
 
-    const duration = transitionMs.current / 1000; // convert ms → seconds
+    const duration = transitionMs.current / 1000;
     animationProgress.current = Math.min(
       animationProgress.current + delta / duration,
       1
     );
 
-    // Ease-in-out cubic
     const t = easeInOutCubic(animationProgress.current);
 
     camera.position.lerpVectors(startPos.current, targetPos.current, t);
-    camera.quaternion.slerpQuaternions(startQuat.current, targetQuat.current, t);
+    camera.quaternion.slerpQuaternions(
+      startQuat.current,
+      targetQuat.current,
+      t
+    );
 
     if (animationProgress.current >= 1) {
       isAnimating.current = false;
+      setCameraTweening(false);
     }
   });
 

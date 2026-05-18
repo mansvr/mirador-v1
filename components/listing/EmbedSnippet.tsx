@@ -5,17 +5,17 @@ import { trackEmbedCopied } from "@/lib/analytics";
 
 interface EmbedSnippetProps {
   sceneId: string;
+  /** Must come from the server (e.g. getSiteUrl()) so SSR matches hydration. */
+  siteUrl: string;
 }
 
-export function EmbedSnippet({ sceneId }: EmbedSnippetProps) {
+export function EmbedSnippet({ sceneId, siteUrl }: EmbedSnippetProps) {
   const [copied, setCopied] = useState(false);
 
-  const origin =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : "https://mirador.umbraltech.co";
-
-  const snippet = `<iframe src="${origin}/e/${sceneId}" width="100%" height="500" style="border:none;border-radius:12px;" allowfullscreen loading="lazy"></iframe>`;
+  const origin = siteUrl.replace(/\/$/, "");
+  const snippet = `<div style="position:relative;width:100%;aspect-ratio:16/9;max-height:min(85dvh,900px);min-height:200px"><iframe src="${origin}/e/${sceneId}" title="Mirador" style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:12px;display:block" allowfullscreen loading="lazy"></iframe></div>`;
+  const tourUrl = `${origin}/v/${sceneId}`;
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(tourUrl)}`;
 
   async function handleCopy() {
     await navigator.clipboard.writeText(snippet);
@@ -39,6 +39,30 @@ export function EmbedSnippet({ sceneId }: EmbedSnippetProps) {
         >
           {copied ? "✓" : "Copiar"}
         </button>
+      </div>
+
+      <p className="text-xs text-gray-500 mt-4 mb-2 font-medium uppercase tracking-wider">
+        QR · tour completo
+      </p>
+      <div className="flex flex-wrap items-center gap-4">
+        {/* v0: third-party QR; swap for self-hosted / canvas in v1 if policy requires */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={qrSrc}
+          alt=""
+          width={120}
+          height={120}
+          className="rounded-lg border border-gray-200 bg-white p-1"
+        />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-gray-600 mb-1">Abre en el móvil (página con tour + detalle)</p>
+          <a
+            href={tourUrl}
+            className="text-xs text-blue-600 hover:underline break-all font-mono"
+          >
+            {tourUrl}
+          </a>
+        </div>
       </div>
     </div>
   );

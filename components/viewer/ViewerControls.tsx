@@ -12,12 +12,14 @@ import { useViewerStore } from "@/lib/store";
 
 export function ViewerControls() {
   const isWalkMode = useViewerStore((s) => s.isWalkMode);
+  const isCameraTweening = useViewerStore((s) => s.isCameraTweening);
 
   if (isWalkMode) return null;
 
   return (
     <OrbitControls
       makeDefault
+      enabled={!isCameraTweening}
       enableDamping
       dampingFactor={0.08}
       // Prevent going underground

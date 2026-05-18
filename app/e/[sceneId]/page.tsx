@@ -17,8 +17,8 @@ export default async function EmbedPage({ params }: Props) {
   const scene = await fetchScene(sceneId);
 
   return (
-    <div className="relative w-full h-screen bg-black overflow-hidden">
-      <SceneCanvas scene={scene} heightClass="h-screen" />
+    <div className="relative h-dvh w-full min-h-0 overflow-hidden bg-black">
+      <SceneCanvas scene={scene} heightClass="absolute inset-0 size-full min-h-0" />
       <MetricBadge metric={scene.metric} />
       <WaypointNav waypoints={scene.waypoints ?? []} sceneId={scene.id} />
       <BrandingBadge branding={scene.branding} />

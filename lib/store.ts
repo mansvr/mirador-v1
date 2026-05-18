@@ -3,7 +3,12 @@ import type { Scene, SceneWaypoint } from "@/lib/types/scene";
 
 interface ViewerState {
   scene: Scene | null;
+  /** Replaces scene; picks a valid `activeWaypointId` when the current id is missing from the new scene. */
   setScene: (scene: Scene) => void;
+
+  /** True while WaypointCamera is tweening — OrbitControls should yield. */
+  isCameraTweening: boolean;
+  setCameraTweening: (v: boolean) => void;
 
   // Active waypoint
   activeWaypointId: string | null;
@@ -26,7 +31,22 @@ interface ViewerState {
 
 export const useViewerStore = create<ViewerState>((set) => ({
   scene: null,
-  setScene: (scene) => set({ scene }),
+  setScene: (scene) =>
+    set((s) => {
+      const wps = scene.waypoints ?? [];
+      const stillValid =
+        s.activeWaypointId != null &&
+        wps.some((w) => w.id === s.activeWaypointId);
+      const sameScene = s.scene?.id === scene.id;
+      return {
+        scene,
+        activeWaypointId: stillValid ? s.activeWaypointId : (wps[0]?.id ?? null),
+        activeHotspotId: sameScene ? s.activeHotspotId : null,
+      };
+    }),
+
+  isCameraTweening: false,
+  setCameraTweening: (isCameraTweening) => set({ isCameraTweening }),
 
   activeWaypointId: null,
   setActiveWaypoint: (id) => set({ activeWaypointId: id, activeHotspotId: null }),

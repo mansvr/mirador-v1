@@ -74,6 +74,18 @@
           "maxItems": 3,
           "default": [0, 1, 0],
           "description": "World-space up vector. [0,1,0] when the capture pipeline has gravity-aligned the scene."
+        },
+        "yaw_correction_deg": {
+          "type": "number",
+          "description": "Extra rotation around world +Y (degrees) on the splat root. Common: 0 or 180 for forward mismatch — see 3dgs-viewer-system.md §3.5."
+        },
+        "pitch_correction_deg": {
+          "type": "number",
+          "description": "Extra rotation around world +X (degrees) on the splat root. Common: 0 or 180 when the scene appears upside-down vs Three.js Y-up; only affects the viewer root transform, not the SOG bytes."
+        },
+        "roll_correction_deg": {
+          "type": "number",
+          "description": "Extra rotation around world +Z (degrees) on the splat root; optional."
         }
       }
     },

@@ -26,11 +26,14 @@ import type { Scene } from "@/lib/types/scene";
 
 interface SceneCanvasProps {
   scene: Scene;
-  /** Height class for the canvas container. Defaults to full viewport. */
+  /**
+   * Layout classes for the root wrapper. Parent should give a definite height
+   * (e.g. h-dvh, h-[50dvh], or flex-1 min-h-0) so R3F can measure the GL surface.
+   */
   heightClass?: string;
 }
 
-export function SceneCanvas({ scene, heightClass = "h-screen" }: SceneCanvasProps) {
+export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneCanvasProps) {
   const setScene = useViewerStore((s) => s.setScene);
   const isLoaded = useViewerStore((s) => s.isLoaded);
 
@@ -50,7 +53,7 @@ export function SceneCanvas({ scene, heightClass = "h-screen" }: SceneCanvasProp
 
   return (
     <div
-      className={`relative w-full ${heightClass} overflow-hidden`}
+      className={`mirador-gl-root relative w-full overflow-hidden ${heightClass}`}
       // Inject branding CSS custom properties for hotspot/UI theming
       style={
         {

@@ -128,3 +128,8 @@
     @apply font-sans;
   }
 }
+
+/* Three.js Journey / R3F: canvas is already display:block in fiber; kill drag outline on Chrome */
+.mirador-gl-root canvas {
+  outline: none;
+}
