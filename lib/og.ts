@@ -3,6 +3,7 @@ import "server-only";
 import fs from "fs";
 import path from "path";
 import type { Scene } from "@/lib/types/scene";
+import { OG_SITE_SUBTITLE } from "@/lib/og-copy";
 
 /** Static OG photo (no overlay) from public/og/<sceneId>.jpg */
 export function ogThumbnailPublicPath(sceneId: string): string | null {
@@ -50,7 +51,7 @@ export function shareTitle(scene: Scene): string {
 
 export function shareDescription(scene: Scene): string {
   const t = shareTitle(scene);
-  return `Tour virtual 3D · ${t}`;
+  return `${OG_SITE_SUBTITLE} · ${t}`;
 }
 
 export function buildOpenGraphImages(

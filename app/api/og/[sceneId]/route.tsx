@@ -1,12 +1,14 @@
 import { ImageResponse } from "next/og";
-import { MIRADOR_DEFAULT_PRIMARY } from "@/lib/brand";
 import { fetchScene } from "@/lib/scene";
 import { OgCard } from "@/lib/og-card";
 import { getOgFonts, OG_IMAGE_SIZE } from "@/lib/og-fonts";
+import { ogThumbnailDataUrl } from "@/lib/og";
 import {
-  ogThumbnailDataUrl,
-  shareTitle,
-} from "@/lib/og";
+  OG_CARD_ACCENT,
+  OG_EYEBROW,
+  OG_SITE_SUBTITLE,
+  ogCardPropsForScene,
+} from "@/lib/og-template";
 
 export const runtime = "nodejs";
 
@@ -19,17 +21,11 @@ export async function GET(
 
   try {
     const scene = await fetchScene(sceneId);
-    const accent = scene.branding?.primary_color ?? MIRADOR_DEFAULT_PRIMARY;
-    const thumbSrc = ogThumbnailDataUrl(sceneId);
+    const props = ogCardPropsForScene(sceneId, scene);
 
     return new ImageResponse(
       (
-        <OgCard
-          title={shareTitle(scene)}
-          accent={accent}
-          thumbSrc={thumbSrc}
-          subtitle="Tour virtual 3D · mirador.lat"
-        />
+        <OgCard {...props} />
       ),
       {
         ...OG_IMAGE_SIZE,
@@ -44,7 +40,9 @@ export async function GET(
       (
         <OgCard
           title="Mirador"
-          accent={MIRADOR_DEFAULT_PRIMARY}
+          accent={OG_CARD_ACCENT}
+          eyebrow={OG_EYEBROW}
+          subtitle={OG_SITE_SUBTITLE}
           thumbSrc={ogThumbnailDataUrl(sceneId)}
         />
       ),

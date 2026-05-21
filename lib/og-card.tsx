@@ -1,13 +1,14 @@
 /** JSX layout for `next/og` ImageResponse (Satori). No client hooks. */
 
 import { OG_FONT_DISPLAY, OG_FONT_UI } from "@/lib/og-fonts";
+import { OG_CARD_ACCENT, OG_EYEBROW, OG_SITE_SUBTITLE } from "@/lib/og-copy";
 
 export function OgCard({
   title,
-  accent,
+  accent = OG_CARD_ACCENT,
   thumbSrc,
-  eyebrow = "Mirador",
-  subtitle = "Tour virtual 3D",
+  eyebrow = OG_EYEBROW,
+  subtitle = OG_SITE_SUBTITLE,
 }: {
   title: string;
   accent: string;

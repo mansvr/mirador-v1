@@ -1,7 +1,12 @@
 import { ImageResponse } from "next/og";
 import { OgCard } from "@/lib/og-card";
 import { getOgFonts, OG_IMAGE_SIZE } from "@/lib/og-fonts";
-import { MIRADOR_BRAND } from "@/lib/brand";
+import {
+  OG_CARD_ACCENT,
+  OG_EYEBROW,
+  OG_MARKETING_TITLE,
+  OG_SITE_SUBTITLE,
+} from "@/lib/og-template";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -18,10 +23,10 @@ export default async function OpenGraphImage() {
   return new ImageResponse(
     (
       <OgCard
-        title="El mirador que tu listing necesitaba"
-        accent={MIRADOR_BRAND.surface}
-        eyebrow="Mirador"
-        subtitle="Recorridos 3D · Colombia · mirador.lat"
+        title={OG_MARKETING_TITLE}
+        accent={OG_CARD_ACCENT}
+        eyebrow={OG_EYEBROW}
+        subtitle={OG_SITE_SUBTITLE}
       />
     ),
     { ...size, fonts }
