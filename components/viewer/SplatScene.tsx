@@ -10,7 +10,12 @@ import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { SplatMesh } from "@sparkjsdev/spark";
 import { useViewerStore } from "@/lib/store";
-import { splatBudget } from "@/lib/scene-utils";
+import { isViewerDebugEnabled } from "@/lib/viewer-debug";
+import { viewerDebugRegistry } from "@/lib/viewer-debug-registry";
+import {
+  resolveSplatBudget,
+  splatMeshOptions,
+} from "@/lib/spark-viewer-config";
 import type { Scene, SceneRender } from "@/lib/types/scene";
 
 interface SplatSceneProps {
@@ -48,31 +53,36 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
   useEffect(() => {
     if (rootRef.current) return;
 
-    void splatBudget(scene);
+    const budget = resolveSplatBudget(scene);
+    viewerDebugRegistry.setSplatBudget(budget);
     setLoadProgress(0.05);
 
     const root = new THREE.Group();
     applyRootOrientation(root, scene.render);
 
-    const splat = new SplatMesh({
-      url: splatSrc,
-      onProgress: (ev: ProgressEvent) => {
-        if (ev.lengthComputable && ev.total > 0) {
-          setLoadProgress(0.05 + 0.85 * (ev.loaded / ev.total));
-        }
-      },
-      onLoad: () => {
-        // Re-apply after Spark async init so a late loader pass cannot stomp mesh.local transform.
-        applyRootOrientation(root, scene.render);
-        setLoadProgress(1);
-        setLoaded(true);
-      },
-    });
+    const splat = new SplatMesh(
+      splatMeshOptions(scene, splatSrc, {
+        onProgress: (ev: ProgressEvent) => {
+          if (ev.lengthComputable && ev.total > 0) {
+            setLoadProgress(0.05 + 0.85 * (ev.loaded / ev.total));
+          }
+        },
+        onLoad: () => {
+          // Re-apply after Spark async init so a late loader pass cannot stomp mesh.local transform.
+          applyRootOrientation(root, scene.render);
+          setLoadProgress(1);
+          setLoaded(true);
+        },
+      })
+    );
 
     splat.position.set(0, 0, 0);
     root.add(splat);
     threeScene.add(root);
     rootRef.current = root;
+    if (isViewerDebugEnabled()) {
+      viewerDebugRegistry.setSplat(splat);
+    }
 
     // Fallback if onLoad never fires (defensive)
     const fallback = setTimeout(() => {
@@ -91,6 +101,8 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
       }
       setLoaded(false);
       setLoadProgress(0);
+      viewerDebugRegistry.setSplat(null);
+      viewerDebugRegistry.setSplatBudget(0);
     };
   }, [threeScene, splatSrc, scene, setLoaded, setLoadProgress]);
 

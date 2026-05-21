@@ -19,8 +19,12 @@ import { WaypointCamera } from "./WaypointCamera";
 import { HotspotPin } from "./HotspotPin";
 import { HotspotPanel } from "./HotspotPanel";
 import { LoadingOverlay } from "./LoadingOverlay";
+import { ViewerDebugPanel } from "./ViewerDebugPanel";
+import { ViewerDebugSampler } from "./ViewerDebugSampler";
 import { useViewerStore } from "@/lib/store";
+import { isViewerDebugEnabled } from "@/lib/viewer-debug";
 import { splatUrl } from "@/lib/scene-utils";
+import { resolveSplatBudget } from "@/lib/spark-viewer-config";
 import { trackSceneLoaded } from "@/lib/analytics";
 import type { Scene } from "@/lib/types/scene";
 
@@ -32,6 +36,11 @@ interface SceneCanvasProps {
    */
   heightClass?: string;
 }
+
+const debugPerfEnabled =
+  typeof window !== "undefined"
+    ? isViewerDebugEnabled()
+    : process.env.NODE_ENV === "development";
 
 export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneCanvasProps) {
   const setScene = useViewerStore((s) => s.setScene);
@@ -50,6 +59,7 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
   }, [isLoaded, scene.id, scene.title]);
 
   const src = splatUrl(scene);
+  const budget = resolveSplatBudget(scene);
 
   return (
     <div
@@ -78,7 +88,7 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
         className="w-full h-full"
       >
         {/* Spark renderer must mount before SplatMesh */}
-        <SparkInit />
+        <SparkInit splatBudget={budget} />
 
         {/* The actual splat */}
         <SplatScene scene={scene} splatSrc={src} />
@@ -91,9 +101,12 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
         {scene.hotspots?.map((hotspot) => (
           <HotspotPin key={hotspot.id} hotspot={hotspot} sceneId={scene.id} />
         ))}
+
+        {debugPerfEnabled ? <ViewerDebugSampler /> : null}
       </Canvas>
 
       {/* ── DOM overlays (outside canvas, same stacking context) ──────── */}
+      {debugPerfEnabled ? <ViewerDebugPanel /> : null}
       <LoadingOverlay />
       <HotspotPanel scene={scene} />
     </div>

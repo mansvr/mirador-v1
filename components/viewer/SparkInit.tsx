@@ -11,25 +11,36 @@
 import { useEffect, useRef } from "react";
 import { useThree } from "@react-three/fiber";
 import { SparkRenderer } from "@sparkjsdev/spark";
+import { isViewerDebugEnabled } from "@/lib/viewer-debug";
+import { viewerDebugRegistry } from "@/lib/viewer-debug-registry";
+import { sparkRendererOptions } from "@/lib/spark-viewer-config";
 
-export function SparkInit() {
+interface SparkInitProps {
+  splatBudget: number;
+}
+
+export function SparkInit({ splatBudget }: SparkInitProps) {
   const { gl, scene } = useThree();
   const sparkRef = useRef<SparkRenderer | null>(null);
 
   useEffect(() => {
-    if (sparkRef.current) return; // already mounted
+    if (sparkRef.current) return;
 
-    const spark = new SparkRenderer({ renderer: gl });
+    const spark = new SparkRenderer(sparkRendererOptions(gl, splatBudget));
     scene.add(spark);
     sparkRef.current = spark;
+    if (isViewerDebugEnabled()) {
+      viewerDebugRegistry.setSpark(spark);
+    }
 
     return () => {
       if (sparkRef.current) {
         scene.remove(sparkRef.current);
         sparkRef.current = null;
       }
+      viewerDebugRegistry.setSpark(null);
     };
-  }, [gl, scene]);
+  }, [gl, scene, splatBudget]);
 
   return null;
 }

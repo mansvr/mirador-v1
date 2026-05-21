@@ -46,3 +46,7 @@ Conceptual / brand-strategy work (competitions, new product framing) uses **HDS*
 ### QA URLs
 
 Run `npm run dev` first, then QA: `/`, `/design`, `/home`, `/v/scene_best50000`.
+
+### 3DGS performance debug
+
+On viewer routes in dev: press **H** to toggle perf HUD + lil-gui (`docs/viewer-debug.md`). Both hidden until **H**.
