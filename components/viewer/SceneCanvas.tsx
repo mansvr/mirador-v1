@@ -14,6 +14,7 @@ import { useEffect, useSyncExternalStore } from "react";
 import { Canvas } from "@react-three/fiber";
 import { SparkInit } from "./SparkInit";
 import { SplatScene } from "./SplatScene";
+import { SplatLoadVerify } from "./SplatLoadVerify";
 import { ViewerControls } from "./ViewerControls";
 import { WaypointCamera } from "./WaypointCamera";
 import { HotspotPin } from "./HotspotPin";
@@ -25,6 +26,7 @@ import { useViewerStore } from "@/lib/store";
 import { isViewerDebugEnabled } from "@/lib/viewer-debug";
 import { splatUrl } from "@/lib/scene-utils";
 import { getCanvasDpr } from "@/lib/canvas-dpr";
+import { getCanvasGlProps } from "@/lib/canvas-gl";
 import { resolveSplatBudget } from "@/lib/spark-viewer-config";
 import { trackSceneLoaded } from "@/lib/analytics";
 import type { Scene } from "@/lib/types/scene";
@@ -86,12 +88,7 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
       {/* ── R3F Canvas ────────────────────────────────────────────────── */}
       <Canvas
         dpr={dpr}
-        gl={{
-          // WebGL2 is required for Spark
-          antialias: true,
-          alpha: false,
-          powerPreference: "high-performance",
-        }}
+        gl={getCanvasGlProps()}
         camera={{
           fov: 60,
           near: 0.01,
@@ -105,6 +102,7 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
 
         {/* The actual splat */}
         <SplatScene scene={scene} splatSrc={src} />
+        <SplatLoadVerify />
 
         {/* Camera controls */}
         <ViewerControls />

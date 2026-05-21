@@ -26,9 +26,12 @@ interface ViewerState {
   isLoaded: boolean;
   loadProgress: number; // 0–1
   loadError: string | null;
+  /** Spark onLoad fired; waiting for activeSplats > 0 (iOS can stay black otherwise). */
+  awaitingGpuRender: boolean;
   setLoaded: (loaded: boolean) => void;
   setLoadProgress: (progress: number) => void;
   setLoadError: (message: string | null) => void;
+  setAwaitingGpuRender: (value: boolean) => void;
 }
 
 export const useViewerStore = create<ViewerState>((set) => ({
@@ -62,9 +65,18 @@ export const useViewerStore = create<ViewerState>((set) => ({
   isLoaded: false,
   loadProgress: 0,
   loadError: null,
-  setLoaded: (isLoaded) => set({ isLoaded, ...(isLoaded ? { loadError: null } : {}) }),
+  awaitingGpuRender: false,
+  setLoaded: (isLoaded) =>
+    set({
+      isLoaded,
+      ...(isLoaded
+        ? { loadError: null, awaitingGpuRender: false }
+        : {}),
+    }),
   setLoadProgress: (loadProgress) => set({ loadProgress }),
-  setLoadError: (loadError) => set({ loadError, isLoaded: false }),
+  setLoadError: (loadError) =>
+    set({ loadError, isLoaded: false, awaitingGpuRender: false }),
+  setAwaitingGpuRender: (awaitingGpuRender) => set({ awaitingGpuRender }),
 }));
 
 /** Helper: get the active SceneWaypoint object from the store. */

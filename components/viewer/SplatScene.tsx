@@ -10,7 +10,6 @@ import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { SplatMesh } from "@sparkjsdev/spark";
 import { useViewerStore } from "@/lib/store";
-import { isViewerDebugEnabled } from "@/lib/viewer-debug";
 import { viewerDebugRegistry } from "@/lib/viewer-debug-registry";
 import {
   resolveSplatBudget,
@@ -98,8 +97,8 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
           },
           onLoad: () => {
             applyRootOrientation(root, scene.render);
-            setLoadProgress(1);
-            setLoaded(true);
+            setLoadProgress(0.98);
+            useViewerStore.getState().setAwaitingGpuRender(true);
           },
         })
       );
@@ -108,19 +107,18 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
       root.add(splat);
       threeScene.add(root);
       rootRef.current = root;
-      if (isViewerDebugEnabled()) {
-        viewerDebugRegistry.setSplat(splat);
-      }
+      viewerDebugRegistry.setSplat(splat);
     })();
 
     const isMobile =
       typeof navigator !== "undefined" &&
       /Mobi|iPhone|iPad|Android/i.test(navigator.userAgent);
-    const fallbackMs = isMobile ? 180_000 : 120_000;
+    const fallbackMs = isMobile ? 90_000 : 120_000;
 
     const fallback = setTimeout(() => {
+      useViewerStore.getState().setAwaitingGpuRender(false);
       setLoadError(
-        "La carga tardó demasiado. En móvil, prueba Wi‑Fi o un recorrido más ligero."
+        "La descarga tardó demasiado (~65 MB). En móvil usa Wi‑Fi o sube un .sog más pequeño a R2."
       );
     }, fallbackMs);
 
@@ -137,6 +135,7 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
       setLoaded(false);
       setLoadProgress(0);
       setLoadError(null);
+      useViewerStore.getState().setAwaitingGpuRender(false);
       viewerDebugRegistry.setSplat(null);
       viewerDebugRegistry.setSplatBudget(0);
     };
