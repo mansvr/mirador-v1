@@ -32,6 +32,7 @@ interface ViewerState {
   awaitingGpuRender: boolean;
   setLoaded: (loaded: boolean) => void;
   setLoadProgress: (progress: number) => void;
+  setLoadHint: (hint: string | null) => void;
   setLoadError: (message: string | null) => void;
   setAwaitingGpuRender: (value: boolean) => void;
 }
