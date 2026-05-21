@@ -1,8 +1,8 @@
-# mirador.home — setup & listings pipeline
+# mirador.homes — setup & listings pipeline
 
 > **Master guide:** [mirador-operations-guide.md](./mirador-operations-guide.md) — URLs, viewer code map, embed protocol, localhost, full new-listing playbook.
 
-**Goal:** One Vercel project serves both **mirador.lat** (B2B marketing + tours) and **mirador.home** (listings grid). Cards pull from a **catalog**; tours pull from **R2 scene folders**.
+**Goal:** One Vercel project serves both **mirador.lat** (B2B marketing + tours) and **mirador.homes** (listings grid). Cards pull from a **catalog**; tours pull from **R2 scene folders**.
 
 You do **not** need a separate GitHub repo for v1.
 
@@ -15,7 +15,7 @@ You do **not** need a separate GitHub repo for v1.
 | **Listings catalog** | `mirador/lib/listings/catalog.json` | What appears on the grid: title, price, beds, sort order, `sceneId` link |
 | **Scene manifest** | `R2/{sceneId}/scene.json` | Tour truth: splat URLs, waypoints, listing strip on `/v/…` |
 | **Card image** | `R2/{sceneId}/thumbnail.webp` | 16:10 hero on `ListingCard` (required for production polish) |
-| **Splat assets** | `R2/{sceneId}/scene.sog` (+ optional `scene-mobile.sog`) | WebGL tour |
+| **Splat assets** | `R2/{sceneId}/scene.spz` or `scene.sog` (+ optional mobile) | WebGL tour |
 
 **Rule:** Catalog = marketplace index. Scene = spatial product. Never duplicate splat paths in the catalog.
 
@@ -32,7 +32,7 @@ Server: `getPublishedListingCards()` → `resolveListingCard()` per row.
 3. `R2 /{sceneId}/thumbnail.webp` (recommended)
 4. Gradient placeholder “Vista previa”
 
-**Tour link:** always `/v/{sceneId}` (works on both `.lat` and `.home`).
+**Tour link:** always `/v/{sceneId}` (works on both `.lat` and `.homes`).
 
 **Enrichment:** If catalog omits fields, resolver reads `scene.json` (`listing.*`, `metric.*`) when R2/local scene exists.
 
@@ -41,19 +41,19 @@ Server: `getPublishedListingCards()` → `resolveListingCard()` per row.
 ## Phase 1 — Domain on existing Vercel project (no new repo)
 
 1. **Vercel** → same project as `mirador.lat` → **Settings → Domains**
-2. Add **`mirador.home`** (and optional `www.mirador.home` → redirect to apex)
+2. Add **`mirador.homes`** (and optional `www.mirador.homes` → redirect to apex)
 3. DNS at registrar: point to Vercel (same as `.lat`)
 4. Deploy latest `main` from `mansvr/mirador-v1`
 
 **Middleware** (`mirador/middleware.ts`):
 
-- `https://mirador.home/` → rewrites to `/home` (listings grid)
+- `https://mirador.homes/` → rewrites to `/home` (listings grid)
 - `https://mirador.lat/` → marketing `/` (unchanged)
-- Tours: `https://mirador.home/v/scene_…` works on either host
+- Tours: `https://mirador.homes/v/scene_…` works on either host
 
-**Env:** Keep `NEXT_PUBLIC_R2_URL` + `NEXT_PUBLIC_SITE_URL=https://mirador.lat` for OG canonical on marketing. `getSiteUrl()` uses **request host** in production so embeds on `.home` get correct origin.
+**Env:** Keep `NEXT_PUBLIC_R2_URL` + `NEXT_PUBLIC_SITE_URL=https://mirador.lat` for OG canonical on marketing. `getSiteUrl()` uses **request host** in production so embeds on `.homes` get correct origin.
 
-**R2 CORS:** Add `https://mirador.home` to allowed origins (same bucket).
+**R2 CORS:** Add `https://mirador.homes` to allowed origins (same bucket).
 
 ---
 
@@ -65,45 +65,34 @@ Use **one folder per scene** (folder name = `sceneId`):
 mirador-scenes/   (your R2 bucket)
   scene_best50000/
     scene.json
-    scene.sog
-    scene-mobile.sog    ← optional
+    scene.spz
     thumbnail.webp      ← card + social fallback
   scene_poblado001/
     scene.json
-    scene.sog
+    scene.spz
     thumbnail.webp
   scene_laureles01/
     scene.json
-    scene.sog
+    scene.spz
     thumbnail.webp
 ```
 
-Staging templates: `O:\Umbral\r2upload\scene_poblado001\` and `scene_laureles01\` (copy from `scene_best50000` pattern).
+Staging templates: `O:\Umbral\r2upload\` — see [`../../r2upload/README.md`](../../r2upload/README.md).
 
 ### Per-scene checklist
 
 - [ ] Pick `sceneId` matching `^scene_[a-z0-9]{8,}$` (see `catalog.json`)
-- [ ] Export desktop `.sog` (+ mobile crop if needed)
+- [ ] Export splat (`.spz` or `.sog`; SPZ dummies uploaded 2026-05-21)
 - [ ] Write `scene.json` (orientation: test `pitch_correction_deg` on `/v/…`)
 - [ ] Export **thumbnail.webp** — 1600×1000 or 1200×750, WebP ~80–120 KB, representative frame
-- [ ] Upload with Wrangler (below)
+- [ ] Upload with Wrangler (`--remote`; see `r2upload/upload-spz-dummies.ps1`)
 - [ ] Add row to `catalog.json` if new listing
 - [ ] Verify card image + tour on `/home` and `/v/{sceneId}`
 
 ### Wrangler upload (example)
 
 ```powershell
-$SCENE = "scene_poblado001"
-$BUCKET = "mirador-scenes"
-
-wrangler r2 object put "$BUCKET/$SCENE/scene.json" `
-  --file="O:\Umbral\r2upload\$SCENE\scene.json" --content-type=application/json
-
-wrangler r2 object put "$BUCKET/$SCENE/scene.sog" `
-  --file="O:\Umbral\r2upload\$SCENE\scene.sog"
-
-wrangler r2 object put "$BUCKET/$SCENE/thumbnail.webp" `
-  --file="O:\Umbral\r2upload\$SCENE\thumbnail.webp" --content-type=image/webp
+powershell -ExecutionPolicy Bypass -File O:\Umbral\r2upload\upload-spz-dummies.ps1
 ```
 
 **JSON-only updates** propagate in ~60s (ISR). **New splats** = upload only, no Vercel redeploy.
@@ -130,9 +119,9 @@ After catalog changes: **git commit + push** → Vercel redeploy (catalog is in 
 
 | URL | Expect |
 |-----|--------|
-| `https://mirador.home/` | Listings grid (3 cards when R2 + thumbs ready) |
+| `https://mirador.homes/` | Listings grid (3 cards when R2 + thumbs ready) |
 | `https://mirador.lat/home` | Same grid (path alias during transition) |
-| `https://mirador.home/v/scene_best50000` | Tour loads from R2 |
+| `https://mirador.homes/v/scene_best50000` | Tour loads from R2 |
 | Card image | `thumbnail.webp` or placeholder until uploaded |
 
 ---
@@ -160,12 +149,12 @@ npm run dev
 | `http://localhost:3000/home` | Listings grid |
 | `http://localhost:3000/?host=…` | Use `/home` directly |
 
-Optional: add `127.0.0.1 mirador.home` to hosts file to test middleware locally.
+Optional: add `127.0.0.1 mirador.homes` to hosts file to test middleware locally.
 
 ---
 
 ## Related docs
 
-- R2 single-scene upload: [`../../r2upload/README.md`](../../r2upload/README.md)
+- R2 upload staging: [`../../r2upload/README.md`](../../r2upload/README.md)
 - Vercel + `.lat`: [`vercel-mirador.lat-setup.md`](vercel-mirador.lat-setup.md)
 - Brand roadmap: [`../../brand/ROADMAP.md`](../../brand/ROADMAP.md) Step 8

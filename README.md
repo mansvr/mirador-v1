@@ -10,7 +10,7 @@ npm run dev
 ```
 
 - **`/`** — B2B marketing. **`/home`** — listings grid. **`/v/scene_best50000`** — 3D tour (main local dev URL).
-- **Ops guide:** [docs/mirador-operations-guide.md](docs/mirador-operations-guide.md) (URLs, R2, catalog, embeds, `.home`, localhost).
+- **Ops guide:** [docs/mirador-operations-guide.md](docs/mirador-operations-guide.md) (URLs, R2, catalog, embeds, `mirador.homes`, localhost).
 - Local scenes load from `scenes/<sceneId>/scene.json` when that file exists (see `lib/scene.ts`). Splats can use same-origin paths in `render.url` (e.g. `/best-splat_50000.sog` in `public/`).
 - Do **not** set `NEXT_PUBLIC_R2_URL` in `.env.local` unless you need to test R2 (`MIRADOR_USE_R2=1` + CORS for `http://localhost:3000`).
 

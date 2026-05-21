@@ -19,7 +19,7 @@ export async function getSiteUrl(): Promise<string> {
       ? "http"
       : "https");
 
-  // Multi-domain: mirador.lat (marketing) + mirador.home (listings) share one deploy.
+  // Multi-domain: mirador.lat (marketing) + mirador.homes (listings) share one deploy.
   if (!host.startsWith("localhost") && !host.startsWith("127.0.0.1")) {
     return `${proto}://${host}`;
   }

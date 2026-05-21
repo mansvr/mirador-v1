@@ -79,8 +79,8 @@ export function MarketingFooter() {
             </p>
             <ul className="mt-3 space-y-2 text-sm">
               <li>
-                <Link href="/home" className="hover:text-mirador-accent">
-                  mirador.home
+                <Link href="https://mirador.homes" className="hover:text-mirador-accent">
+                  mirador.homes
                 </Link>
               </li>
               <li>

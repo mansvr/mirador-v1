@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Mirador listings catalog",
-  "description": "Index for mirador.home grid. Each row points at one R2 scene folder + tour route /v/{sceneId}.",
+  "description": "Index for mirador.homes grid. Each row points at one R2 scene folder + tour route /v/{sceneId}.",
   "type": "object",
   "required": ["version", "listings"],
   "additionalProperties": false,

@@ -7,7 +7,7 @@ import { fetchScene } from "@/lib/scene";
 import type { ListingCatalogEntry } from "@/lib/listings/types";
 
 /**
- * Card thumbnail priority (documented in docs/mirador-home-setup.md):
+ * Card thumbnail priority (documented in docs/mirador-homes-setup.md):
  * 1. catalog.thumbnailUrl (absolute override)
  * 2. public/og/{sceneId}.jpg (baked OG still)
  * 3. R2 /{sceneId}/{thumbnailR2 || thumbnail.webp}

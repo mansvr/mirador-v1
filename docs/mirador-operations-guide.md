@@ -1,6 +1,6 @@
 # Mirador — operations guide
 
-Single reference for **where the viewer lives**, **how to ship listings** (mirador.home + mirador.lat), **file layout**, **embeds**, and **local dev** when localhost “doesn’t load.”
+Single reference for **where the viewer lives**, **how to ship listings** (mirador.homes + mirador.lat), **file layout**, **embeds**, and **local dev** when localhost “doesn’t load.”
 
 ---
 
@@ -9,7 +9,7 @@ Single reference for **where the viewer lives**, **how to ship listings** (mirad
 | Layer | Location |
 |-------|----------|
 | **Code** | `O:\Umbral\mirador` → GitHub `mansvr/mirador-v1` |
-| **Hosting** | One Vercel project → **mirador.lat** + **mirador.home** (same deploy) |
+| **Hosting** | One Vercel project → **mirador.lat** + **mirador.homes** (same deploy) |
 | **3D assets** | Cloudflare R2 bucket (e.g. `mirador-scenes`) — not in Git |
 | **Listings index** | `mirador/lib/listings/catalog.json` — in Git, redeploy on change |
 | **Staging uploads** | `O:\Umbral\r2upload\<sceneId>\` (per-scene folders at repo root) |
@@ -23,15 +23,15 @@ The **viewer** is not a separate app. It is routes inside this Next.js project p
 | URL | Purpose | Who uses it |
 |-----|---------|-------------|
 | `/` | B2B marketing (mirador.lat) | Prospects, agents evaluating product |
-| `/home` | Listings grid (mirador.home content) | Buyers browsing properties |
-| `/v/<sceneId>` | **Full tour** — 3D + waypoints + listing strip (mobile) + embed copy + OG | Share links, WhatsApp, QR, cards on `.home` |
+| `/home` | Listings grid (mirador.homes content) | Buyers browsing properties |
+| `/v/<sceneId>` | **Full tour** — 3D + waypoints + listing strip (mobile) + embed copy + OG | Share links, WhatsApp, QR, cards on `.homes` |
 | `/e/<sceneId>` | **Embed-only** — fullscreen GL, no listing chrome; `frame-ancestors *` | iframe on your main site / WordPress / Webflow |
 | `/<tenant>/<property>` | Branded slug (static map in `lib/tenants.ts`) | e.g. `/umbral/best-splat-50k` → `scene_best50000` |
 
 **Production examples**
 
-- Tour: `https://mirador.lat/v/scene_best50000` or `https://mirador.home/v/scene_best50000`
-- Grid: `https://mirador.home/` (middleware rewrites `/` → `/home` on `.home` host)
+- Tour: `https://mirador.lat/v/scene_best50000` or `https://mirador.homes/v/scene_best50000`
+- Grid: `https://mirador.homes/` (middleware rewrites `/` → `/home` on `.homes` host)
 - Embed: `https://mirador.lat/e/scene_best50000`
 
 **Rule:** Cards and marketing always link to **`/v/<sceneId>`**. Never iframe `/v/` — use **`/e/`** for embeds.
@@ -54,7 +54,7 @@ components/viewer/
 
 lib/scene.ts                 → fetch scene.json (local scenes/ or R2)
 lib/scene-utils.ts           → splatUrl(), url_mobile, device budgets
-lib/listings/catalog.json    → mirador.home cards
+lib/listings/catalog.json    → mirador.homes cards
 lib/tenants.ts               → branded URL → sceneId
 ```
 
@@ -83,7 +83,7 @@ mirador/
   app/e/[sceneId]/          # embed routes
   app/home/                 # listings grid
   scenes/<sceneId>/         # local dev scene.json only
-  lib/listings/catalog.json # .home grid
+  lib/listings/catalog.json # .homes grid
   public/                   # local .sog / .spz (gitignored), OG JPEGs
   docs/                     # this guide + specialized docs
 ```
@@ -197,16 +197,16 @@ Edit `mirador/lib/listings/catalog.json`:
 
 ---
 
-## 7. mirador.home — populate the grid
+## 7. mirador.homes — populate the grid
 
-1. **Domain:** `mirador.home` on same Vercel project as `.lat` (see §8).
+1. **Domain:** `mirador.homes` on same Vercel project as `.lat` (see §8).
 2. **Catalog:** `catalog.json` rows with `"published": true`.
 3. **Thumbnails:** R2 `thumbnail.webp` per scene (or baked `public/og/<sceneId>.jpg`).
-4. **Middleware:** `mirador/middleware.ts` rewrites `mirador.home/` → `/home`.
+4. **Middleware:** `mirador/middleware.ts` rewrites `mirador.homes/` → `/home`.
 
 Card links are always **`/v/{sceneId}`** — works on both hostnames.
 
-Detailed checklist: [mirador-home-setup.md](./mirador-home-setup.md).
+Detailed checklist: [mirador-homes-setup.md](./mirador-homes-setup.md).
 
 ---
 
@@ -227,7 +227,7 @@ Detailed checklist: [mirador-home-setup.md](./mirador-home-setup.md).
 ```
 
 - **CSP:** `next.config.ts` sets `frame-ancestors *` on `/e/*`.
-- **Origin:** On production, `getSiteUrl()` uses the **request host** — embeds on `mirador.home` should be served from pages on `.home` so the iframe src matches (or hardcode the canonical host you want).
+- **Origin:** On production, `getSiteUrl()` uses the **request host** — embeds on `mirador.homes` should be served from pages on `.homes` so the iframe src matches (or hardcode the canonical host you want).
 - **Copy from UI:** Desktop `/v/…` → Embed panel (bottom-right). Mobile → Embed section in listing strip.
 
 ### Do not
@@ -286,7 +286,7 @@ Server binds **`0.0.0.0:3000`** (phone can use `http://<PC-LAN-IP>:3000`).
 | You open | You get |
 |----------|---------|
 | `http://localhost:3000/` | Marketing homepage — **not** the 3D tour |
-| `http://localhost:3000/home` | Listings grid (mirador.home) |
+| `http://localhost:3000/home` | Listings grid (mirador.homes) |
 | `http://localhost:3000/v/scene_best50000` | **3D tour** (primary dev URL) |
 | `http://localhost:3000/v/scene_demo00` | Demo butterfly `.spz` (Spark CDN) |
 | `http://localhost:3000/e/scene_best50000` | Embed layout only |
@@ -344,7 +344,7 @@ Save HTML on disk:
 **R2 CORS** must allow:
 
 - `https://mirador.lat`
-- `https://mirador.home`
+- `https://mirador.homes`
 - `https://*.vercel.app` (previews)
 - `http://localhost:3000` (dev)
 
@@ -368,7 +368,7 @@ CLI: `vercel ls`, `vercel whoami` from `mirador/` (project linked in `.vercel/re
 
 | Doc | Topic |
 |-----|--------|
-| [mirador-home-setup.md](./mirador-home-setup.md) | `.home` domain + 3 demo scenes |
+| [mirador-homes-setup.md](./mirador-homes-setup.md) | `.homes` domain + 3 demo scenes |
 | [local-mobile-testing.md](./local-mobile-testing.md) | Phone + DevTools mobile |
 | [mobile-splat-delivery.md](./mobile-splat-delivery.md) | Dual SOG + sizes |
 | [spark-assets-and-budget.md](./spark-assets-and-budget.md) | LoD, SPZ, budgets |
@@ -390,6 +390,6 @@ New listing:
 
 Share link:     /v/<sceneId>
 Embed iframe:   /e/<sceneId>
-Listings grid:  mirador.home/  or  localhost:3000/home
+Listings grid:  mirador.homes/  or  localhost:3000/home
 Local tour dev: localhost:3000/v/scene_best50000
 ```

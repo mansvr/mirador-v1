@@ -87,6 +87,8 @@ Bucket → **Settings** → **CORS policy** → paste (edit origins):
     "AllowedOrigins": [
       "https://mirador.lat",
       "https://www.mirador.lat",
+      "https://mirador.homes",
+      "https://www.mirador.homes",
       "http://localhost:3000",
       "https://mirador-v1.vercel.app"
     ],

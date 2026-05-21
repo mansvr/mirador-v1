@@ -1,21 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const HOME_HOSTS = new Set([
-  "mirador.home",
-  "www.mirador.home",
-  "mirador.homes",
-  "www.mirador.homes",
-]);
+const HOMES_HOSTS = new Set(["mirador.homes", "www.mirador.homes"]);
 
 /**
- * mirador.home / mirador.homes → listings hub at `/home`.
+ * mirador.homes → listings hub at `/home`.
  * Same Vercel project as mirador.lat — no second repo required for v1.
  */
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host")?.split(":")[0]?.toLowerCase() ?? "";
 
-  if (!HOME_HOSTS.has(host)) {
+  if (!HOMES_HOSTS.has(host)) {
     return NextResponse.next();
   }
 

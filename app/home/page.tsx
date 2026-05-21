@@ -11,7 +11,7 @@ export default async function HomeListingsPage() {
       <main className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-12">
         <header className="mb-10 max-w-2xl">
           <p className="text-sm font-medium uppercase tracking-widest text-mirador-text-muted">
-            mirador.home
+            mirador.homes
           </p>
           <h1 className="mt-2 text-3xl font-medium tracking-tight md:text-4xl">
             Propiedades con tour 3D

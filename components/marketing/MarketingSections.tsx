@@ -44,7 +44,7 @@ const SOLUTIONS = [
 const STEPS = [
   { label: "Capturas", detail: "Móvil o cámara 360 según el plan." },
   { label: "Procesamos", detail: "Tour optimizado para carga rápida." },
-  { label: "Compartes", detail: "Link, embed o listing en mirador.home." },
+  { label: "Compartes", detail: "Link, embed o listing en mirador.homes." },
 ] as const;
 
 const TRUST = [
