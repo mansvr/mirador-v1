@@ -1,4 +1,8 @@
-import type { SparkRendererOptions, SplatMeshOptions } from "@sparkjsdev/spark";
+import {
+  SplatFileType,
+  type SparkRendererOptions,
+  type SplatMeshOptions,
+} from "@sparkjsdev/spark";
 import type { WebGLRenderer } from "three";
 import { splatBudget } from "@/lib/scene-utils";
 import type { Scene } from "@/lib/types/scene";
@@ -9,6 +13,19 @@ import type { Scene } from "@/lib/types/scene";
  */
 export function resolveSplatBudget(scene: Scene): number {
   return splatBudget(scene);
+}
+
+/** Spark format for scene.json `render.format` (SOG = PlayCanvas zip bundle). */
+export function sparkFileTypeForScene(scene: Scene): SplatFileType {
+  switch (scene.render.format) {
+    case "spz":
+      return SplatFileType.SPZ;
+    case "ply":
+      return SplatFileType.PLY;
+    case "sog":
+    default:
+      return SplatFileType.PCSOGSZIP;
+  }
 }
 
 export function sparkRendererOptions(

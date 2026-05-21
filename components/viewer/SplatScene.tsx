@@ -14,6 +14,7 @@ import { viewerDebugRegistry } from "@/lib/viewer-debug-registry";
 import { fetchSplatBytes } from "@/lib/fetch-splat-bytes";
 import {
   resolveSplatBudget,
+  sparkFileTypeForScene,
   splatMeshOptions,
 } from "@/lib/spark-viewer-config";
 import { isMobileClient, resolveSceneRender } from "@/lib/scene-utils";
@@ -172,6 +173,8 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
             ...opts,
             url: undefined,
             fileBytes: buf,
+            fileType: sparkFileTypeForScene(scene),
+            fileName: fileLabel,
           });
         } else {
           splat = new SplatMesh(splatMeshOptions(scene, splatSrc, handlers));
