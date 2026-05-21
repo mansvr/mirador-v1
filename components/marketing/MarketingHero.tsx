@@ -4,9 +4,8 @@ import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 import { MiradorMark } from "@/components/brand/MiradorMark";
 import { buttonVariants } from "@/components/ui/button";
+import { demoTourHref } from "@/lib/demo-scene";
 import { cn } from "@/lib/utils";
-
-const DEMO_SCENE = "scene_best50000";
 
 export function MarketingHero() {
   const reduceMotion = useReducedMotion();
@@ -49,7 +48,7 @@ export function MarketingHero() {
 
           <div className="mt-9 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
             <Link
-              href={`/v/${DEMO_SCENE}`}
+              href={demoTourHref()}
               className={cn(buttonVariants({ size: "lg" }), "min-h-11 px-8")}
             >
               Ver tour de ejemplo

@@ -6,9 +6,8 @@ import { ArrowRight } from "lucide-react";
 import { MiradorMark } from "@/components/brand/MiradorMark";
 import { ScrollReveal } from "@/components/marketing/ScrollReveal";
 import { buttonVariants } from "@/components/ui/button";
+import { demoTourHref } from "@/lib/demo-scene";
 import { cn } from "@/lib/utils";
-
-const DEMO_SCENE = "scene_best50000";
 
 const SOLUTIONS = [
   {
@@ -169,7 +168,7 @@ export function DemoSection() {
                 Navega un espacio de ejemplo con el mismo visor que verán tus clientes.
               </p>
               <Link
-                href={`/v/${DEMO_SCENE}`}
+                href={demoTourHref()}
                 className={cn(buttonVariants({ size: "lg" }), "mt-6 inline-flex min-h-11 gap-2")}
               >
                 Abrir demo
@@ -250,7 +249,7 @@ export function CtaBand() {
               Solicitar cotización
             </a>
             <Link
-              href={`/v/${DEMO_SCENE}`}
+              href={demoTourHref()}
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
                 "min-h-11 border-[#F5F6F2]/40 text-[#F5F6F2] hover:bg-white/10"

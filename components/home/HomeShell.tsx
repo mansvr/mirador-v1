@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MiradorWordmark } from "@/components/brand/MiradorMark";
 import { buttonVariants } from "@/components/ui/button";
+import { demoTourHref } from "@/lib/demo-scene";
 import { cn } from "@/lib/utils";
 
 export function HomeHeader() {
@@ -18,7 +19,7 @@ export function HomeHeader() {
             Para agentes
           </Link>
           <Link
-            href="/v/scene_best50000"
+            href={demoTourHref()}
             className={cn(
               buttonVariants({ size: "sm" }),
               "min-h-10 bg-mirador-text text-[#F5F6F2] hover:bg-mirador-accent-hover"

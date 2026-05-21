@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { MiradorWordmark } from "@/components/brand/MiradorMark";
+import { demoTourHref } from "@/lib/demo-scene";
 import { cn } from "@/lib/utils";
-
-const DEMO_SCENE = "scene_best50000";
 
 export function MarketingHeader() {
   return (
@@ -16,13 +15,13 @@ export function MarketingHeader() {
           aria-label="Principal"
         >
           <Link
-            href={`/v/${DEMO_SCENE}`}
+            href={demoTourHref()}
             className="hidden border-r border-mirador-text px-4 py-2.5 text-mirador-text transition-colors hover:bg-mirador-surface sm:inline-flex sm:items-center"
           >
             Tour de ejemplo
           </Link>
           <Link
-            href={`/v/${DEMO_SCENE}`}
+            href={demoTourHref()}
             className={cn(
               "inline-flex min-h-11 items-center px-4 py-2.5",
               "bg-mirador-text text-[#F5F6F2] hover:bg-mirador-accent-hover"
@@ -66,7 +65,7 @@ export function MarketingFooter() {
                 </Link>
               </li>
               <li>
-                <Link href={`/v/${DEMO_SCENE}`} className="hover:text-mirador-accent">
+                <Link href={demoTourHref()} className="hover:text-mirador-accent">
                   Ver demo
                 </Link>
               </li>
