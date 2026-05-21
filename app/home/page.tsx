@@ -1,8 +1,10 @@
+import { getPublishedListingCards } from "@/lib/listings/get-listings";
 import { ListingCard } from "@/components/listing/ListingCard";
 import { HomeFooter, HomeHeader } from "@/components/home/HomeShell";
-import { DEMO_LISTINGS } from "@/lib/listings/demo-listings";
 
-export default function HomeListingsPage() {
+export default async function HomeListingsPage() {
+  const listings = await getPublishedListingCards();
+
   return (
     <div className="min-h-dvh bg-mirador-bg text-mirador-text">
       <HomeHeader />
@@ -20,8 +22,8 @@ export default function HomeListingsPage() {
         </header>
 
         <ul className="grid list-none gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {DEMO_LISTINGS.map((listing) => (
-            <li key={listing.title}>
+          {listings.map((listing) => (
+            <li key={listing.href}>
               <ListingCard {...listing} />
             </li>
           ))}

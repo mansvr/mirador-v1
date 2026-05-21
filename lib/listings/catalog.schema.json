@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mirador listings catalog",
+  "description": "Index for mirador.home grid. Each row points at one R2 scene folder + tour route /v/{sceneId}.",
+  "type": "object",
+  "required": ["version", "listings"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "type": "integer", "const": 1 },
+    "listings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "sceneId",
+          "title",
+          "neighborhood",
+          "city",
+          "beds",
+          "areaM2",
+          "priceLabel",
+          "published",
+          "sortOrder"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Stable listing slug (URLs later: /home/{id})."
+          },
+          "sceneId": {
+            "type": "string",
+            "pattern": "^scene_[a-z0-9]{8,}$",
+            "description": "R2 folder name and /v/[sceneId] route."
+          },
+          "title": { "type": "string" },
+          "neighborhood": { "type": "string" },
+          "city": { "type": "string" },
+          "beds": { "type": "integer", "minimum": 0 },
+          "areaM2": { "type": "number", "minimum": 0 },
+          "priceLabel": {
+            "type": "string",
+            "description": "Pre-formatted display string (locale handled in CMS later)."
+          },
+          "published": { "type": "boolean" },
+          "sortOrder": { "type": "integer" },
+          "thumbnailR2": {
+            "type": "string",
+            "description": "Filename under R2 /{sceneId}/ for card hero. Default thumbnail.webp."
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "description": "Optional absolute override (CDN, Unsplash staging)."
+          }
+        }
+      }
+    }
+  }
+}

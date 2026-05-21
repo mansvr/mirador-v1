@@ -1,0 +1,51 @@
+{
+  "$schema": "../../mirador/schemas/scene.v1.schema.json",
+  "schema_version": "1",
+  "id": "scene_poblado001",
+  "title": "Penthouse con terraza — El Poblado",
+  "metric": {
+    "area_m2": 168,
+    "rooms": 4,
+    "bathrooms": 3,
+    "verified_by": "unverified"
+  },
+  "render": {
+    "format": "sog",
+    "url": "scene.sog",
+    "url_mobile": "scene-mobile.sog",
+    "splat_budget_desktop": 2000000,
+    "splat_budget_mobile": 500000,
+    "up_axis": [0, 1, 0],
+    "yaw_correction_deg": 0,
+    "pitch_correction_deg": 180,
+    "pitch_correction_deg_mobile": 0
+  },
+  "waypoints": [
+    {
+      "id": "w_terrace",
+      "label": "Terraza",
+      "pos": [0, 1.6, 3],
+      "quat": [0, 0, 0, 1],
+      "transition_ms": 1200,
+      "thumbnail_url": "thumb_w_terrace.webp"
+    }
+  ],
+  "hotspots": [],
+  "listing": {
+    "neighborhood": "El Poblado",
+    "city": "Medellín",
+    "description_md": "Penthouse con terraza y vista. Tour 3D Mirador.",
+    "agent_whatsapp": "+573001234567"
+  },
+  "branding": {
+    "tenant_id": "mirador",
+    "show_mirador_badge": true,
+    "primary_color": "#5e5956"
+  },
+  "access": { "visibility": "public" },
+  "attribution": {
+    "capture_date": "2026-05-21",
+    "pipeline": "SOG on R2",
+    "converter": "splat-transform"
+  }
+}
