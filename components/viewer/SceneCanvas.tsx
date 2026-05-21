@@ -24,6 +24,7 @@ import { ViewerDebugSampler } from "./ViewerDebugSampler";
 import { useViewerStore } from "@/lib/store";
 import { isViewerDebugEnabled } from "@/lib/viewer-debug";
 import { splatUrl } from "@/lib/scene-utils";
+import { getCanvasDpr } from "@/lib/canvas-dpr";
 import { resolveSplatBudget } from "@/lib/spark-viewer-config";
 import { trackSceneLoaded } from "@/lib/analytics";
 import type { Scene } from "@/lib/types/scene";
@@ -54,6 +55,8 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
   const debugPerfEnabled = useViewerDebugActive();
   const setScene = useViewerStore((s) => s.setScene);
   const isLoaded = useViewerStore((s) => s.isLoaded);
+  const dpr =
+    typeof window !== "undefined" ? getCanvasDpr() : 1;
 
   // Bootstrap the store with scene data
   useEffect(() => {
@@ -82,6 +85,7 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
     >
       {/* ── R3F Canvas ────────────────────────────────────────────────── */}
       <Canvas
+        dpr={dpr}
         gl={{
           // WebGL2 is required for Spark
           antialias: true,

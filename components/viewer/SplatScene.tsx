@@ -49,6 +49,7 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
   const rootRef = useRef<THREE.Group | null>(null);
   const setLoaded = useViewerStore((s) => s.setLoaded);
   const setLoadProgress = useViewerStore((s) => s.setLoadProgress);
+  const setLoadError = useViewerStore((s) => s.setLoadError);
 
   useEffect(() => {
     if (rootRef.current) return;
@@ -56,41 +57,75 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
     const budget = resolveSplatBudget(scene);
     viewerDebugRegistry.setSplatBudget(budget);
     setLoadProgress(0.05);
+    setLoadError(null);
 
-    const root = new THREE.Group();
-    applyRootOrientation(root, scene.render);
+    let cancelled = false;
 
-    const splat = new SplatMesh(
-      splatMeshOptions(scene, splatSrc, {
-        onProgress: (ev: ProgressEvent) => {
-          if (ev.lengthComputable && ev.total > 0) {
-            setLoadProgress(0.05 + 0.85 * (ev.loaded / ev.total));
+    void (async () => {
+      const sameOrigin =
+        typeof window !== "undefined" &&
+        (splatSrc.startsWith("/") ||
+          splatSrc.startsWith(window.location.origin));
+      if (sameOrigin) {
+        try {
+          const head = await fetch(splatSrc, { method: "HEAD" });
+          if (cancelled) return;
+          if (!head.ok) {
+            setLoadError(
+              `No se pudo cargar el recorrido 3D (${head.status}). Falta el archivo .sog en el servidor.`
+            );
+            return;
           }
-        },
-        onLoad: () => {
-          // Re-apply after Spark async init so a late loader pass cannot stomp mesh.local transform.
-          applyRootOrientation(root, scene.render);
-          setLoadProgress(1);
-          setLoaded(true);
-        },
-      })
-    );
+        } catch {
+          if (!cancelled) {
+            setLoadError("Error de red al cargar el recorrido 3D.");
+          }
+          return;
+        }
+      }
 
-    splat.position.set(0, 0, 0);
-    root.add(splat);
-    threeScene.add(root);
-    rootRef.current = root;
-    if (isViewerDebugEnabled()) {
-      viewerDebugRegistry.setSplat(splat);
-    }
+      if (cancelled || rootRef.current) return;
 
-    // Fallback if onLoad never fires (defensive)
+      const root = new THREE.Group();
+      applyRootOrientation(root, scene.render);
+
+      const splat = new SplatMesh(
+        splatMeshOptions(scene, splatSrc, {
+          onProgress: (ev: ProgressEvent) => {
+            if (ev.lengthComputable && ev.total > 0) {
+              setLoadProgress(0.05 + 0.85 * (ev.loaded / ev.total));
+            }
+          },
+          onLoad: () => {
+            applyRootOrientation(root, scene.render);
+            setLoadProgress(1);
+            setLoaded(true);
+          },
+        })
+      );
+
+      splat.position.set(0, 0, 0);
+      root.add(splat);
+      threeScene.add(root);
+      rootRef.current = root;
+      if (isViewerDebugEnabled()) {
+        viewerDebugRegistry.setSplat(splat);
+      }
+    })();
+
+    const isMobile =
+      typeof navigator !== "undefined" &&
+      /Mobi|iPhone|iPad|Android/i.test(navigator.userAgent);
+    const fallbackMs = isMobile ? 180_000 : 120_000;
+
     const fallback = setTimeout(() => {
-      setLoadProgress(1);
-      setLoaded(true);
-    }, 120_000);
+      setLoadError(
+        "La carga tardó demasiado. En móvil, prueba Wi‑Fi o un recorrido más ligero."
+      );
+    }, fallbackMs);
 
     return () => {
+      cancelled = true;
       clearTimeout(fallback);
       const r = rootRef.current;
       if (r) {
@@ -101,10 +136,11 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
       }
       setLoaded(false);
       setLoadProgress(0);
+      setLoadError(null);
       viewerDebugRegistry.setSplat(null);
       viewerDebugRegistry.setSplatBudget(0);
     };
-  }, [threeScene, splatSrc, scene, setLoaded, setLoadProgress]);
+  }, [threeScene, splatSrc, scene, setLoaded, setLoadProgress, setLoadError]);
 
   return null;
 }

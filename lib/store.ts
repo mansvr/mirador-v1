@@ -25,8 +25,10 @@ interface ViewerState {
   // Splat loaded state
   isLoaded: boolean;
   loadProgress: number; // 0–1
+  loadError: string | null;
   setLoaded: (loaded: boolean) => void;
   setLoadProgress: (progress: number) => void;
+  setLoadError: (message: string | null) => void;
 }
 
 export const useViewerStore = create<ViewerState>((set) => ({
@@ -59,8 +61,10 @@ export const useViewerStore = create<ViewerState>((set) => ({
 
   isLoaded: false,
   loadProgress: 0,
-  setLoaded: (isLoaded) => set({ isLoaded }),
+  loadError: null,
+  setLoaded: (isLoaded) => set({ isLoaded, ...(isLoaded ? { loadError: null } : {}) }),
   setLoadProgress: (loadProgress) => set({ loadProgress }),
+  setLoadError: (loadError) => set({ loadError, isLoaded: false }),
 }));
 
 /** Helper: get the active SceneWaypoint object from the store. */
