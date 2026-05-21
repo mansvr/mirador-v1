@@ -121,8 +121,12 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
           });
           if (cancelled) return;
           if (!head.ok) {
+            const devHint =
+              head.status === 404 && splatSrc.includes("/api/scene-asset/")
+                ? " Coloca el splat en scenes/<id>/ o descomenta NEXT_PUBLIC_R2_URL en .env.local."
+                : "";
             setLoadError(
-              `No se pudo cargar el recorrido 3D (${head.status}). Falta el ${splatAssetNoun(splatSrc)} en el servidor.`
+              `No se pudo cargar el recorrido 3D (${head.status}). Falta el ${splatAssetNoun(splatSrc)} en el servidor.${devHint}`
             );
             return;
           }

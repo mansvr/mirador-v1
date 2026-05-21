@@ -1,3 +1,4 @@
+import { SitePageShell } from "@/components/home/HomeShell";
 import { MarketingFooter, MarketingHeader } from "@/components/marketing/MarketingShell";
 import { MarketingHero } from "@/components/marketing/MarketingHero";
 import {
@@ -11,9 +12,9 @@ import {
 
 export default function HomePage() {
   return (
-    <div className="min-h-dvh bg-mirador-bg text-mirador-text">
+    <SitePageShell>
       <MarketingHeader />
-      <main>
+      <main className="flex-1">
         <MarketingHero />
         <SystemBand />
         <SolutionsSection />
@@ -23,6 +24,6 @@ export default function HomePage() {
         <CtaBand />
       </main>
       <MarketingFooter />
-    </div>
+    </SitePageShell>
   );
 }

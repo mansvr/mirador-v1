@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
 import { trackEmbedCopied } from "@/lib/analytics";
+import { cn } from "@/lib/utils";
 
 interface EmbedSnippetProps {
   sceneId: string;
@@ -9,10 +11,21 @@ interface EmbedSnippetProps {
   siteUrl: string;
   /** Desktop overlay: iframe snippet + copy only (no QR block). */
   compact?: boolean;
+  /** Tour page secondary card (padding matches PropertyStrip). */
+  variant?: "default" | "card";
+  /** Tour page: collapsible panel, closed by default. */
+  collapsible?: boolean;
 }
 
-export function EmbedSnippet({ sceneId, siteUrl, compact = false }: EmbedSnippetProps) {
+export function EmbedSnippet({
+  sceneId,
+  siteUrl,
+  compact = false,
+  variant = "default",
+  collapsible = false,
+}: EmbedSnippetProps) {
   const [copied, setCopied] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const origin = siteUrl.replace(/\/$/, "");
   const snippet = `<div style="position:relative;width:100%;aspect-ratio:16/9;max-height:min(85dvh,900px);min-height:200px"><iframe src="${origin}/e/${sceneId}" title="Mirador" style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:12px;display:block" allowfullscreen loading="lazy"></iframe></div>`;
@@ -51,11 +64,20 @@ export function EmbedSnippet({ sceneId, siteUrl, compact = false }: EmbedSnippet
     );
   }
 
-  return (
-    <div className="px-4 py-4 md:px-6 border-t border-mirador-border">
-      <p className="text-xs text-mirador-text-muted mb-2 font-medium uppercase tracking-wider">
-        Embed
-      </p>
+  const wrapClass =
+    variant === "card"
+      ? collapsible && !open
+        ? "px-5 py-4 md:px-6"
+        : "px-5 py-5 md:px-6 md:py-6"
+      : "px-4 py-4 md:px-6 border-t border-mirador-border";
+
+  const body = (
+    <>
+      {!collapsible && (
+        <p className="text-xs text-mirador-text-muted mb-2 font-medium uppercase tracking-wider">
+          Embed
+        </p>
+      )}
       <p className="text-xs text-mirador-text-muted mb-2">
         Pega este código en tu sitio. El iframe apunta a{" "}
         <span className="font-mono text-mirador-text">/e/{sceneId}</span> (solo visor).
@@ -101,6 +123,31 @@ export function EmbedSnippet({ sceneId, siteUrl, compact = false }: EmbedSnippet
           </a>
         </div>
       </div>
-    </div>
+    </>
   );
+
+  if (collapsible) {
+    return (
+      <div className={wrapClass}>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="flex w-full items-center justify-between gap-3 text-left text-sm font-medium text-mirador-text transition-colors hover:text-mirador-accent"
+        >
+          <span>Embed y compartir</span>
+          <ChevronDown
+            className={cn(
+              "size-4 shrink-0 text-mirador-text-muted transition-transform duration-200",
+              open && "rotate-180"
+            )}
+            aria-hidden
+          />
+        </button>
+        {open ? <div className="mt-4 border-t border-mirador-border pt-4">{body}</div> : null}
+      </div>
+    );
+  }
+
+  return <div className={wrapClass}>{body}</div>;
 }

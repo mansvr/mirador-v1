@@ -16,7 +16,27 @@
 const R2_PUBLIC_URL =
   process.env.NEXT_PUBLIC_R2_URL ??
   process.env.R2_PUBLIC_URL ??
-  "https://placeholder.r2.dev";
+  "";
+
+/** True when a real public bucket URL is configured (not empty / placeholder). */
+export function isR2Configured(): boolean {
+  const base = R2_PUBLIC_URL.trim();
+  return base.length > 0 && !base.includes("placeholder");
+}
+
+/**
+ * Browser + server URL for a scene asset filename.
+ * Absolute paths and https URLs pass through; otherwise R2 or local dev API.
+ */
+export function resolvePublicAssetUrl(sceneId: string, filename: string): string {
+  if (filename.startsWith("http") || filename.startsWith("/")) {
+    return filename;
+  }
+  if (isR2Configured()) {
+    return r2Url(sceneId, filename);
+  }
+  return `/api/scene-asset/${sceneId}/${encodeURIComponent(filename)}`;
+}
 
 /**
  * Construct a public R2 URL for a file inside a scene's folder.
@@ -25,13 +45,8 @@ const R2_PUBLIC_URL =
  * @param filename - File name relative to the scene folder (e.g. "scene.sog")
  */
 export function r2Url(sceneId: string, filename: string): string {
-  const base = R2_PUBLIC_URL.replace(/\/$/, "");
+  const base = (R2_PUBLIC_URL || "https://placeholder.r2.dev").replace(/\/$/, "");
   return `${base}/${sceneId}/${filename}`;
-}
-
-/** Returns the public URL for a scene's .sog (or other format) asset. */
-export function sceneAssetUrl(sceneId: string, renderUrl: string): string {
-  return r2Url(sceneId, renderUrl);
 }
 
 /** Returns the public URL for a scene's thumbnail. */

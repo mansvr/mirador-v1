@@ -1,14 +1,14 @@
 import { getPublishedListingCards } from "@/lib/listings/get-listings";
 import { ListingCard } from "@/components/listing/ListingCard";
-import { HomeFooter, HomeHeader } from "@/components/home/HomeShell";
+import { HomeFooter, HomeHeader, SitePageShell } from "@/components/home/HomeShell";
 
 export default async function HomeListingsPage() {
   const listings = await getPublishedListingCards();
 
   return (
-    <div className="min-h-dvh bg-mirador-bg text-mirador-text">
+    <SitePageShell>
       <HomeHeader />
-      <main className="mx-auto max-w-6xl px-4 py-10 md:px-6 md:py-12">
+      <main className="mx-auto w-full min-w-0 max-w-6xl flex-1 px-4 py-10 sm:px-5 md:px-6 md:py-12">
         <header className="mb-10 max-w-2xl">
           <p className="text-sm font-medium uppercase tracking-widest text-mirador-text-muted">
             mirador.homes
@@ -30,6 +30,6 @@ export default async function HomeListingsPage() {
         </ul>
       </main>
       <HomeFooter />
-    </div>
+    </SitePageShell>
   );
 }

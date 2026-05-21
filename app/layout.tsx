@@ -39,7 +39,7 @@ export default function RootLayout({
       className={`${sourceSans.variable} ${cormorantDisplay.variable} h-full antialiased`}
     >
       {/* h-full chains % heights to R3F; min-h-dvh covers mobile dynamic toolbar */}
-      <body className="h-full min-h-dvh bg-background text-foreground">
+      <body className="flex min-h-dvh flex-col bg-background text-foreground">
         <PosthogAnalytics />
         {children}
       </body>

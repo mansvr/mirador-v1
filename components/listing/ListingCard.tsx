@@ -30,6 +30,11 @@ export function ListingCard({
   hasTour = true,
   className,
 }: ListingCardProps) {
+  const tourLinkProps = {
+    target: "_blank" as const,
+    rel: "noopener noreferrer",
+  };
+
   return (
     <article
       className={cn(
@@ -39,7 +44,11 @@ export function ListingCard({
         className
       )}
     >
-      <Link href={href} className="relative block aspect-[16/10] overflow-hidden bg-mirador-bg">
+      <Link
+        href={href}
+        {...tourLinkProps}
+        className="relative block aspect-[16/10] overflow-hidden bg-mirador-bg"
+      >
         {imageUrl ? (
           <ListingCardImage
             src={imageUrl}
@@ -63,7 +72,7 @@ export function ListingCard({
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div>
           <h3 className="line-clamp-1 text-base font-medium leading-snug text-mirador-text">
-            <Link href={href} className="hover:text-mirador-accent">
+            <Link href={href} {...tourLinkProps} className="hover:text-mirador-accent">
               {title}
             </Link>
           </h3>
@@ -83,6 +92,7 @@ export function ListingCard({
 
         <Link
           href={href}
+          {...tourLinkProps}
           className={cn(
             buttonVariants({ variant: "default", size: "sm" }),
             "mt-auto min-h-11 w-full justify-center gap-1.5"

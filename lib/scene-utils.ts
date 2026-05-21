@@ -4,7 +4,7 @@
  */
 
 import type { Scene, SceneRender } from "@/lib/types/scene";
-import { r2Url } from "@/lib/r2";
+import { resolvePublicAssetUrl } from "@/lib/r2";
 
 const MOBILE_UA = /Mobi|Android|iPhone|iPad/i;
 
@@ -19,10 +19,7 @@ export function isMobileClient(): boolean {
  * Same rules as splatUrl: absolute http(s), leading `/`, else R2.
  */
 export function sceneAssetUrl(sceneId: string, filename: string): string {
-  if (filename.startsWith("http") || filename.startsWith("/")) {
-    return filename;
-  }
-  return r2Url(sceneId, filename);
+  return resolvePublicAssetUrl(sceneId, filename);
 }
 
 /**

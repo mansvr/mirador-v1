@@ -1,11 +1,10 @@
 import type { CSSProperties } from "react";
-import { SceneCanvas } from "@/components/viewer/SceneCanvas";
-import { WaypointNav } from "@/components/hud/WaypointNav";
-import { BrandingBadge } from "@/components/hud/BrandingBadge";
-import { MetricBadge } from "@/components/hud/MetricBadge";
+import { HomeFooter, HomeHeader, SitePageShell } from "@/components/home/HomeShell";
+import { TourViewerFrame } from "@/components/viewer/TourViewerFrame";
 import { PropertyStrip } from "@/components/listing/PropertyStrip";
 import { AgentCTA } from "@/components/listing/AgentCTA";
 import { EmbedSnippet } from "@/components/listing/EmbedSnippet";
+import { getPriceLabelForScene } from "@/lib/listings/get-listings";
 import type { Scene } from "@/lib/types/scene";
 import { MIRADOR_DEFAULT_PRIMARY } from "@/lib/brand";
 
@@ -15,46 +14,54 @@ interface ViewerPageShellProps {
 }
 
 /**
- * Shared layout for `/v/[sceneId]` and `/[tenant]/[property]`.
- * Branding CSS variable on `main` so HUD siblings inherit tenant color.
+ * Full tour page (`/v/…`, tenant slugs): site chrome + vrestate-style contained
+ * iframe viewer and listing card — not a full-viewport GL column.
  */
-export function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) {
+export async function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) {
   const primary = scene.branding?.primary_color ?? MIRADOR_DEFAULT_PRIMARY;
+  const priceLabel = await getPriceLabelForScene(scene.id);
 
   return (
-    <main
-      className="mirador-viewer-chrome flex min-h-dvh flex-col md:h-dvh md:overflow-hidden"
-      style={{ "--mirador-primary": primary } as CSSProperties}
-    >
-      <div
-        className="relative w-full shrink-0 h-[min(68dvh,720px)] min-h-[280px] md:h-0 md:min-h-0 md:max-h-none md:flex-1 md:basis-0 md:shrink"
-        aria-label="Vista 3D"
-      >
-        <SceneCanvas scene={scene} heightClass="absolute inset-0 size-full min-h-0" />
+    <SitePageShell style={{ "--mirador-primary": primary } as CSSProperties}>
+      <HomeHeader />
 
-        <MetricBadge metric={scene.metric} />
-        <WaypointNav waypoints={scene.waypoints ?? []} sceneId={scene.id} />
-        <BrandingBadge branding={scene.branding} />
-
-        <div className="pointer-events-none absolute bottom-16 right-4 z-20 hidden max-w-sm md:block">
-          <div className="pointer-events-auto rounded-xl border border-white/10 bg-black/80 p-3 shadow-xl backdrop-blur-md">
-            <p className="mb-2 text-[10px] font-medium uppercase tracking-wider text-white/50">
-              Embed en tu web
+      <main className="mx-auto flex w-full min-w-0 max-w-6xl flex-1 flex-col justify-center px-4 py-8 sm:px-5 md:px-6 md:py-10">
+        <div className="grid w-full min-w-0 max-w-full grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)] lg:items-center xl:grid-cols-[minmax(0,1fr)_minmax(0,24rem)]">
+          <section className="min-w-0 max-w-full" aria-label="Tour 3D">
+            <TourViewerFrame scene={scene} />
+            <p className="mt-3 max-w-full text-pretty px-0.5 text-center text-xs text-mirador-text-muted sm:text-sm lg:text-left">
+              Arrastra para mirar · usa los puntos del recorrido en el visor
             </p>
-            <EmbedSnippet sceneId={scene.id} siteUrl={siteUrl} compact />
-          </div>
-        </div>
-      </div>
+          </section>
 
-      <div className="flex min-h-0 flex-1 flex-col border-t border-mirador-border bg-mirador-surface text-mirador-text md:hidden">
-        <PropertyStrip
-          title={scene.title}
-          listing={scene.listing}
-          metric={scene.metric}
-        />
-        <AgentCTA listing={scene.listing} sceneTitle={scene.title} />
-        <EmbedSnippet sceneId={scene.id} siteUrl={siteUrl} />
-      </div>
-    </main>
+          <aside
+            className="flex min-w-0 max-w-full flex-col gap-4 sm:gap-6"
+            aria-label="Detalles del inmueble"
+          >
+            <div className="overflow-hidden rounded-xl border border-mirador-border bg-mirador-surface shadow-sm">
+              <PropertyStrip
+                title={scene.title}
+                listing={scene.listing}
+                metric={scene.metric}
+                priceLabel={priceLabel}
+                variant="sidebar"
+              />
+              <AgentCTA listing={scene.listing} sceneTitle={scene.title} variant="card" />
+            </div>
+
+            <div className="overflow-hidden rounded-xl border border-mirador-border bg-mirador-surface shadow-sm">
+              <EmbedSnippet
+                sceneId={scene.id}
+                siteUrl={siteUrl}
+                variant="card"
+                collapsible
+              />
+            </div>
+          </aside>
+        </div>
+      </main>
+
+      <HomeFooter />
+    </SitePageShell>
   );
 }

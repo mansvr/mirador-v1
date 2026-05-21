@@ -17,7 +17,7 @@ export function MetricBadge({ metric }: MetricBadgeProps) {
   if (ceiling_m) parts.push(`${ceiling_m}m ceil.`);
 
   return (
-    <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 px-2.5 py-1 bg-black/50 backdrop-blur-sm rounded-full select-none pointer-events-none">
+    <div className="absolute top-2 right-2 z-10 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-full bg-black/50 px-2 py-1 backdrop-blur-sm select-none pointer-events-none sm:top-4 sm:right-4 sm:px-2.5">
       {isVerified && (
         <span className="text-green-400 text-xs" title={`Verified by ${verified_by}`}>
           ✓
