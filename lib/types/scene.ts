@@ -109,7 +109,7 @@ export interface SceneListing {
 export interface SceneBranding {
   tenant_id?: string;
   logo_url?: string | null;
-  /** Hex color string, e.g. #FF6A00 */
+  /** Hex color string, e.g. #5e5956 */
   primary_color?: string;
   show_mirador_badge?: boolean;
 }

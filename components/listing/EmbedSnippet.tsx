@@ -42,7 +42,7 @@ export function EmbedSnippet({ sceneId, siteUrl, compact = false }: EmbedSnippet
           <button
             type="button"
             onClick={handleCopy}
-            className="shrink-0 px-2.5 py-1.5 text-[10px] font-medium rounded-lg bg-[var(--mirador-primary,#FF6A00)] text-white hover:opacity-90 transition-opacity"
+            className="shrink-0 px-2.5 py-1.5 text-[10px] font-medium rounded-lg bg-[var(--mirador-primary,#5e5956)] text-white hover:opacity-90 transition-opacity"
           >
             {copied ? "✓" : "Copiar"}
           </button>
@@ -52,32 +52,32 @@ export function EmbedSnippet({ sceneId, siteUrl, compact = false }: EmbedSnippet
   }
 
   return (
-    <div className="px-4 py-4 md:px-6 border-t border-gray-100">
-      <p className="text-xs text-gray-500 mb-2 font-medium uppercase tracking-wider">
+    <div className="px-4 py-4 md:px-6 border-t border-mirador-border">
+      <p className="text-xs text-mirador-text-muted mb-2 font-medium uppercase tracking-wider">
         Embed
       </p>
-      <p className="text-xs text-gray-600 mb-2">
+      <p className="text-xs text-mirador-text-muted mb-2">
         Pega este código en tu sitio. El iframe apunta a{" "}
-        <span className="font-mono text-gray-800">/e/{sceneId}</span> (solo visor).
+        <span className="font-mono text-mirador-text">/e/{sceneId}</span> (solo visor).
         Enlace directo al tour:{" "}
-        <a href={tourUrl} className="font-mono text-blue-600 hover:underline break-all">
+        <a href={tourUrl} className="font-mono text-mirador-accent hover:underline break-all">
           /v/{sceneId}
         </a>
       </p>
       <div className="flex gap-2 items-start">
-        <code className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg p-2.5 font-mono text-gray-700 break-all leading-relaxed">
+        <code className="flex-1 text-xs bg-[#f3f1ee] border border-mirador-border rounded-lg p-2.5 font-mono text-mirador-text break-all leading-relaxed">
           {snippet}
         </code>
         <button
           type="button"
           onClick={handleCopy}
-          className="shrink-0 px-3 py-2 text-xs font-medium rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition-colors"
+          className="shrink-0 px-3 py-2 text-xs font-medium rounded-lg bg-mirador-accent text-white hover:opacity-90 transition-opacity"
         >
           {copied ? "✓" : "Copiar"}
         </button>
       </div>
 
-      <p className="text-xs text-gray-500 mt-4 mb-2 font-medium uppercase tracking-wider">
+      <p className="text-xs text-mirador-text-muted mt-4 mb-2 font-medium uppercase tracking-wider">
         QR · tour completo
       </p>
       <div className="flex flex-wrap items-center gap-4">
@@ -87,15 +87,15 @@ export function EmbedSnippet({ sceneId, siteUrl, compact = false }: EmbedSnippet
           alt=""
           width={120}
           height={120}
-          className="rounded-lg border border-gray-200 bg-white p-1"
+          className="rounded-lg border border-mirador-border bg-mirador-surface p-1"
         />
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-gray-600 mb-1">
+          <p className="text-xs text-mirador-text-muted mb-1">
             Abre en el móvil (página con tour + detalle)
           </p>
           <a
             href={tourUrl}
-            className="text-xs text-blue-600 hover:underline break-all font-mono"
+            className="text-xs text-mirador-accent hover:underline break-all font-mono"
           >
             {tourUrl}
           </a>

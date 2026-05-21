@@ -1,6 +1,8 @@
 import { ImageResponse } from "next/og";
+import { MIRADOR_DEFAULT_PRIMARY } from "@/lib/brand";
 import { fetchScene } from "@/lib/scene";
 import { OgCard } from "@/lib/og-card";
+import { getOgFonts, OG_IMAGE_SIZE } from "@/lib/og-fonts";
 import {
   ogThumbnailDataUrl,
   shareTitle,
@@ -13,10 +15,11 @@ export async function GET(
   context: { params: Promise<{ sceneId: string }> }
 ) {
   const { sceneId } = await context.params;
+  const fonts = await getOgFonts();
 
   try {
     const scene = await fetchScene(sceneId);
-    const accent = scene.branding?.primary_color ?? "#FF6A00";
+    const accent = scene.branding?.primary_color ?? MIRADOR_DEFAULT_PRIMARY;
     const thumbSrc = ogThumbnailDataUrl(sceneId);
 
     return new ImageResponse(
@@ -25,12 +28,12 @@ export async function GET(
           title={shareTitle(scene)}
           accent={accent}
           thumbSrc={thumbSrc}
-          subtitle="Tour virtual 3D · Umbral"
+          subtitle="Tour virtual 3D · mirador.lat"
         />
       ),
       {
-        width: 1200,
-        height: 630,
+        ...OG_IMAGE_SIZE,
+        fonts,
         headers: {
           "Cache-Control": "public, max-age=86400, s-maxage=86400",
         },
@@ -41,11 +44,11 @@ export async function GET(
       (
         <OgCard
           title="Mirador"
-          accent="#FF6A00"
+          accent={MIRADOR_DEFAULT_PRIMARY}
           thumbSrc={ogThumbnailDataUrl(sceneId)}
         />
       ),
-      { width: 1200, height: 630 }
+      { ...OG_IMAGE_SIZE, fonts }
     );
   }
 }

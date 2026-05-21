@@ -25,7 +25,7 @@ export function LoadingOverlay() {
           {/* Progress bar */}
           <div className="w-40 h-px bg-white/20 rounded-full overflow-hidden">
             <motion.div
-              className="h-full bg-[var(--mirador-primary,#FF6A00)] rounded-full"
+              className="h-full bg-[var(--mirador-primary,#5e5956)] rounded-full"
               initial={{ width: "0%" }}
               animate={{ width: `${Math.round(progress * 100)}%` }}
               transition={{ ease: "easeOut" }}

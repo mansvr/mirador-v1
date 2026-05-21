@@ -14,7 +14,7 @@ export function AgentCTA({ listing, sceneTitle }: AgentCTAProps) {
   const href = `https://wa.me/${listing.agent_whatsapp.replace(/[^0-9]/g, "")}?text=${message}`;
 
   return (
-    <div className="px-4 py-4 md:px-6 bg-white border-t border-gray-100">
+    <div className="border-t border-mirador-border px-4 py-4 md:px-6 bg-mirador-surface">
       <a
         href={href}
         target="_blank"

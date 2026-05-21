@@ -42,13 +42,13 @@ export function HotspotPanel({ scene }: HotspotPanelProps) {
 
           <div className="p-6 pt-10">
             {hotspot.payload.title && (
-              <h2 className="text-lg font-semibold text-gray-900 mb-3 pr-6">
+              <h2 className="text-lg font-medium text-mirador-text mb-3 pr-6">
                 {hotspot.payload.title}
               </h2>
             )}
 
             {hotspot.payload.body_md && (
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line mb-4">
+              <p className="text-sm text-mirador-text-muted leading-relaxed whitespace-pre-line mb-4">
                 {hotspot.payload.body_md}
               </p>
             )}
@@ -76,7 +76,7 @@ export function HotspotPanel({ scene }: HotspotPanelProps) {
                     hotspot.payload!.cta_href!
                   )
                 }
-                className="block w-full text-center py-3 px-4 rounded-lg bg-[var(--mirador-primary,#FF6A00)] text-white font-semibold text-sm hover:opacity-90 transition-opacity"
+                className="block w-full text-center py-3 px-4 rounded-lg bg-[var(--mirador-primary,#5e5956)] text-white font-semibold text-sm hover:opacity-90 transition-opacity"
               >
                 {hotspot.payload.cta_label}
               </a>

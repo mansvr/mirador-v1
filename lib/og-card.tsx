@@ -1,10 +1,12 @@
 /** JSX layout for `next/og` ImageResponse (Satori). No client hooks. */
 
+import { OG_FONT_DISPLAY, OG_FONT_UI } from "@/lib/og-fonts";
+
 export function OgCard({
   title,
   accent,
   thumbSrc,
-  eyebrow = "MIRADOR",
+  eyebrow = "Mirador",
   subtitle = "Tour virtual 3D",
 }: {
   title: string;
@@ -22,10 +24,8 @@ export function OgCard({
         flexDirection: "column",
         justifyContent: "flex-end",
         position: "relative",
-        background: "#070707",
+        background: "#121212",
         color: "#fafafa",
-        fontFamily:
-          "ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif",
       }}
     >
       {thumbSrc ? (
@@ -47,7 +47,7 @@ export function OgCard({
           position: "absolute",
           inset: 0,
           background:
-            "linear-gradient(180deg, rgba(7,7,7,0.35) 0%, rgba(7,7,7,0.55) 45%, rgba(7,7,7,0.92) 78%, #070707 100%)",
+            "linear-gradient(180deg, rgba(18,18,18,0.35) 0%, rgba(18,18,18,0.55) 45%, rgba(18,18,18,0.92) 78%, #121212 100%)",
         }}
       />
       <div
@@ -61,19 +61,22 @@ export function OgCard({
       >
         <div
           style={{
-            fontSize: 22,
-            letterSpacing: "0.2em",
-            fontWeight: 600,
-            opacity: 0.9,
+            fontFamily: OG_FONT_DISPLAY,
+            fontSize: 36,
+            fontWeight: 700,
+            fontStyle: "normal",
+            letterSpacing: "0.02em",
+            opacity: 0.95,
           }}
         >
           {eyebrow}
         </div>
         <div
           style={{
+            fontFamily: OG_FONT_UI,
             fontSize: 52,
-            fontWeight: 700,
-            lineHeight: 1.1,
+            fontWeight: 500,
+            lineHeight: 1.12,
             maxHeight: 220,
             overflow: "hidden",
             textShadow: "0 2px 24px rgba(0,0,0,0.6)",
@@ -83,7 +86,9 @@ export function OgCard({
         </div>
         <div
           style={{
+            fontFamily: OG_FONT_UI,
             fontSize: 24,
+            fontWeight: 400,
             opacity: 0.85,
             color: accent,
             textShadow: "0 1px 12px rgba(0,0,0,0.5)",

@@ -38,7 +38,7 @@
   "branding": {
     "tenant_id": "umbral",
     "show_mirador_badge": true,
-    "primary_color": "#FF6A00"
+    "primary_color": "#5e5956"
   },
   "access": {
     "visibility": "public"

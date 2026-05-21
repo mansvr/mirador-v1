@@ -52,13 +52,13 @@
     "neighborhood": "Chapinero Alto",
     "city": "Bogotá",
     "description_md": "Apartamento renovado con acabados de lujo. Piso 5 con vista despejada hacia los cerros. Incluye parqueadero y depósito.",
-    "agent_name": "Carlos Umbral",
+    "agent_name": "Carlos Demo",
     "agent_whatsapp": "+573001234567"
   },
   "branding": {
     "tenant_id": "umbral",
     "show_mirador_badge": true,
-    "primary_color": "#FF6A00"
+    "primary_color": "#5e5956"
   },
   "access": {
     "visibility": "public"

@@ -7,6 +7,7 @@ import { PropertyStrip } from "@/components/listing/PropertyStrip";
 import { AgentCTA } from "@/components/listing/AgentCTA";
 import { EmbedSnippet } from "@/components/listing/EmbedSnippet";
 import type { Scene } from "@/lib/types/scene";
+import { MIRADOR_DEFAULT_PRIMARY } from "@/lib/brand";
 
 interface ViewerPageShellProps {
   scene: Scene;
@@ -18,11 +19,11 @@ interface ViewerPageShellProps {
  * Branding CSS variable on `main` so HUD siblings inherit tenant color.
  */
 export function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) {
-  const primary = scene.branding?.primary_color ?? "#FF6A00";
+  const primary = scene.branding?.primary_color ?? MIRADOR_DEFAULT_PRIMARY;
 
   return (
     <main
-      className="flex min-h-dvh flex-col bg-black md:h-dvh md:overflow-hidden"
+      className="mirador-viewer-chrome flex min-h-dvh flex-col md:h-dvh md:overflow-hidden"
       style={{ "--mirador-primary": primary } as CSSProperties}
     >
       <div
@@ -45,7 +46,7 @@ export function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) {
         </div>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col bg-white text-gray-900 md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col border-t border-mirador-border bg-mirador-surface text-mirador-text md:hidden">
         <PropertyStrip
           title={scene.title}
           listing={scene.listing}

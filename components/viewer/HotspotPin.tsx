@@ -47,8 +47,8 @@ export function HotspotPin({ hotspot, sceneId }: HotspotPinProps) {
           "text-white text-sm font-bold transition-all duration-150",
           "pointer-events-auto cursor-pointer",
           isActive
-            ? "bg-[var(--mirador-primary,#FF6A00)] scale-110"
-            : "bg-black/60 hover:bg-[var(--mirador-primary,#FF6A00)] hover:scale-105",
+            ? "bg-[var(--mirador-primary,#5e5956)] scale-110"
+            : "bg-black/60 hover:bg-[var(--mirador-primary,#5e5956)] hover:scale-105",
         ].join(" ")}
         style={{ pointerEvents: "auto" }}
       >

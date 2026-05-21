@@ -1,7 +1,28 @@
-import { redirect } from "next/navigation";
+import { MarketingFooter, MarketingHeader } from "@/components/marketing/MarketingShell";
+import { MarketingHero } from "@/components/marketing/MarketingHero";
+import {
+  CtaBand,
+  DemoSection,
+  ProcessSection,
+  SolutionsSection,
+  SystemBand,
+  TrustSection,
+} from "@/components/marketing/MarketingSections";
 
-// Root redirects to the demo scene during development.
-// In production this will be the Mirador marketing / login page.
-export default function RootPage() {
-  redirect("/v/scene_best50000");
+export default function HomePage() {
+  return (
+    <div className="min-h-dvh bg-mirador-bg text-mirador-text">
+      <MarketingHeader />
+      <main>
+        <MarketingHero />
+        <SystemBand />
+        <SolutionsSection />
+        <ProcessSection />
+        <DemoSection />
+        <TrustSection />
+        <CtaBand />
+      </main>
+      <MarketingFooter />
+    </div>
+  );
 }

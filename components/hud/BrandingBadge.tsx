@@ -1,3 +1,4 @@
+import { MiradorMark } from "@/components/brand/MiradorMark";
 import type { SceneBranding } from "@/lib/types/scene";
 
 interface BrandingBadgeProps {
@@ -16,7 +17,8 @@ export function BrandingBadge({ branding }: BrandingBadgeProps) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={logoUrl} alt="Brand" className="h-6 object-contain" />
       ) : (
-        <span className="text-white/50 text-xs tracking-[0.2em] uppercase font-light">
+        <span className="flex items-center gap-1.5 text-white/60 text-xs tracking-[0.12em] uppercase font-medium">
+          <MiradorMark className="h-4 w-4 text-[var(--mirador-primary,#5e5956)]" accent="currentColor" />
           Mirador
         </span>
       )}

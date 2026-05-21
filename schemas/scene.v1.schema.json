@@ -249,7 +249,7 @@
         "primary_color": {
           "type": "string",
           "pattern": "^#[0-9a-fA-F]{6}$",
-          "default": "#FF6A00"
+          "default": "#5e5956"
         },
         "show_mirador_badge": {
           "type": "boolean",

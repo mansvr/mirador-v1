@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none">
+  <rect
+    x="2.68"
+    y="4.57"
+    width="8.32"
+    height="10.46"
+    stroke="#5e5956"
+    stroke-width="1"
+    stroke-miterlimit="10"
+  />
+  <path
+    d="M5.19,4.68c0-2.05,1.82-3.71,4.07-3.71s4.07,1.66,4.07,3.71v7.7H5.19v-7.78"
+    stroke="#5e5956"
+    stroke-width="1"
+    stroke-miterlimit="10"
+  />
+</svg>

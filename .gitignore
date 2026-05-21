@@ -60,4 +60,7 @@ public/**/*.ply
 # Keep scene.json metadata files in git
 !scenes/**/scene.json
 
+# OG font dev/test renders (WOFF files are committed)
+public/fonts/og/*.png
+
 .vercel

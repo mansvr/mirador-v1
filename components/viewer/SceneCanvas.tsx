@@ -57,7 +57,7 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
       // Inject branding CSS custom properties for hotspot/UI theming
       style={
         {
-          "--mirador-primary": scene.branding?.primary_color ?? "#FF6A00",
+          "--mirador-primary": scene.branding?.primary_color ?? "#5e5956",
         } as React.CSSProperties
       }
     >

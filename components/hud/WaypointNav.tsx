@@ -32,7 +32,7 @@ export function WaypointNav({ waypoints, sceneId }: WaypointNavProps) {
             className={[
               "flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200",
               isActive
-                ? "bg-[var(--mirador-primary,#FF6A00)] text-white"
+                ? "bg-[var(--mirador-primary,#5e5956)] text-white"
                 : "text-white/70 hover:text-white hover:bg-white/10",
             ].join(" ")}
           >
