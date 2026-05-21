@@ -52,3 +52,35 @@ Replace `scene_best50000` with your `scene.json` id. Full listing chrome (descri
 | `https://mirador.lat/e/scene_best50000` | Canvas + HUD only — use inside dashboard iframe |
 | `https://mirador.lat/umbral/best-splat-50k` | Tenant slug → same scene |
 | `https://mirador.lat/v/scene_best50000/opengraph-image` | OG PNG for share previews |
+
+## 6. Viewer perf debug (stats.js + **H** panel)
+
+Gate: `lib/viewer-debug.ts` — overlay is **not** mounted on Production unless you opt in.
+
+### Go-live checklist
+
+- [ ] **Production** env vars: **`NEXT_PUBLIC_VIEWER_DEBUG` is unset** (or not `1`).
+- [ ] Redeploy Production after removing it (env changes need a new build).
+- [ ] Open `https://mirador.lat/v/scene_best50000` — press **H** → nothing should appear (no FPS HUD).
+- [ ] Splat budgets still apply without the overlay (`docs/spark-assets-and-budget.md`).
+
+### One-off profiling on production
+
+Use this when you need real-device numbers on the live domain (then turn it off again).
+
+1. Vercel → project **mirador-v1** → **Settings** → **Environment Variables**.
+2. **Add** (or edit):
+   - **Name:** `NEXT_PUBLIC_VIEWER_DEBUG`
+   - **Value:** `1`
+   - **Environment:** **Production** only (leave Preview/Development unset unless you want it there too).
+3. **Deployments** → latest Production → **⋯** → **Redeploy** (or push any commit to `main`).
+4. Wait until the deploy is **Ready**.
+5. On a desktop browser, open `https://mirador.lat/v/scene_best50000`.
+6. Press **H** → stats HUD + lil-gui panel should appear (both were hidden until **H**).
+7. Orbit the scene a few seconds; use **Log snapshot → F12 Console** if you need a JSON row to save.
+8. When finished: **delete** `NEXT_PUBLIC_VIEWER_DEBUG` (or set value empty) for **Production**.
+9. **Redeploy** Production again so the next build strips the overlay from the live site.
+
+**Note:** `NEXT_PUBLIC_*` is baked in at **build** time — toggling the variable without redeploying does not change an already-built deployment.
+
+More detail: `docs/viewer-debug.md`.

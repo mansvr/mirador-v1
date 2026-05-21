@@ -9,6 +9,7 @@ Dev tooling for Mirador’s Spark + R3F viewer: **stats.js** FPS HUD + **lil-gui
 | Local dev | On by default (`npm run dev`) |
 | Force off in dev | Add `?nodebug` to the URL |
 | Production profiling | Set `NEXT_PUBLIC_VIEWER_DEBUG=1` at build time (requires `stats.js` / `lil-gui` in dependencies) |
+| **Live site (default)** | **Off** on `mirador.lat` when that env var is unset — no `?debug` URL toggle (env only). See **`docs/vercel-mirador.lat-setup.md`** → Viewer perf debug checklist. |
 
 Works on `/v/[sceneId]`, `/e/[sceneId]`, and tenant property routes (all use `SceneCanvas`).
 
