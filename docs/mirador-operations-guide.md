@@ -162,13 +162,18 @@ Copy from `r2upload/scene_best50000/scene.json` or `scenes/scene_best50000/scene
 }
 ```
 
-For SPZ:
+For SPZ (Marble / Niantic — same asset desktop + mobile):
 
 ```json
 "format": "spz",
 "url": "scene.spz",
-"url_mobile": "scene-mobile.spz"
+"yaw_correction_deg": 0,
+"pitch_correction_deg": 180
 ```
+
+Floor/ceiling inverted in viewport → **`pitch_correction_deg: 180`** (+X world rotation). See `umbral-notes/tech-notes/3dgs-viewer-system.md` §3.5. Do **not** set `pitch_correction_deg_mobile` unless you use a separate `url_mobile` file.
+
+For SOG (Postshot pipeline — optional mobile crop):
 
 Test orientation on `/v/<sceneId>` before publishing.
 
