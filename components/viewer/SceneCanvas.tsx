@@ -10,7 +10,7 @@
  * The parent server component passes the scene object as a prop.
  */
 
-import { useEffect } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 import { Canvas } from "@react-three/fiber";
 import { SparkInit } from "./SparkInit";
 import { SplatScene } from "./SplatScene";
@@ -37,12 +37,21 @@ interface SceneCanvasProps {
   heightClass?: string;
 }
 
-const debugPerfEnabled =
-  typeof window !== "undefined"
-    ? isViewerDebugEnabled()
-    : process.env.NODE_ENV === "development";
+/** Baked at build time when `NEXT_PUBLIC_VIEWER_DEBUG=1` on Vercel Production. */
+const viewerDebugBuildEnabled =
+  process.env.NEXT_PUBLIC_VIEWER_DEBUG === "1" ||
+  process.env.NODE_ENV === "development";
+
+function useViewerDebugActive() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => isViewerDebugEnabled(),
+    () => viewerDebugBuildEnabled
+  );
+}
 
 export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneCanvasProps) {
+  const debugPerfEnabled = useViewerDebugActive();
   const setScene = useViewerStore((s) => s.setScene);
   const isLoaded = useViewerStore((s) => s.isLoaded);
 

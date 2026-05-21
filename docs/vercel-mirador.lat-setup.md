@@ -83,4 +83,12 @@ Use this when you need real-device numbers on the live domain (then turn it off 
 
 **Note:** `NEXT_PUBLIC_*` is baked in at **build** time — toggling the variable without redeploying does not change an already-built deployment.
 
+### If **H** does nothing after redeploy
+
+1. **Deployments** → confirm the latest Production deploy is **Ready** (not Building/Queued) and started **after** you saved the env var.
+2. Hard refresh the tour: **Ctrl+Shift+R** (or Safari private window).
+3. Use the **Production** URL `https://mirador.lat/v/...` (Preview hosts do not get Production-only env vars).
+4. Click the **canvas** (3D view), then press **H** — not while typing in an input.
+5. If you redeployed before this fix shipped, push/wait for the latest `main` deploy (SSR used to skip debug on Production even with the env var set).
+
 More detail: `docs/viewer-debug.md`.
