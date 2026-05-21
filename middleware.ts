@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const HOME_HOSTS = new Set(["mirador.home", "www.mirador.home"]);
+const HOME_HOSTS = new Set([
+  "mirador.home",
+  "www.mirador.home",
+  "mirador.homes",
+  "www.mirador.homes",
+]);
 
 /**
- * mirador.home → listings hub at `/home`.
+ * mirador.home / mirador.homes → listings hub at `/home`.
  * Same Vercel project as mirador.lat — no second repo required for v1.
  */
 export function middleware(request: NextRequest) {
