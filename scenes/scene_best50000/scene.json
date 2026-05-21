@@ -18,22 +18,6 @@
     "yaw_correction_deg": 0,
     "pitch_correction_deg": 0
   },
-  "waypoints": [
-    {
-      "id": "w_entry",
-      "label": "Entrada",
-      "pos": [0, 1.6, 3],
-      "quat": [0, 0, 0, 1],
-      "transition_ms": 1200
-    },
-    {
-      "id": "w_corner",
-      "label": "Esquina",
-      "pos": [2.5, 1.6, -1.5],
-      "quat": [0, 0.924, 0, -0.383],
-      "transition_ms": 1400
-    }
-  ],
   "hotspots": [],
   "listing": {
     "neighborhood": "Chapinero",

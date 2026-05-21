@@ -36,6 +36,10 @@ Export is a **patch** only (`camera_default` + `waypoints`), not the full scene 
 
 While Author is enabled, draft waypoints sync to the live viewer (pills + tweens) so you can test before export.
 
+## Fresh start (no legacy waypoints)
+
+Listing demos ship **without** `waypoints` in `scenes/*/scene.json` until you author them. The viewer still loads the splat; only the tour pills / tweens are absent until you paste exported JSON and upload `scene.json` to R2.
+
 ## Security note
 
 `NEXT_PUBLIC_VIEWER_AUTHOR` is visible in client JS. Use it on **Preview** for daily work; enable on **Production** only when agents need in-browser authoring (no secrets in the panel).
