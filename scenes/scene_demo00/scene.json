@@ -12,7 +12,7 @@
     "verified_at": "2026-05-15"
   },
   "render": {
-    "format": "sog",
+    "format": "spz",
     "url": "https://sparkjs.dev/assets/splats/butterfly.spz",
     "splat_budget_desktop": 2000000,
     "splat_budget_mobile": 750000,

@@ -63,7 +63,7 @@ export function SplatLoadVerify() {
     if (framesRef.current >= VERIFY_FRAMES) {
       setAwaitingGpuRender(false);
       setLoadError(
-        "El recorrido cargó pero no se puede mostrar en este iPhone (archivo muy pesado o WebGL). Prueba un .sog más pequeño o vuelve más tarde."
+        "El recorrido cargó pero no se puede mostrar en este iPhone (archivo muy pesado o WebGL). Prueba un SOG/SPZ más pequeño o vuelve más tarde."
       );
     }
   });

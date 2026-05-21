@@ -39,6 +39,24 @@ In `scenes/<id>/scene.json`:
 
 Dual assets: see `docs/mobile-splat-delivery.md`. Mirador picks `url_mobile` on phone/tablet when set.
 
+## SPZ on R2
+
+Set `render.format` to `"spz"` and point `url` at your file (extension must match):
+
+```json
+"render": {
+  "format": "spz",
+  "url": "scene.spz",
+  "url_mobile": "scene-mobile.spz",
+  "splat_budget_desktop": 2000000,
+  "splat_budget_mobile": 500000
+}
+```
+
+Mirador infers the Spark decoder from the **file extension** when it disagrees with `format` (console warning in dev). Optional `format_mobile` when desktop and phone use different formats.
+
+Pipeline: export SPZ from [splat-transform](https://github.com/playcanvas/splat-transform) or receive from Polycam/Niantic tools → upload next to `scene.json` on R2.
+
 Lower `_mobile` for heavy indoor scans; raise desktop only if profiling shows headroom.
 
 ## Docs

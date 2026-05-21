@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * SplatScene — renders the SOGS splat using Spark's SplatMesh.
+ * SplatScene — renders the splat (SOG / SPZ / PLY) using Spark's SplatMesh.
  * Must be inside <Canvas> and after <SparkInit>.
  */
 
@@ -14,9 +14,10 @@ import { viewerDebugRegistry } from "@/lib/viewer-debug-registry";
 import { fetchSplatBytes } from "@/lib/fetch-splat-bytes";
 import {
   resolveSplatBudget,
-  sparkFileTypeForScene,
+  sparkFileTypeForAsset,
   splatMeshOptions,
 } from "@/lib/spark-viewer-config";
+import { inferFormatFromAssetUrl } from "@/lib/render-format";
 import { isMobileClient, resolveSceneRender } from "@/lib/scene-utils";
 import type { Scene, SceneRender } from "@/lib/types/scene";
 
@@ -48,6 +49,13 @@ function applyRootOrientation(root: THREE.Group, render: SceneRender) {
 
 function splatFileLabel(splatSrc: string): string {
   return splatSrc.split("/").pop() ?? "scene.sog";
+}
+
+function splatAssetNoun(splatSrc: string): string {
+  const ext = inferFormatFromAssetUrl(splatSrc);
+  if (ext === "spz") return "archivo .spz";
+  if (ext === "ply") return "archivo .ply";
+  return "archivo .sog";
 }
 
 export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
@@ -91,7 +99,7 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
           `La descarga tardó demasiado (${fileLabel}, ${sizePart}). ` +
             (sameOrigin
               ? "Comprueba que el PC sigue con npm run dev y el teléfono en la misma Wi‑Fi."
-              : "En móvil usa Wi‑Fi o sube un .sog más pequeño a R2.")
+              : "En móvil usa Wi‑Fi o sube un splat más pequeño (SOG/SPZ) a R2.")
         );
       }, fallbackMs);
     };
@@ -114,7 +122,7 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
           if (cancelled) return;
           if (!head.ok) {
             setLoadError(
-              `No se pudo cargar el recorrido 3D (${head.status}). Falta el archivo .sog en el servidor.`
+              `No se pudo cargar el recorrido 3D (${head.status}). Falta el ${splatAssetNoun(splatSrc)} en el servidor.`
             );
             return;
           }
@@ -173,7 +181,7 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
             ...opts,
             url: undefined,
             fileBytes: buf,
-            fileType: sparkFileTypeForScene(scene),
+            fileType: sparkFileTypeForAsset(scene, splatSrc),
             fileName: fileLabel,
           });
         } else {

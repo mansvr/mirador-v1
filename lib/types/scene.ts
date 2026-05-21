@@ -16,10 +16,15 @@ export type SceneRenderFormat = "sog" | "spz" | "ply";
 
 export interface SceneRender {
   format: SceneRenderFormat;
-  /** Filename relative to the scene's R2 folder, e.g. "scene.sog" */
+  /**
+   * Optional when `url_mobile` uses a different extension (e.g. desktop SOG, mobile SPZ).
+   * Defaults to `format`.
+   */
+  format_mobile?: SceneRenderFormat;
+  /** Filename relative to the scene's R2 folder, e.g. "scene.sog" or "scene.spz" */
   url: string;
   /**
-   * Optional lighter splat for phones/tablets (e.g. "scene-mobile.sog").
+   * Optional lighter splat for phones/tablets (e.g. "scene-mobile.sog" or "scene-mobile.spz").
    * Same folder as `url` on R2, or same-origin path in `public/` for local dev.
    */
   url_mobile?: string;

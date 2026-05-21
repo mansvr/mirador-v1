@@ -1,10 +1,14 @@
 import {
-  SplatFileType,
   type SparkRendererOptions,
+  type SplatFileType,
   type SplatMeshOptions,
 } from "@sparkjsdev/spark";
 import type { WebGLRenderer } from "three";
-import { splatBudget } from "@/lib/scene-utils";
+import {
+  resolveEffectiveFormat,
+  sparkFileTypeForFormat,
+} from "@/lib/render-format";
+import { isMobileClient, splatBudget } from "@/lib/scene-utils";
 import type { Scene } from "@/lib/types/scene";
 
 /**
@@ -15,17 +19,14 @@ export function resolveSplatBudget(scene: Scene): number {
   return splatBudget(scene);
 }
 
-/** Spark format for scene.json `render.format` (SOG = PlayCanvas zip bundle). */
-export function sparkFileTypeForScene(scene: Scene): SplatFileType {
-  switch (scene.render.format) {
-    case "spz":
-      return SplatFileType.SPZ;
-    case "ply":
-      return SplatFileType.PLY;
-    case "sog":
-    default:
-      return SplatFileType.PCSOGSZIP;
-  }
+/** Spark decoder type for the asset URL about to load (SOG / SPZ / PLY). */
+export function sparkFileTypeForAsset(scene: Scene, assetUrl: string): SplatFileType {
+  const format = resolveEffectiveFormat(
+    scene.render,
+    assetUrl,
+    isMobileClient()
+  );
+  return sparkFileTypeForFormat(format);
 }
 
 export function sparkRendererOptions(

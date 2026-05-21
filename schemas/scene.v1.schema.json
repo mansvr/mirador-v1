@@ -47,15 +47,20 @@
         "format": {
           "type": "string",
           "enum": ["sog", "spz", "ply"],
-          "description": "Asset format. 'sog' (SOGS) is the default and preferred format."
+          "description": "Primary asset format. Must match the file in `url` (.sog PlayCanvas SOG, .spz Niantic SPZ, .ply). Spark decodes all three."
+        },
+        "format_mobile": {
+          "type": "string",
+          "enum": ["sog", "spz", "ply"],
+          "description": "Format for `url_mobile` when different from desktop (e.g. format sog + format_mobile spz). Extension on the URL also resolves the decoder."
         },
         "url": {
           "type": "string",
-          "description": "Filename relative to the scene's R2 folder, e.g. 'scene.sog'."
+          "description": "Filename relative to the scene's R2 folder, e.g. 'scene.sog' or 'scene.spz', or absolute https URL."
         },
         "url_mobile": {
           "type": "string",
-          "description": "Optional lighter splat for mobile (e.g. 'scene-mobile.sog'). Mirador loads this on phone/tablet when set; desktop keeps url."
+          "description": "Optional lighter splat for mobile (e.g. 'scene-mobile.sog' or 'scene-mobile.spz'). Mirador loads this on phone/tablet when set; desktop keeps url."
         },
         "splat_budget_desktop": {
           "type": "integer",
