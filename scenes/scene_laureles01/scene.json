@@ -16,7 +16,7 @@
     "splat_budget_mobile": 2000000,
     "up_axis": [0, 1, 0],
     "yaw_correction_deg": 0,
-    "pitch_correction_deg": 180
+    "pitch_correction_deg": 0
   },
   "waypoints": [
     {
@@ -42,7 +42,7 @@
   "access": { "visibility": "public" },
   "attribution": {
     "capture_date": "2026-05-21",
-    "pipeline": "Marble export SPZ — pitch_correction_deg 180 (3dgs-viewer-system §3.5)",
+    "pipeline": "Marble export SPZ — pitch_correction_deg 0 (Marble/Spark Y-up; SOG Postshot uses 180)",
     "converter": "Marble / Niantic SPZ"
   }
 }

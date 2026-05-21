@@ -168,10 +168,10 @@ For SPZ (Marble / Niantic — same asset desktop + mobile):
 "format": "spz",
 "url": "scene.spz",
 "yaw_correction_deg": 0,
-"pitch_correction_deg": 180
+"pitch_correction_deg": 0
 ```
 
-Floor/ceiling inverted in viewport → **`pitch_correction_deg: 180`** (+X world rotation). See `umbral-notes/tech-notes/3dgs-viewer-system.md` §3.5. Do **not** set `pitch_correction_deg_mobile` unless you use a separate `url_mobile` file.
+**Marble SPZ** exports are usually **already Y-up in Spark** → start at **`pitch_correction_deg: 0`**. The **`180`** fix in `3dgs-viewer-system.md` §3.5 applies to **Postshot → SOG**, not Marble. If upside-down, toggle **`0` vs `180`** in `scene.json` and re-upload JSON only.
 
 For SOG (Postshot pipeline — optional mobile crop):
 
