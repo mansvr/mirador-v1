@@ -90,17 +90,29 @@ mirador/
 
 ### On R2 (production assets)
 
+**One splat format per scene** — pick SOG *or* SPZ in `scene.json`; do not leave legacy files from old exports.
+
 ```
 <bucket>/
   scene_best50000/
-    scene.json
-    scene.sog                 # desktop
-    scene-mobile.sog          # optional phones
-    scene.spz                 # optional instead of/in addition to sog
-    thumbnail.webp            # listing card (~120 KB WebP)
+    scene.json              # render.url → scene.spz (or scene.sog)
+    scene.spz               # SPZ path (Marble / Niantic demos)
+    thumbnail.webp          # listing card hero (16:10 WebP ~80–120 KB)
   scene_poblado001/
-    ...
+    scene.json
+    scene.spz
+    thumbnail.webp
 ```
+
+| File | Used by |
+|------|---------|
+| `scene.json` | Viewer + catalog enrichment |
+| `scene.spz` or `scene.sog` | `/v/` and `/e/` WebGL tour only |
+| `thumbnail.webp` | **Listing cards** on mirador.homes (if no `public/og/{sceneId}.jpg`) |
+
+Optional later: `scene-mobile.spz` / `scene-mobile.sog` when mobile needs a lighter file than desktop.
+
+**Do not** mix SOG + SPZ in the same folder unless `scene.json` explicitly references both (confusing; wastes storage). Remove orphans when switching format.
 
 ### Staging on disk (Umbral root, not deployed)
 
@@ -191,9 +203,38 @@ Edit `mirador/lib/listings/catalog.json`:
 | Check | URL |
 |-------|-----|
 | Tour | `/v/<sceneId>` |
-| Card | `/home` |
+| Card | `/home` — hero image or “Vista previa” gradient (never broken icon) |
 | Embed | paste snippet from tour page; test `/e/<sceneId>` in iframe |
 | Phone | same tour URL on Safari |
+| Share preview | paste `/v/<sceneId>` in WhatsApp — see §6b |
+
+---
+
+## 6b. Listing images vs share OG (three assets)
+
+These are **different jobs**. Do not assume one file covers all.
+
+| Asset | Location | Aspect | Purpose |
+|-------|----------|--------|---------|
+| **Source still** | `public/og/{sceneId}.jpg` | any (≥ 16:10) | Underlay for OG composite; **listing card** if present (priority #2) |
+| **Listing card** | `R2/{sceneId}/thumbnail.webp` | 16:10 WebP | Grid hero when no `public/og` still |
+| **Share card** | `public/og/{sceneId}-card.jpg` | 1200×630 JPEG | WhatsApp, iMessage, Twitter, LinkedIn link previews for **`/v/`** URLs |
+
+**Listing cards (`/home`):** resolver order → `catalog.thumbnailUrl` → `public/og/{sceneId}.jpg` → R2 `thumbnail.webp` (HEAD must succeed) → gradient placeholder.
+
+**Share / OG (`/v/` metadata):** not the same as the listing card. Crawlers read Open Graph tags on the tour page:
+
+1. Baked **`{sceneId}-card.jpg`** (best for WhatsApp — run `npm run og:bake -- <sceneId>`)
+2. Else dynamic **`/api/og/{sceneId}`** (PNG composite at request time)
+
+WhatsApp is the picky case (size limits, cache); OG is also used by iMessage, Slack, Facebook, etc. Listing thumbnails are **only** for the mirador.homes grid.
+
+**Per-listing image checklist**
+
+1. Capture one representative frame from the tour (or export from SuperSplat).
+2. Save as `public/og/{sceneId}.jpg` → redeploy → card + OG underlay.
+3. `npm run og:bake -- {sceneId}` → `{sceneId}-card.jpg` for share links.
+4. Optionally export WebP → upload `R2/{sceneId}/thumbnail.webp` if you prefer assets off-repo (CDN-only cards).
 
 ---
 
@@ -239,7 +280,7 @@ Detailed checklist: [mirador-homes-setup.md](./mirador-homes-setup.md).
 ### Share / OG
 
 - Direct links and WhatsApp: **`/v/<sceneId>`**
-- OG image: baked `public/og/<sceneId>-card.jpg` or dynamic route — see [whatsapp-og-troubleshooting.md](./whatsapp-og-troubleshooting.md)
+- OG image: baked `public/og/<sceneId>-card.jpg` (share) — see **§6b** for listing vs share assets
 
 ---
 

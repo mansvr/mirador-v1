@@ -6,13 +6,27 @@ import { r2Url } from "@/lib/r2";
 import { fetchScene } from "@/lib/scene";
 import type { ListingCatalogEntry } from "@/lib/listings/types";
 
+async function r2AssetExists(url: string): Promise<boolean> {
+  try {
+    const res = await fetch(url, {
+      method: "HEAD",
+      next: { revalidate: 300 },
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 /**
- * Card thumbnail priority (documented in docs/mirador-homes-setup.md):
+ * Card thumbnail priority (see docs/mirador-operations-guide.md §6):
  * 1. catalog.thumbnailUrl (absolute override)
- * 2. public/og/{sceneId}.jpg (baked OG still)
- * 3. R2 /{sceneId}/{thumbnailR2 || thumbnail.webp}
+ * 2. public/og/{sceneId}.jpg (source still — also used for OG bake)
+ * 3. R2 /{sceneId}/{thumbnailR2 || thumbnail.webp} — only if HEAD returns 200
  */
-function resolveThumbnailUrl(entry: ListingCatalogEntry): string | undefined {
+async function resolveThumbnailUrl(
+  entry: ListingCatalogEntry
+): Promise<string | undefined> {
   if (entry.thumbnailUrl?.trim()) {
     return entry.thumbnailUrl.trim();
   }
@@ -26,7 +40,12 @@ function resolveThumbnailUrl(entry: ListingCatalogEntry): string | undefined {
   }
 
   const file = entry.thumbnailR2?.trim() || "thumbnail.webp";
-  return r2Url(entry.sceneId, file);
+  const url = r2Url(entry.sceneId, file);
+  if (await r2AssetExists(url)) {
+    return url;
+  }
+
+  return undefined;
 }
 
 /**
@@ -69,7 +88,7 @@ export async function resolveListingCard(
     areaM2,
     priceLabel: entry.priceLabel,
     href: `/v/${entry.sceneId}`,
-    imageUrl: resolveThumbnailUrl(entry),
+    imageUrl: await resolveThumbnailUrl(entry),
     hasTour,
   };
 }

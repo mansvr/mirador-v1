@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { ListingCardImage } from "@/components/listing/ListingCardImage";
 import { cn } from "@/lib/utils";
 
 export type ListingCardProps = {
@@ -40,10 +41,8 @@ export function ListingCard({
     >
       <Link href={href} className="relative block aspect-[16/10] overflow-hidden bg-mirador-bg">
         {imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <ListingCardImage
             src={imageUrl}
-            alt=""
             className="size-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
         ) : (
