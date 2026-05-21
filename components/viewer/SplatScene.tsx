@@ -60,15 +60,21 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
     setLoadError(null);
 
     let cancelled = false;
+    let fallback: ReturnType<typeof setTimeout> | undefined;
 
     void (async () => {
       const sameOrigin =
         typeof window !== "undefined" &&
         (splatSrc.startsWith("/") ||
           splatSrc.startsWith(window.location.origin));
+      let bytesHint: number | null = null;
+
       if (sameOrigin) {
         try {
-          const head = await fetch(splatSrc, { method: "HEAD" });
+          const head = await fetch(splatSrc, {
+            method: "HEAD",
+            signal: AbortSignal.timeout(8_000),
+          });
           if (cancelled) return;
           if (!head.ok) {
             setLoadError(
@@ -76,15 +82,38 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
             );
             return;
           }
+          const len = head.headers.get("content-length");
+          if (len) bytesHint = Number.parseInt(len, 10);
         } catch {
-          if (!cancelled) {
-            setLoadError("Error de red al cargar el recorrido 3D.");
-          }
-          return;
+          // Next dev often lacks reliable HEAD on /public — continue to GET load.
         }
       }
 
       if (cancelled || rootRef.current) return;
+
+      const isMobile =
+        typeof navigator !== "undefined" &&
+        /Mobi|iPhone|iPad|Android/i.test(navigator.userAgent);
+      const mb =
+        bytesHint != null && Number.isFinite(bytesHint)
+          ? Math.round(bytesHint / 1_000_000)
+          : null;
+      const fileLabel = splatSrc.split("/").pop() ?? "sog";
+      const fallbackMs =
+        isMobile && sameOrigin ? 240_000 : isMobile ? 120_000 : 120_000;
+
+      fallback = setTimeout(() => {
+        const state = useViewerStore.getState();
+        if (state.isLoaded) return;
+        state.setAwaitingGpuRender(false);
+        const sizePart = mb != null ? `~${mb} MB` : "archivo grande";
+        setLoadError(
+          `La descarga tardó demasiado (${fileLabel}, ${sizePart}). ` +
+            (sameOrigin
+              ? "En emulación móvil local el .sog sigue siendo pesado — comprueba Network que sea scene-mobile.sog."
+              : "En móvil usa Wi‑Fi o sube un .sog más pequeño a R2.")
+        );
+      }, fallbackMs);
 
       const root = new THREE.Group();
       applyRootOrientation(root, resolveSceneRender(scene));
@@ -97,6 +126,7 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
             }
           },
           onLoad: () => {
+            if (fallback) clearTimeout(fallback);
             applyRootOrientation(root, resolveSceneRender(scene));
             setLoadProgress(0.98);
             useViewerStore.getState().setAwaitingGpuRender(true);
@@ -111,21 +141,9 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
       viewerDebugRegistry.setSplat(splat);
     })();
 
-    const isMobile =
-      typeof navigator !== "undefined" &&
-      /Mobi|iPhone|iPad|Android/i.test(navigator.userAgent);
-    const fallbackMs = isMobile ? 90_000 : 120_000;
-
-    const fallback = setTimeout(() => {
-      useViewerStore.getState().setAwaitingGpuRender(false);
-      setLoadError(
-        "La descarga tardó demasiado (~65 MB). En móvil usa Wi‑Fi o sube un .sog más pequeño a R2."
-      );
-    }, fallbackMs);
-
     return () => {
       cancelled = true;
-      clearTimeout(fallback);
+      if (fallback) clearTimeout(fallback);
       const r = rootRef.current;
       if (r) {
         threeScene.remove(r);

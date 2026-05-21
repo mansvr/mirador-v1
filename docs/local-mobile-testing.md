@@ -62,8 +62,12 @@ Good for **URL + orientation logic**, not a perfect substitute for real iOS WebG
 3. Pick a device (e.g. iPhone 14) — this changes **User-Agent** to mobile.
 4. **Hard refresh** (`Ctrl+Shift+R`) so the splat loader runs again with mobile UA.
 5. **Network** tab → filter `sog`:
-   - Mobile emulation → request **`scene-mobile.sog`**
+   - Mobile emulation → request **`scene-mobile.sog`** (~61 MB), **not** `best-splat_50000.sog` (~68 MB)
    - Turn off device toolbar, refresh → **`best-splat_50000.sog`**
+
+If you see the timeout error at **90s** with “~65 MB”, either the wrong file loaded or decode exceeded the limit. After a code update, local mobile emulation uses a **4 min** timeout; the message shows the **actual filename** from Network.
+
+**Important:** `scene-mobile.sog` is only ~4 MB smaller than desktop — emulated mobile on a PC can still time out or fail WebGL. That does not mean `url_mobile` is broken; it means the asset is still too heavy for real phones.
 
 Optional: **H** key if viewer debug is on (dev default) — check `activeSplats` vs budget.
 
