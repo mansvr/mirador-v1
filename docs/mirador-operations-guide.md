@@ -1,0 +1,395 @@
+# Mirador — operations guide
+
+Single reference for **where the viewer lives**, **how to ship listings** (mirador.home + mirador.lat), **file layout**, **embeds**, and **local dev** when localhost “doesn’t load.”
+
+---
+
+## 1. Where Mirador lives
+
+| Layer | Location |
+|-------|----------|
+| **Code** | `O:\Umbral\mirador` → GitHub `mansvr/mirador-v1` |
+| **Hosting** | One Vercel project → **mirador.lat** + **mirador.home** (same deploy) |
+| **3D assets** | Cloudflare R2 bucket (e.g. `mirador-scenes`) — not in Git |
+| **Listings index** | `mirador/lib/listings/catalog.json` — in Git, redeploy on change |
+| **Staging uploads** | `O:\Umbral\r2upload\<sceneId>\` (per-scene folders at repo root) |
+
+The **viewer** is not a separate app. It is routes inside this Next.js project plus `SceneCanvas` (Spark / R3F).
+
+---
+
+## 2. URL map (how to link and reference)
+
+| URL | Purpose | Who uses it |
+|-----|---------|-------------|
+| `/` | B2B marketing (mirador.lat) | Prospects, agents evaluating product |
+| `/home` | Listings grid (mirador.home content) | Buyers browsing properties |
+| `/v/<sceneId>` | **Full tour** — 3D + waypoints + listing strip (mobile) + embed copy + OG | Share links, WhatsApp, QR, cards on `.home` |
+| `/e/<sceneId>` | **Embed-only** — fullscreen GL, no listing chrome; `frame-ancestors *` | iframe on your main site / WordPress / Webflow |
+| `/<tenant>/<property>` | Branded slug (static map in `lib/tenants.ts`) | e.g. `/umbral/best-splat-50k` → `scene_best50000` |
+
+**Production examples**
+
+- Tour: `https://mirador.lat/v/scene_best50000` or `https://mirador.home/v/scene_best50000`
+- Grid: `https://mirador.home/` (middleware rewrites `/` → `/home` on `.home` host)
+- Embed: `https://mirador.lat/e/scene_best50000`
+
+**Rule:** Cards and marketing always link to **`/v/<sceneId>`**. Never iframe `/v/` — use **`/e/`** for embeds.
+
+---
+
+## 3. Code map (viewer stack)
+
+```
+app/v/[sceneId]/page.tsx     → ViewerPageShell (full tour page)
+app/e/[sceneId]/page.tsx     → SceneCanvas only (iframe)
+app/[tenant]/[property]/     → same shell, slug → sceneId
+
+components/viewer/
+  SceneCanvas.tsx            → Canvas + overlays
+  SplatScene.tsx             → Spark SplatMesh load (SOG / SPZ / PLY)
+  SparkInit.tsx              → SparkRenderer + LoD
+  LoadingOverlay.tsx         → progress / errors
+  ViewerPageShell.tsx        → layout: GL + PropertyStrip + EmbedSnippet
+
+lib/scene.ts                 → fetch scene.json (local scenes/ or R2)
+lib/scene-utils.ts           → splatUrl(), url_mobile, device budgets
+lib/listings/catalog.json    → mirador.home cards
+lib/tenants.ts               → branded URL → sceneId
+```
+
+---
+
+## 4. Two-layer data model (critical)
+
+Do **not** put splat paths in the catalog. Split responsibilities:
+
+| Layer | File | Contains |
+|-------|------|----------|
+| **Catalog** | `lib/listings/catalog.json` | Card title, price, beds, `sceneId`, `published`, `sortOrder` |
+| **Scene** | `R2/<sceneId>/scene.json` | `render.url`, splat budgets, waypoints, `listing` copy for tour page, orientation |
+
+**sceneId** is the join key: same string in catalog, R2 folder name, and `/v/` URL.
+
+---
+
+## 5. Recommended file structure
+
+### In Git (mirador repo)
+
+```
+mirador/
+  app/v/[sceneId]/          # tour routes
+  app/e/[sceneId]/          # embed routes
+  app/home/                 # listings grid
+  scenes/<sceneId>/         # local dev scene.json only
+  lib/listings/catalog.json # .home grid
+  public/                   # local .sog / .spz (gitignored), OG JPEGs
+  docs/                     # this guide + specialized docs
+```
+
+### On R2 (production assets)
+
+```
+<bucket>/
+  scene_best50000/
+    scene.json
+    scene.sog                 # desktop
+    scene-mobile.sog          # optional phones
+    scene.spz                 # optional instead of/in addition to sog
+    thumbnail.webp            # listing card (~120 KB WebP)
+  scene_poblado001/
+    ...
+```
+
+### Staging on disk (Umbral root, not deployed)
+
+```
+O:\Umbral\r2upload\
+  scene_best50000\          # or flat scene.json for one scene
+    scene.json
+    scene.sog
+    scene-mobile.sog
+  scene_poblado001\
+    scene.json
+    ...
+```
+
+Upload manually in Cloudflare dashboard or Wrangler — see `r2upload/README.md`.
+
+---
+
+## 6. New listing playbook (end-to-end)
+
+### A. Choose ids
+
+- **sceneId:** `scene_<slug>` e.g. `scene_poblado001` (must match catalog + R2 folder).
+- **catalog id:** marketing slug e.g. `poblado-penthouse` (future `/home/{id}`).
+
+### B. Capture → export
+
+1. Train (Postshot / LichtFeld) → PLY.
+2. SuperSplat — crop, prune, orient.
+3. Export **SOG** and/or **SPZ** (`splat-transform`). Target **8–20 MB** for mobile when possible.
+4. Export **thumbnail.webp** (1600×1000 or 1200×750).
+
+### C. Write `scene.json`
+
+Copy from `r2upload/scene_best50000/scene.json` or `scenes/scene_best50000/scene.json`.
+
+```json
+"render": {
+  "format": "sog",
+  "url": "scene.sog",
+  "url_mobile": "scene-mobile.sog",
+  "format_mobile": "sog",
+  "splat_budget_desktop": 2000000,
+  "splat_budget_mobile": 500000,
+  "pitch_correction_deg": 180,
+  "pitch_correction_deg_mobile": 0
+}
+```
+
+For SPZ:
+
+```json
+"format": "spz",
+"url": "scene.spz",
+"url_mobile": "scene-mobile.spz"
+```
+
+Test orientation on `/v/<sceneId>` before publishing.
+
+### D. Upload to R2
+
+Upload entire folder to `/<sceneId>/` on the bucket. JSON-only updates apply in ~60s without Vercel redeploy.
+
+### E. Add catalog row
+
+Edit `mirador/lib/listings/catalog.json`:
+
+```json
+{
+  "id": "poblado-penthouse",
+  "sceneId": "scene_poblado001",
+  "title": "Penthouse con terraza",
+  "neighborhood": "El Poblado",
+  "city": "Medellín",
+  "beds": 4,
+  "areaM2": 168,
+  "priceLabel": "$1.250.000.000 COP",
+  "published": true,
+  "sortOrder": 2,
+  "thumbnailR2": "thumbnail.webp"
+}
+```
+
+**Commit + push** → Vercel rebuild (catalog lives in repo).
+
+### F. Verify
+
+| Check | URL |
+|-------|-----|
+| Tour | `/v/<sceneId>` |
+| Card | `/home` |
+| Embed | paste snippet from tour page; test `/e/<sceneId>` in iframe |
+| Phone | same tour URL on Safari |
+
+---
+
+## 7. mirador.home — populate the grid
+
+1. **Domain:** `mirador.home` on same Vercel project as `.lat` (see §8).
+2. **Catalog:** `catalog.json` rows with `"published": true`.
+3. **Thumbnails:** R2 `thumbnail.webp` per scene (or baked `public/og/<sceneId>.jpg`).
+4. **Middleware:** `mirador/middleware.ts` rewrites `mirador.home/` → `/home`.
+
+Card links are always **`/v/{sceneId}`** — works on both hostnames.
+
+Detailed checklist: [mirador-home-setup.md](./mirador-home-setup.md).
+
+---
+
+## 8. Embed on your main site (protocol)
+
+### Use `/e/<sceneId>` only
+
+```html
+<div style="position:relative;width:100%;aspect-ratio:16/9;max-height:min(85dvh,900px);min-height:200px">
+  <iframe
+    src="https://mirador.lat/e/scene_best50000"
+    title="Mirador — tour 3D"
+    style="position:absolute;inset:0;width:100%;height:100%;border:none;border-radius:12px;display:block"
+    allowfullscreen
+    loading="lazy"
+  ></iframe>
+</div>
+```
+
+- **CSP:** `next.config.ts` sets `frame-ancestors *` on `/e/*`.
+- **Origin:** On production, `getSiteUrl()` uses the **request host** — embeds on `mirador.home` should be served from pages on `.home` so the iframe src matches (or hardcode the canonical host you want).
+- **Copy from UI:** Desktop `/v/…` → Embed panel (bottom-right). Mobile → Embed section in listing strip.
+
+### Do not
+
+- iframe `/v/` (extra chrome, worse for small boxes).
+- Put splat files on your main site — keep them on R2.
+- Block third-party cookies in a way that breaks WebGL inside iframe (rare).
+
+### Share / OG
+
+- Direct links and WhatsApp: **`/v/<sceneId>`**
+- OG image: baked `public/og/<sceneId>-card.jpg` or dynamic route — see [whatsapp-og-troubleshooting.md](./whatsapp-og-troubleshooting.md)
+
+---
+
+## 9. Branded URLs (optional)
+
+Edit `lib/tenants.ts`:
+
+```ts
+umbral: {
+  "best-splat-50k": "scene_best50000",
+},
+```
+
+→ `https://mirador.lat/umbral/best-splat-50k` (same viewer as `/v/scene_best50000`).
+
+---
+
+## 10. Splat formats (SOG / SPZ / PLY)
+
+| format in JSON | File | Notes |
+|----------------|------|--------|
+| `sog` | `.sog` | Default Umbral pipeline (PlayCanvas SOG zip) |
+| `spz` | `.spz` | Often smaller; Niantic / Polycam |
+| `ply` | `.ply` | Large; dev / fallback |
+
+Mirador infers decoder from **file extension** if it disagrees with `format`. See [spark-assets-and-budget.md](./spark-assets-and-budget.md).
+
+---
+
+## 11. Local dev — localhost “not loading”
+
+### Start the server
+
+```powershell
+cd O:\Umbral\mirador
+npm install
+npm run dev
+```
+
+Server binds **`0.0.0.0:3000`** (phone can use `http://<PC-LAN-IP>:3000`).
+
+### Which URL to open
+
+| You open | You get |
+|----------|---------|
+| `http://localhost:3000/` | Marketing homepage — **not** the 3D tour |
+| `http://localhost:3000/home` | Listings grid (mirador.home) |
+| `http://localhost:3000/v/scene_best50000` | **3D tour** (primary dev URL) |
+| `http://localhost:3000/v/scene_demo00` | Demo butterfly `.spz` (Spark CDN) |
+| `http://localhost:3000/e/scene_best50000` | Embed layout only |
+
+**Common mistake:** opening `/` and expecting the splat viewer.
+
+### Local scene resolution (`lib/scene.ts`)
+
+- If `scenes/<sceneId>/scene.json` exists → use it (default in dev).
+- If `MIRADOR_USE_R2=1` or no local file → fetch from `NEXT_PUBLIC_R2_URL`.
+
+**Recommended `.env.local` for local splats:**
+
+```env
+# Leave R2 unset, or comment out NEXT_PUBLIC_R2_URL
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+```
+
+Put splats in `public/` and reference with leading `/`:
+
+```json
+"url": "/best-splat_50000.sog",
+"url_mobile": "/scene-mobile.sog"
+```
+
+### If the page loads but GL stays black
+
+1. Hard refresh; check DevTools → Network for `.sog` / `.spz` **200**.
+2. Mobile path needs `fileType` + download progress (latest `main`).
+3. File too large for Safari — use smaller export or `scene-mobile.*`.
+4. See [local-mobile-testing.md](./local-mobile-testing.md).
+
+### If the server won’t start
+
+- Port 3000 in use: stop other `node` / old `npm run dev`.
+- Run from **`mirador/`**, not `O:\Umbral` root.
+
+### Test embed locally
+
+Save HTML on disk:
+
+```html
+<iframe src="http://localhost:3000/e/scene_best50000" width="100%" height="400" style="border:0"></iframe>
+```
+
+---
+
+## 12. Production env (Vercel)
+
+| Variable | Purpose |
+|----------|---------|
+| `NEXT_PUBLIC_R2_URL` | Public bucket base URL |
+| `NEXT_PUBLIC_SITE_URL` | Canonical for OG on **mirador.lat** (`https://mirador.lat`) |
+
+**R2 CORS** must allow:
+
+- `https://mirador.lat`
+- `https://mirador.home`
+- `https://*.vercel.app` (previews)
+- `http://localhost:3000` (dev)
+
+See [cloudflare-r2-setup.md](./cloudflare-r2-setup.md).
+
+---
+
+## 13. Deploy protocol
+
+| Change | Action |
+|--------|--------|
+| Code (viewer, catalog.json) | `git push` → Vercel auto-deploy |
+| `scene.json` / splats on R2 | Upload only — no redeploy |
+| Domain / env | Vercel dashboard |
+
+CLI: `vercel ls`, `vercel whoami` from `mirador/` (project linked in `.vercel/repo.json`).
+
+---
+
+## 14. Related docs (deep dives)
+
+| Doc | Topic |
+|-----|--------|
+| [mirador-home-setup.md](./mirador-home-setup.md) | `.home` domain + 3 demo scenes |
+| [local-mobile-testing.md](./local-mobile-testing.md) | Phone + DevTools mobile |
+| [mobile-splat-delivery.md](./mobile-splat-delivery.md) | Dual SOG + sizes |
+| [spark-assets-and-budget.md](./spark-assets-and-budget.md) | LoD, SPZ, budgets |
+| [vercel-mirador.lat-setup.md](./vercel-mirador.lat-setup.md) | Domains, OG, firewall |
+| [cloudflare-r2-setup.md](./cloudflare-r2-setup.md) | Bucket + CORS |
+| [../../r2upload/README.md](../../r2upload/README.md) | Staging uploads |
+
+---
+
+## Quick reference card
+
+```
+New listing:
+  1. Export → r2upload/<sceneId>/
+  2. Upload → R2/<sceneId>/
+  3. Add row → lib/listings/catalog.json
+  4. git push
+  5. Test /home + /v/<sceneId> + /e/<sceneId>
+
+Share link:     /v/<sceneId>
+Embed iframe:   /e/<sceneId>
+Listings grid:  mirador.home/  or  localhost:3000/home
+Local tour dev: localhost:3000/v/scene_best50000
+```
