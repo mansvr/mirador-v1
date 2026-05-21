@@ -44,6 +44,16 @@ Local dev uses `scenes/scene_best50000/scene.json` when R2 is not forced (`lib/s
 
 ## Method A — Real phone on Wi‑Fi (best)
 
+Mirador uses a **main-thread download** on real phones (not only Spark’s worker URL fetch), so you should see text like `Descargando scene-mobile.sog (~61 MB)…` and a **percent** on the loader. If the logo appears with **no text and no %** for a long time, pull latest code and restart `npm run dev`.
+
+**Checklist**
+
+- PC firewall allows inbound **port 3000**
+- Phone and PC on the **same Wi‑Fi** (not guest network isolation)
+- URL uses the PC’s LAN IP: `http://192.168.x.x:3000/v/scene_best50000` (not `localhost`)
+- iPhone **Low Power Mode / very low battery** can stall WebGL — charge and retry
+- First load of ~61 MB over Wi‑Fi can take **2–5+ minutes**; wait for the percent to move
+
 1. PC and phone on the **same Wi‑Fi**.
 2. Find your PC IP: `ipconfig` → IPv4 (e.g. `192.168.1.42`).
 3. On the phone Safari/Chrome open:  

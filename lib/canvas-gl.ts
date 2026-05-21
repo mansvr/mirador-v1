@@ -11,6 +11,7 @@ export function getCanvasGlProps(): {
   return {
     antialias: !mobile,
     alpha: false,
-    powerPreference: "high-performance",
+    // "high-performance" can fail or stall on iOS Safari (low battery / thermal).
+    powerPreference: mobile ? "default" : "high-performance",
   };
 }

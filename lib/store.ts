@@ -25,6 +25,8 @@ interface ViewerState {
   // Splat loaded state
   isLoaded: boolean;
   loadProgress: number; // 0–1
+  /** Short status for the loading overlay (e.g. which .sog is downloading). */
+  loadHint: string | null;
   loadError: string | null;
   /** Spark onLoad fired; waiting for activeSplats > 0 (iOS can stay black otherwise). */
   awaitingGpuRender: boolean;
@@ -64,18 +66,20 @@ export const useViewerStore = create<ViewerState>((set) => ({
 
   isLoaded: false,
   loadProgress: 0,
+  loadHint: null,
   loadError: null,
   awaitingGpuRender: false,
   setLoaded: (isLoaded) =>
     set({
       isLoaded,
       ...(isLoaded
-        ? { loadError: null, awaitingGpuRender: false }
+        ? { loadError: null, awaitingGpuRender: false, loadHint: null }
         : {}),
     }),
   setLoadProgress: (loadProgress) => set({ loadProgress }),
+  setLoadHint: (loadHint) => set({ loadHint }),
   setLoadError: (loadError) =>
-    set({ loadError, isLoaded: false, awaitingGpuRender: false }),
+    set({ loadError, isLoaded: false, awaitingGpuRender: false, loadHint: null }),
   setAwaitingGpuRender: (awaitingGpuRender) => set({ awaitingGpuRender }),
 }));
 

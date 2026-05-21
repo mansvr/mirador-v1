@@ -11,11 +11,12 @@ import * as THREE from "three";
 import { SplatMesh } from "@sparkjsdev/spark";
 import { useViewerStore } from "@/lib/store";
 import { viewerDebugRegistry } from "@/lib/viewer-debug-registry";
+import { fetchSplatBytes } from "@/lib/fetch-splat-bytes";
 import {
   resolveSplatBudget,
   splatMeshOptions,
 } from "@/lib/spark-viewer-config";
-import { resolveSceneRender } from "@/lib/scene-utils";
+import { isMobileClient, resolveSceneRender } from "@/lib/scene-utils";
 import type { Scene, SceneRender } from "@/lib/types/scene";
 
 interface SplatSceneProps {
@@ -44,32 +45,66 @@ function applyRootOrientation(root: THREE.Group, render: SceneRender) {
   root.quaternion.copy(_qy).multiply(_qx).multiply(_qz);
 }
 
+function splatFileLabel(splatSrc: string): string {
+  return splatSrc.split("/").pop() ?? "scene.sog";
+}
+
 export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
   const { scene: threeScene } = useThree();
   const rootRef = useRef<THREE.Group | null>(null);
   const setLoaded = useViewerStore((s) => s.setLoaded);
   const setLoadProgress = useViewerStore((s) => s.setLoadProgress);
+  const setLoadHint = useViewerStore((s) => s.setLoadHint);
   const setLoadError = useViewerStore((s) => s.setLoadError);
 
   useEffect(() => {
     if (rootRef.current) return;
 
     const budget = resolveSplatBudget(scene);
+    const fileLabel = splatFileLabel(splatSrc);
+    const mobile = isMobileClient();
     viewerDebugRegistry.setSplatBudget(budget);
     setLoadProgress(0.05);
+    setLoadHint(
+      mobile
+        ? `Descargando ${fileLabel}… (puede tardar varios minutos en el teléfono)`
+        : "Preparando recorrido 3D…"
+    );
     setLoadError(null);
 
     let cancelled = false;
     let fallback: ReturnType<typeof setTimeout> | undefined;
+
+    const scheduleFallback = (
+      mb: number | null,
+      sameOrigin: boolean
+    ) => {
+      const fallbackMs =
+        mobile && sameOrigin ? 300_000 : mobile ? 180_000 : 120_000;
+      fallback = setTimeout(() => {
+        const state = useViewerStore.getState();
+        if (state.isLoaded) return;
+        state.setAwaitingGpuRender(false);
+        const sizePart = mb != null ? `~${mb} MB` : "archivo grande";
+        setLoadError(
+          `La descarga tardó demasiado (${fileLabel}, ${sizePart}). ` +
+            (sameOrigin
+              ? "Comprueba que el PC sigue con npm run dev y el teléfono en la misma Wi‑Fi."
+              : "En móvil usa Wi‑Fi o sube un .sog más pequeño a R2.")
+        );
+      }, fallbackMs);
+    };
 
     void (async () => {
       const sameOrigin =
         typeof window !== "undefined" &&
         (splatSrc.startsWith("/") ||
           splatSrc.startsWith(window.location.origin));
+
       let bytesHint: number | null = null;
 
-      if (sameOrigin) {
+      // HEAD is unreliable on Next dev + iOS Safari over LAN; skip on mobile.
+      if (sameOrigin && !mobile) {
         try {
           const head = await fetch(splatSrc, {
             method: "HEAD",
@@ -85,60 +120,77 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
           const len = head.headers.get("content-length");
           if (len) bytesHint = Number.parseInt(len, 10);
         } catch {
-          // Next dev often lacks reliable HEAD on /public — continue to GET load.
+          // Continue to GET load.
         }
       }
 
       if (cancelled || rootRef.current) return;
 
-      const isMobile =
-        typeof navigator !== "undefined" &&
-        /Mobi|iPhone|iPad|Android/i.test(navigator.userAgent);
       const mb =
         bytesHint != null && Number.isFinite(bytesHint)
           ? Math.round(bytesHint / 1_000_000)
           : null;
-      const fileLabel = splatSrc.split("/").pop() ?? "sog";
-      const fallbackMs =
-        isMobile && sameOrigin ? 240_000 : isMobile ? 120_000 : 120_000;
 
-      fallback = setTimeout(() => {
-        const state = useViewerStore.getState();
-        if (state.isLoaded) return;
-        state.setAwaitingGpuRender(false);
-        const sizePart = mb != null ? `~${mb} MB` : "archivo grande";
-        setLoadError(
-          `La descarga tardó demasiado (${fileLabel}, ${sizePart}). ` +
-            (sameOrigin
-              ? "En emulación móvil local el .sog sigue siendo pesado — comprueba Network que sea scene-mobile.sog."
-              : "En móvil usa Wi‑Fi o sube un .sog más pequeño a R2.")
-        );
-      }, fallbackMs);
+      scheduleFallback(mb, sameOrigin);
 
       const root = new THREE.Group();
       applyRootOrientation(root, resolveSceneRender(scene));
 
-      const splat = new SplatMesh(
-        splatMeshOptions(scene, splatSrc, {
-          onProgress: (ev: ProgressEvent) => {
-            if (ev.lengthComputable && ev.total > 0) {
-              setLoadProgress(0.05 + 0.85 * (ev.loaded / ev.total));
-            }
-          },
-          onLoad: () => {
-            if (fallback) clearTimeout(fallback);
-            applyRootOrientation(root, resolveSceneRender(scene));
-            setLoadProgress(0.98);
-            useViewerStore.getState().setAwaitingGpuRender(true);
-          },
-        })
-      );
+      const handlers = {
+        onProgress: (ev: ProgressEvent) => {
+          if (ev.lengthComputable && ev.total > 0) {
+            setLoadProgress(0.1 + 0.8 * (ev.loaded / ev.total));
+          }
+        },
+        onLoad: () => {
+          if (fallback) clearTimeout(fallback);
+          setLoadHint("Procesando en GPU…");
+          applyRootOrientation(root, resolveSceneRender(scene));
+          setLoadProgress(0.98);
+          useViewerStore.getState().setAwaitingGpuRender(true);
+        },
+      };
 
-      splat.position.set(0, 0, 0);
-      root.add(splat);
-      threeScene.add(root);
-      rootRef.current = root;
-      viewerDebugRegistry.setSplat(splat);
+      try {
+        let splat: SplatMesh;
+
+        if (mobile) {
+          setLoadHint(
+            `Descargando ${fileLabel}${mb != null ? ` (~${mb} MB)` : ""}…`
+          );
+          const buf = await fetchSplatBytes(splatSrc, (loaded, total) => {
+            if (total > 0) {
+              setLoadProgress(0.1 + 0.75 * (loaded / total));
+            }
+          });
+          if (cancelled) return;
+
+          setLoadHint("Decodificando splats…");
+          setLoadProgress(0.88);
+          const opts = splatMeshOptions(scene, splatSrc, handlers);
+          splat = new SplatMesh({
+            ...opts,
+            url: undefined,
+            fileBytes: buf,
+          });
+        } else {
+          splat = new SplatMesh(splatMeshOptions(scene, splatSrc, handlers));
+        }
+
+        splat.position.set(0, 0, 0);
+        root.add(splat);
+        threeScene.add(root);
+        rootRef.current = root;
+        viewerDebugRegistry.setSplat(splat);
+      } catch (err) {
+        if (!cancelled) {
+          const msg =
+            err instanceof Error ? err.message : "Error desconocido";
+          setLoadError(
+            `No se pudo cargar ${fileLabel} en este dispositivo (${msg}).`
+          );
+        }
+      }
     })();
 
     return () => {
@@ -153,12 +205,13 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
       }
       setLoaded(false);
       setLoadProgress(0);
+      setLoadHint(null);
       setLoadError(null);
       useViewerStore.getState().setAwaitingGpuRender(false);
       viewerDebugRegistry.setSplat(null);
       viewerDebugRegistry.setSplatBudget(0);
     };
-  }, [threeScene, splatSrc, scene, setLoaded, setLoadProgress, setLoadError]);
+  }, [threeScene, splatSrc, scene, setLoaded, setLoadProgress, setLoadHint, setLoadError]);
 
   return null;
 }
