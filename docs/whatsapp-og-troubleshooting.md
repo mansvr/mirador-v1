@@ -44,8 +44,18 @@ Known issue: Meta’s datacenter IPs are sometimes blocked by Vercel DDoS mitiga
 
 1. Confirm **robots.txt**: https://mirador.lat/robots.txt (200, allows crawlers).
 2. Confirm **OG image**: https://mirador.lat/og/scene_best50000.jpg (200, JPEG).
-3. Sharing Debugger → paste `https://mirador.lat/v/scene_best50000` → **Scrape Again** (twice).
-4. WhatsApp: paste link in **Message yourself** (new message; cache is sticky).
+3. Sharing Debugger → paste `https://mirador.lat/share/scene_best50000.html` → **Scrape Again** (twice).
+4. WhatsApp: paste link in a **new** chat (cache is sticky). If the image still fails, try `?v=2` on the share URL once.
+
+## WhatsApp shows title but no image
+
+WhatsApp drops `og:image` when the file is too large (often **> ~300 KB**). The dynamic PNG at `/api/og/scene_best50000` is ~1.4 MB.
+
+**Fix:** baked JPEG in `public/og/<sceneId>-card.jpg` (run `npm run og:bake` after changing the overlay).
+
+Share page and `/v/` metadata should point at:
+
+`https://mirador.lat/og/scene_best50000-card.jpg` (~60–80 KB)
 
 ## Expected OG tags (when scrape succeeds)
 
@@ -53,9 +63,10 @@ Known issue: Meta’s datacenter IPs are sometimes blocked by Vercel DDoS mitiga
 |-----|---------|
 | `og:title` | Best splat — 50k |
 | `og:description` | Tour virtual 3D · … |
-| `og:image` | `https://mirador.lat/og/scene_best50000.jpg` |
+| `og:image` | `https://mirador.lat/og/scene_best50000-card.jpg` |
 
-Composite card (photo + title overlay): https://mirador.lat/api/og/scene_best50000
+Raw photo (no overlay): `https://mirador.lat/og/scene_best50000.jpg`  
+Dynamic composite PNG (too large for WA): `https://mirador.lat/api/og/scene_best50000`
 
 ## Fix 4 — R2 share page (works while Vercel blocks Meta)
 

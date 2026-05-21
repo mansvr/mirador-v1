@@ -4,10 +4,22 @@ import fs from "fs";
 import path from "path";
 import type { Scene } from "@/lib/types/scene";
 
-/** Static OG photo served from public/og/<sceneId>.jpg (WhatsApp-friendly). */
+/** Static OG photo (no overlay) from public/og/<sceneId>.jpg */
 export function ogThumbnailPublicPath(sceneId: string): string | null {
   const file = path.join(process.cwd(), "public", "og", `${sceneId}.jpg`);
   return fs.existsSync(file) ? `/og/${sceneId}.jpg` : null;
+}
+
+/** Baked overlay card JPEG (≤300 KB) — preferred for WhatsApp / iMessage. Run `npm run og:bake`. */
+export function ogCardPublicPath(sceneId: string): string | null {
+  const file = path.join(process.cwd(), "public", "og", `${sceneId}-card.jpg`);
+  return fs.existsSync(file) ? `/og/${sceneId}-card.jpg` : null;
+}
+
+export function ogCardAbsoluteUrl(sceneId: string, siteUrl: string): string | null {
+  const rel = ogCardPublicPath(sceneId);
+  if (!rel) return null;
+  return `${siteUrl.replace(/\/$/, "")}${rel}`;
 }
 
 export function ogThumbnailAbsoluteUrl(
@@ -46,9 +58,21 @@ export function buildOpenGraphImages(
   siteUrl: string,
   alt: string
 ): NonNullable<import("next").Metadata["openGraph"]>["images"] {
-  const card = ogCardApiUrl(sceneId, siteUrl);
+  const baked = ogCardAbsoluteUrl(sceneId, siteUrl);
+  if (baked) {
+    return [
+      {
+        url: baked,
+        secureUrl: baked,
+        width: 1200,
+        height: 630,
+        type: "image/jpeg",
+        alt,
+      },
+    ];
+  }
 
-  // Composite PNG (photo + gradient + title) — used by /v/, /umbral/…, and share pages.
+  const card = ogCardApiUrl(sceneId, siteUrl);
   return [
     {
       url: card,
