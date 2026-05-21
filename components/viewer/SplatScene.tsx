@@ -15,6 +15,7 @@ import {
   resolveSplatBudget,
   splatMeshOptions,
 } from "@/lib/spark-viewer-config";
+import { resolveSceneRender } from "@/lib/scene-utils";
 import type { Scene, SceneRender } from "@/lib/types/scene";
 
 interface SplatSceneProps {
@@ -86,7 +87,7 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
       if (cancelled || rootRef.current) return;
 
       const root = new THREE.Group();
-      applyRootOrientation(root, scene.render);
+      applyRootOrientation(root, resolveSceneRender(scene));
 
       const splat = new SplatMesh(
         splatMeshOptions(scene, splatSrc, {
@@ -96,7 +97,7 @@ export function SplatScene({ scene, splatSrc }: SplatSceneProps) {
             }
           },
           onLoad: () => {
-            applyRootOrientation(root, scene.render);
+            applyRootOrientation(root, resolveSceneRender(scene));
             setLoadProgress(0.98);
             useViewerStore.getState().setAwaitingGpuRender(true);
           },

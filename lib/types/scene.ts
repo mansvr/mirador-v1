@@ -18,6 +18,11 @@ export interface SceneRender {
   format: SceneRenderFormat;
   /** Filename relative to the scene's R2 folder, e.g. "scene.sog" */
   url: string;
+  /**
+   * Optional lighter splat for phones/tablets (e.g. "scene-mobile.sog").
+   * Same folder as `url` on R2, or same-origin path in `public/` for local dev.
+   */
+  url_mobile?: string;
   splat_budget_desktop?: number;
   splat_budget_mobile?: number;
   /** World-space up vector, defaults to [0, 1, 0] */
@@ -34,6 +39,12 @@ export interface SceneRender {
   pitch_correction_deg?: number;
   /** Extra rotation around world +Z (degrees); rare, for rolled exports. */
   roll_correction_deg?: number;
+  /** When `url_mobile` is used; falls back to `yaw_correction_deg` if omitted. */
+  yaw_correction_deg_mobile?: number;
+  /** When `url_mobile` is used; falls back to `pitch_correction_deg` if omitted. */
+  pitch_correction_deg_mobile?: number;
+  /** When `url_mobile` is used; falls back to `roll_correction_deg` if omitted. */
+  roll_correction_deg_mobile?: number;
 }
 
 export interface SceneContextMacro {

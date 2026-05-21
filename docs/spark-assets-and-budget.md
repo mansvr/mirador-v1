@@ -28,10 +28,16 @@ In `scenes/<id>/scene.json`:
 
 ```json
 "render": {
+  "url": "scene.sog",
+  "url_mobile": "scene-mobile.sog",
   "splat_budget_desktop": 2000000,
-  "splat_budget_mobile": 750000
+  "splat_budget_mobile": 750000,
+  "pitch_correction_deg": 180,
+  "pitch_correction_deg_mobile": 0
 }
 ```
+
+Dual assets: see `docs/mobile-splat-delivery.md`. Mirador picks `url_mobile` on phone/tablet when set.
 
 Lower `_mobile` for heavy indoor scans; raise desktop only if profiling shows headroom.
 

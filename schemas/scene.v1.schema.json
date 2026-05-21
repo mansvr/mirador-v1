@@ -53,6 +53,10 @@
           "type": "string",
           "description": "Filename relative to the scene's R2 folder, e.g. 'scene.sog'."
         },
+        "url_mobile": {
+          "type": "string",
+          "description": "Optional lighter splat for mobile (e.g. 'scene-mobile.sog'). Mirador loads this on phone/tablet when set; desktop keeps url."
+        },
         "splat_budget_desktop": {
           "type": "integer",
           "minimum": 100000,
@@ -86,6 +90,18 @@
         "roll_correction_deg": {
           "type": "number",
           "description": "Extra rotation around world +Z (degrees) on the splat root; optional."
+        },
+        "yaw_correction_deg_mobile": {
+          "type": "number",
+          "description": "Yaw correction when url_mobile is loaded; defaults to yaw_correction_deg."
+        },
+        "pitch_correction_deg_mobile": {
+          "type": "number",
+          "description": "Pitch correction when url_mobile is loaded; use 0 if the mobile export is already Y-up in Mirador."
+        },
+        "roll_correction_deg_mobile": {
+          "type": "number",
+          "description": "Roll correction when url_mobile is loaded; defaults to roll_correction_deg."
         }
       }
     },

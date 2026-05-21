@@ -107,7 +107,8 @@ Folder layout in the bucket (keys = paths):
 ```text
 scene_best50000/
   scene.json
-  scene.sog          ← your trained/exported file (can rename from best-splat_50000.sog)
+  scene.sog          ← desktop / full-quality SOG
+  scene-mobile.sog   ← optional pruned export for phones (`render.url_mobile`)
   thumbnail.webp     ← optional, for future OG underlay
 ```
 
