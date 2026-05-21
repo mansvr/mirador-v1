@@ -50,3 +50,5 @@ Run `npm run dev` first, then QA: `/`, `/design`, `/home`, `/v/scene_best50000`.
 ### 3DGS performance debug
 
 On viewer routes in dev: press **H** to toggle perf HUD + lil-gui (`docs/viewer-debug.md`). Both hidden until **H**.
+
+Author mode (when `NEXT_PUBLIC_VIEWER_AUTHOR=1`): press **A** for waypoint capture panel (`docs/viewer-author.md`). Hidden until **A**.

@@ -22,8 +22,14 @@ import { HotspotPanel } from "./HotspotPanel";
 import { LoadingOverlay } from "./LoadingOverlay";
 import { ViewerDebugPanel } from "./ViewerDebugPanel";
 import { ViewerDebugSampler } from "./ViewerDebugSampler";
+import { AuthorCameraBridge } from "./AuthorCameraBridge";
+import { ViewerAuthorPanel } from "./ViewerAuthorPanel";
 import { useViewerStore } from "@/lib/store";
 import { isViewerDebugEnabled } from "@/lib/viewer-debug";
+import {
+  isViewerAuthorBuildEnabled,
+  isViewerAuthorEnabled,
+} from "@/lib/viewer-author";
 import { splatUrl } from "@/lib/scene-utils";
 import { getCanvasDpr } from "@/lib/canvas-dpr";
 import { getCanvasGlProps } from "@/lib/canvas-gl";
@@ -53,8 +59,19 @@ function useViewerDebugActive() {
   );
 }
 
+const viewerAuthorBuildEnabled = isViewerAuthorBuildEnabled();
+
+function useViewerAuthorActive() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => isViewerAuthorEnabled(),
+    () => viewerAuthorBuildEnabled
+  );
+}
+
 export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneCanvasProps) {
   const debugPerfEnabled = useViewerDebugActive();
+  const authorEnabled = useViewerAuthorActive();
   const setScene = useViewerStore((s) => s.setScene);
   const isLoaded = useViewerStore((s) => s.isLoaded);
   const dpr =
@@ -113,10 +130,12 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
           <HotspotPin key={hotspot.id} hotspot={hotspot} sceneId={scene.id} />
         ))}
 
+        {authorEnabled ? <AuthorCameraBridge /> : null}
         {debugPerfEnabled ? <ViewerDebugSampler /> : null}
       </Canvas>
 
       {/* ── DOM overlays (outside canvas, same stacking context) ──────── */}
+      {authorEnabled ? <ViewerAuthorPanel scene={scene} /> : null}
       {debugPerfEnabled ? <ViewerDebugPanel /> : null}
       <LoadingOverlay />
       <HotspotPanel scene={scene} />

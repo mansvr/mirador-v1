@@ -140,6 +140,32 @@
         }
       }
     },
+    "camera_default": {
+      "type": "object",
+      "description": "Opening camera pose (before tour navigation). Set via Mirador Author mode.",
+      "additionalProperties": false,
+      "required": ["pos", "quat"],
+      "properties": {
+        "pos": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "quat": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "fov": {
+          "type": "number",
+          "minimum": 20,
+          "maximum": 120,
+          "description": "Vertical FOV in degrees."
+        }
+      }
+    },
     "waypoints": {
       "type": "array",
       "description": "Named camera positions. The viewer animates between them.",

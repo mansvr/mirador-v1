@@ -10,7 +10,22 @@ import { useEffect, useRef, useCallback } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { useViewerStore, getActiveWaypoint } from "@/lib/store";
-import type { SceneWaypoint } from "@/lib/types/scene";
+import type { SceneCameraDefault, SceneWaypoint } from "@/lib/types/scene";
+
+function applyCameraPose(
+  camera: THREE.Camera,
+  pose: SceneCameraDefault | SceneWaypoint
+) {
+  const [px, py, pz] = pose.pos;
+  const [qx, qy, qz, qw] = pose.quat;
+  camera.position.set(px, py, pz);
+  camera.quaternion.set(qx, qy, qz, qw);
+  const fov = "fov" in pose ? pose.fov : undefined;
+  if (fov != null && camera instanceof THREE.PerspectiveCamera) {
+    camera.fov = fov;
+    camera.updateProjectionMatrix();
+  }
+}
 
 export function WaypointCamera() {
   const { camera } = useThree();
@@ -52,16 +67,25 @@ export function WaypointCamera() {
       if (wp) beginTweenToWaypoint(wp);
     });
 
-    const wp0 = getActiveWaypoint(useViewerStore.getState());
+    const state = useViewerStore.getState();
+    const opening = state.scene?.camera_default;
+    const wp0 = getActiveWaypoint(state);
+
+    if (opening) {
+      applyCameraPose(camera, opening);
+    }
+
     if (wp0) {
       prevWaypointId.current = wp0.id;
-      beginTweenToWaypoint(wp0);
+      if (!opening) {
+        beginTweenToWaypoint(wp0);
+      }
     } else {
       prevWaypointId.current = null;
     }
 
     return unsub;
-  }, [beginTweenToWaypoint]);
+  }, [beginTweenToWaypoint, camera]);
 
   useEffect(
     () => () => {

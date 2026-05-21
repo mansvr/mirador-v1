@@ -70,6 +70,13 @@ export interface SceneContext {
   meso?: SceneContextMeso[];
 }
 
+export interface SceneCameraDefault {
+  pos: [number, number, number];
+  quat: [number, number, number, number];
+  /** Vertical FOV in degrees; defaults to canvas camera (60) when omitted */
+  fov?: number;
+}
+
 export interface SceneWaypoint {
   id: string;
   label: string;
@@ -167,6 +174,8 @@ export interface Scene {
   metric?: SceneMetric;
   render: SceneRender;
   context?: SceneContext;
+  /** Opening camera before the first waypoint tween (Author / SuperSplat handoff). */
+  camera_default?: SceneCameraDefault;
   waypoints?: SceneWaypoint[];
   hotspots?: SceneHotspot[];
   portals?: ScenePortal[];

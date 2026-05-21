@@ -261,12 +261,12 @@ flowchart TB
 
 *Already have:* `WaypointCamera`, `WaypointNav`, damped `OrbitControls`.
 
-### Phase 3 — Author mode (1 week)
+### Phase 3 — Author mode (1 week) ✅ MVP
 
-- [ ] `NEXT_PUBLIC_VIEWER_AUTHOR=1` (mirror debug pattern)
-- [ ] Capture camera → `camera_default` + waypoints
-- [ ] Export / download updated `scene.json` snippet
-- [ ] Docs: prep SOP SuperSplat → Author → R2
+- [x] `NEXT_PUBLIC_VIEWER_AUTHOR=1` — hidden until **A** (see `docs/viewer-author.md`)
+- [x] Capture camera → `camera_default` + waypoints
+- [x] Export / copy JSON patch + download
+- [x] Docs: `docs/viewer-author.md`
 
 ### Phase 4 — Wayfinders in 3D (1–2 weeks)
 
