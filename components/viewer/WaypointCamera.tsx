@@ -5,7 +5,7 @@
  * Syncs OrbitControls target after each move so controls do not snap on re-enable.
  */
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useLayoutEffect, useRef, useCallback } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
@@ -119,8 +119,10 @@ export function WaypointCamera() {
   }, [applyNavTarget]);
 
   const sceneId = useViewerStore((s) => s.scene?.id ?? null);
+  const isLoaded = useViewerStore((s) => s.isLoaded);
+  const activeWaypointId = useViewerStore((s) => s.activeWaypointId);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!sceneId || sceneIdRef.current === sceneId) return;
     sceneIdRef.current = sceneId;
 
@@ -137,6 +139,14 @@ export function WaypointCamera() {
       prevWaypointId.current = null;
     }
   }, [sceneId, applyNavTarget]);
+
+  // Re-lock opening when the splat becomes visible (orbit was off during load).
+  useLayoutEffect(() => {
+    if (!isLoaded || activeWaypointId !== OPENING_WAYPOINT_ID) return;
+    const state = useViewerStore.getState();
+    if (!state.scene?.camera_default) return;
+    applyNavTarget(OPENING_WAYPOINT_ID, { tween: false });
+  }, [isLoaded, activeWaypointId, applyNavTarget]);
 
   useEffect(
     () => () => {

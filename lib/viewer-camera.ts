@@ -20,6 +20,8 @@ export function syncOrbitControlsToCamera(
   _viewDir.set(0, 0, -1).applyQuaternion(camera.quaternion);
   _target.copy(camera.position).addScaledVector(_viewDir, lookDistance);
   controls.target.copy(_target);
+  // Two updates: first reconciles spherical state from position; second settles damping.
+  controls.update();
   controls.update();
 }
 

@@ -91,6 +91,7 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
 
   const src = splatUrl(scene);
   const budget = resolveSplatBudget(scene);
+  const opening = scene.camera_default;
 
   return (
     <div
@@ -106,12 +107,22 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
       <Canvas
         dpr={dpr}
         gl={getCanvasGlProps()}
-        camera={{
-          fov: 60,
-          near: 0.01,
-          far: 1000,
-          position: [0, 1.6, 3],
-        }}
+        camera={
+          opening
+            ? {
+                fov: opening.fov ?? 60,
+                near: 0.01,
+                far: 1000,
+                position: opening.pos,
+                quaternion: opening.quat,
+              }
+            : {
+                fov: 60,
+                near: 0.01,
+                far: 1000,
+                position: [0, 1.6, 3],
+              }
+        }
         className="w-full h-full"
       >
         {/* Spark renderer must mount before SplatMesh */}

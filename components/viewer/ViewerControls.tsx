@@ -13,13 +13,20 @@ import { useViewerStore } from "@/lib/store";
 export function ViewerControls() {
   const isWalkMode = useViewerStore((s) => s.isWalkMode);
   const isCameraTweening = useViewerStore((s) => s.isCameraTweening);
+  const isLoaded = useViewerStore((s) => s.isLoaded);
+  const hasOpening = useViewerStore((s) => Boolean(s.scene?.camera_default));
 
   if (isWalkMode) return null;
+
+  // Keep orbit off until the splat is visible; otherwise damping overwrites the
+  // programmatic opening pose while the loading overlay is still up.
+  const orbitEnabled =
+    !isCameraTweening && (!hasOpening || isLoaded);
 
   return (
     <OrbitControls
       makeDefault
-      enabled={!isCameraTweening}
+      enabled={orbitEnabled}
       enableDamping
       dampingFactor={0.08}
       // Prevent going underground
