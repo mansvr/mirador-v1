@@ -1,5 +1,8 @@
 # Mirador viewer — product audit & phased gameplan
 
+> **Status (2026-05-22):** Phase 0–1 ✅ · Phase 2 core ✅ (viewer paused) · Phase 3 Author MVP ✅.  
+> Next ROI: hotspots, mobile SPZ, `.homes` polish, OG share — see §10.
+
 > Synthesises your notes (vrestate, StorySplat, Dioramix beta, SuperSplat, Marble,
 > mirador3d.com) against **current Mirador v0** (`/v`, `/e`, waypoints, hotspots,
 > `scene.json`). Companion: [3dgs-viewer-system.md](../../umbral-notes/tech-notes/3dgs-viewer-system.md) §2–6.
@@ -252,14 +255,18 @@ flowchart TB
 
 *Already have:* waypoints, hotspots schema, embed, metrics strip.
 
-### Phase 2 — Tour UX (StorySplat-lite) (1 week)
+### Phase 2 — Tour UX (StorySplat-lite) ✅ core complete (2026-05-22)
 
-- [ ] **Tour bar:** Prev / Next / Play (auto-advance waypoints)
-- [ ] **Orbit-on-leash:** OrbitControls with max distance from active waypoint; **idle → tween back** to waypoint camera
-- [ ] Remove or hide **free walk** until collision exists
-- [ ] `navigation.profile` in schema; default `apartment`
+- [x] **Tour bar:** Prev / Next chevrons (wrap) + Play/Pause autoplay loop
+- [x] **Orbit-on-leash:** fixed-pivot orbit during tour; damped drag; release → spring home
+- [x] **Autoplay:** dwell → slow tween (3× manual speed) between pills; orbit stays live during autoplay tweens
+- [x] **`camera_default` + Inicio pill** — opening view before first waypoint
+- [x] Walk mode **not exposed** in UI until collision exists (`isWalkMode` stub only)
+- [ ] `navigation.profile` in schema; default `apartment` (orbit_leash per-scene tuning exists today)
 
-*Already have:* `WaypointCamera`, `WaypointNav`, damped `OrbitControls`.
+*Shipped in:* `WaypointNav`, `WaypointCamera`, `TourOrbitLeash`, `TourAutoplay`, `lib/tour-autoplay.ts`, `lib/orbit-leash.ts`.
+
+**Viewer paused here** — curated tour nav is production-ready; spatial nav (walk, floorplan, portals) is a later phase.
 
 ### Phase 3 — Author mode (1 week) ✅ MVP
 
@@ -309,8 +316,8 @@ flowchart TB
 
 | Mode | User freedom | Clip risk | Pipeline cost | Ship when |
 |------|--------------|-----------|---------------|-----------|
-| **Tour only** | Low | Low | Low (JSON waypoints) | **Phase 2** |
-| **Orbit-on-leash** | Medium | Medium | Low | **Phase 2** |
+| **Tour only** | Low | Low | Low (JSON waypoints) | **Phase 2** ✅ |
+| **Orbit-on-leash** | Medium | Medium | Low | **Phase 2** ✅ |
 | **Floorplan** | Medium | Low (birds-eye) | Medium (extra asset) | Phase 5 houses |
 | **Walk + collision** | High | Low if mesh good | **High** | Phase 7 |
 | **Full explore fly** | Very high | **Very high** | Low | **Avoid** |
@@ -350,23 +357,45 @@ flowchart TB
 
 | Feature | Location |
 |---------|----------|
-| Waypoints + tween | `WaypointCamera`, `WaypointNav`, `scene.json` |
-| Hotspots | `HotspotPin`, `HotspotPanel` |
+| Opening view + waypoints + tween | `WaypointCamera`, `WaypointNav`, `camera_default`, `scene.json` |
+| Tour autoplay + pause/play | `TourAutoplay`, `lib/tour-autoplay.ts` |
+| Orbit-on-leash (StorySplat-lite) | `TourOrbitLeash`, `lib/orbit-leash.ts` |
+| Author mode (camera + waypoints) | `ViewerAuthorPanel`, `docs/viewer-author.md` |
+| Hotspots (basic) | `HotspotPin`, `HotspotPanel` |
 | Embed `/e/` | `app/e/[sceneId]`, CSP `frame-ancestors *` |
 | Debug overlay | `H` + `NEXT_PUBLIC_VIEWER_DEBUG` |
-| Mobile/desktop chrome | `ViewerPageShell` |
-| SPZ/SOG | `render.format`, `url_mobile` |
+| Mobile/desktop chrome | `ViewerPageShell`, HUD wordmark `BrandingBadge` |
+| SPZ/SOG + mobile asset fields | `render.format`, `url_mobile` (wire per scene) |
 | Listings grid | `/home`, `catalog.json` |
 
 ---
 
 ## 10. Suggested immediate next sprint (ordered)
 
-1. **Phase 0** — new tab from listings  
-2. **Phase 3** — Author mode (unblocks all camera/waypoint work without SuperSplat fork)  
-3. **Phase 2** — Tour bar + orbit leash (StorySplat + controlled nav)  
-4. **Phase 1** — Desktop split layout (vrestate)  
-5. Dioramix + mirador3d study notes → update `3dgs-viewer-system.md`  
+> **As of 2026-05-22:** Phases 0–1 and Phase 2 core + Phase 3 Author MVP are **done**. Viewer feature work is **paused**; highest ROI is content + distribution, not new nav modes.
+
+### Tier A — impress / convert (do first)
+
+1. **Rich hotspots** — video, PDF, room specs on 1–2 demo scenes (extend `hotspots[].payload`; Dioramix-inspired)
+2. **Mobile splat tier** — `url_mobile` / SPZ live on best scene; test WhatsApp → phone load
+3. **`.homes` polish** — real `thumbnail.webp`, listing copy, agent WhatsApp CTA
+4. **Share / OG** — baked scene cards; WhatsApp link preview (see `docs/whatsapp-og-troubleshooting.md`)
+
+### Tier B — viewer polish (when resuming GL work)
+
+5. **Phase 4** — 3D wayfinder markers at waypoints (click → same as pill)
+6. **Author: hotspot placement** — raycast + export patch
+7. **`navigation.profile`** — apartment vs house presets in schema (Phase 2 remainder)
+
+### Tier C — defer (pipeline-heavy nav)
+
+8. **Phase 5** — floorplan SVG sync (houses)
+9. **Phase 6** — portals / multi-scene
+10. **Phase 7** — walk + collision (`nav_mesh` from SuperSplat)
+
+### Study (non-blocking)
+
+- Dioramix + mirador3d competitive notes → update `3dgs-viewer-system.md`
 
 ---
 
