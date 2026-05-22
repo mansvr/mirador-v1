@@ -18,6 +18,27 @@
     "yaw_correction_deg": 0,
     "pitch_correction_deg": 0
   },
+  "camera_default": {
+    "pos": [-0.2208, 1.0452, 0.4673],
+    "quat": [-0.0122, -0.0727, -0.0009, 0.9973],
+    "fov": 60
+  },
+  "waypoints": [
+    {
+      "id": "w_vista2",
+      "label": "Vista2",
+      "pos": [-0.7022, 1.154, -0.863],
+      "quat": [-0.0024, 0.9299, -0.0062, -0.3678],
+      "transition_ms": 1200
+    },
+    {
+      "id": "w_vista3",
+      "label": "Vista3",
+      "pos": [0.5731, 1.1547, 0.0122],
+      "quat": [-0.0002, 0.9727, -0.0008, -0.232],
+      "transition_ms": 1200
+    }
+  ],
   "hotspots": [],
   "listing": {
     "neighborhood": "El Poblado",
