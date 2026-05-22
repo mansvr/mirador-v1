@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Tour navigation: clamped look-around + release tween back to active pill home.
+ * Tour navigation: fixed-pivot look-around + release tween back to active pill home.
  * Author mode uses full OrbitControls instead (see ViewerControls).
  */
 
@@ -23,8 +23,6 @@ import {
 import { useViewerStore } from "@/lib/store";
 
 const ROTATE_SPEED = 0.004;
-const WHEEL_ZOOM_STEP = 0.08;
-const WHEEL_RESET_MS = 400;
 
 function easeInOutCubic(t: number): number {
   return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
@@ -49,9 +47,8 @@ export function TourOrbitLeash() {
   const lastPointer = useRef({ x: 0, y: 0 });
   const resetting = useRef(false);
   const resetProgress = useRef(0);
-  const resetStart = useRef({ yaw: 0, pitch: 0, zoom: 1 });
+  const resetStart = useRef({ yaw: 0, pitch: 0 });
   const resetDurationMs = useRef(450);
-  const wheelResetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const tourActive =
     mode === "tour" &&
@@ -84,20 +81,11 @@ export function TourOrbitLeash() {
       resetStart.current = {
         yaw: offset.yaw,
         pitch: offset.pitch,
-        zoom: offset.zoomScale,
       };
       resetDurationMs.current = config.releaseResetMs;
       resetProgress.current = 0;
       resetting.current = true;
       setCameraTweening(true);
-    }
-
-    function scheduleWheelReset() {
-      if (wheelResetTimer.current) clearTimeout(wheelResetTimer.current);
-      wheelResetTimer.current = setTimeout(() => {
-        wheelResetTimer.current = null;
-        if (!dragging.current) beginReleaseReset();
-      }, WHEEL_RESET_MS);
     }
 
     const onPointerDown = (e: PointerEvent) => {
@@ -136,16 +124,6 @@ export function TourOrbitLeash() {
 
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
-      if (resetting.current || isCameraTweening) return;
-
-      const offset = viewerNavRegistry.offset;
-      const sign = e.deltaY > 0 ? 1 : -1;
-      offset.zoomScale += sign * WHEEL_ZOOM_STEP;
-      clampTourLeashOffset(offset, resolveOrbitLeashConfig(scene));
-
-      const home = viewerNavRegistry.home;
-      if (home) applyTourLeashToCamera(camera, orbit, home, offset);
-      scheduleWheelReset();
     };
 
     el.addEventListener("pointerdown", onPointerDown);
@@ -160,7 +138,6 @@ export function TourOrbitLeash() {
       el.removeEventListener("pointerup", onPointerUp);
       el.removeEventListener("pointercancel", onPointerUp);
       el.removeEventListener("wheel", onWheel);
-      if (wheelResetTimer.current) clearTimeout(wheelResetTimer.current);
     };
   }, [
     tourActive,
@@ -168,7 +145,6 @@ export function TourOrbitLeash() {
     camera,
     orbit,
     scene,
-    isCameraTweening,
     setCameraTweening,
   ]);
 
@@ -188,7 +164,7 @@ export function TourOrbitLeash() {
 
     offset.yaw = THREE.MathUtils.lerp(resetStart.current.yaw, 0, t);
     offset.pitch = THREE.MathUtils.lerp(resetStart.current.pitch, 0, t);
-    offset.zoomScale = THREE.MathUtils.lerp(resetStart.current.zoom, 1, t);
+    offset.zoomScale = 1;
 
     applyTourLeashToCamera(camera, orbit, home, offset);
 

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import type { Scene, SceneNavigation } from "@/lib/types/scene";
-import { navPillsForScene, syncOrbitControlsToCamera } from "@/lib/viewer-camera";
+import { navPillsForScene } from "@/lib/viewer-camera";
 import {
   clearTourLeashOffset,
   type TourHomePose,
@@ -19,21 +19,16 @@ export interface OrbitLeashConfig {
 
 const _viewDir = new THREE.Vector3();
 const _target = new THREE.Vector3();
-const _offsetQuat = new THREE.Quaternion();
-const _euler = new THREE.Euler(0, 0, 0, "YXZ");
+const _radiusVec = new THREE.Vector3();
+const _spherical = new THREE.Spherical();
 
 const DEFAULT_CONFIG: OrbitLeashConfig = {
-  maxYawRad: THREE.MathUtils.degToRad(22),
-  maxPitchRad: THREE.MathUtils.degToRad(12),
+  maxYawRad: THREE.MathUtils.degToRad(28),
+  maxPitchRad: THREE.MathUtils.degToRad(16),
   releaseResetMs: 450,
-  minZoomScale: 0.72,
-  maxZoomScale: 1.38,
+  minZoomScale: 1,
+  maxZoomScale: 1,
 };
-
-function metricScaleTrusted(scene: Scene | null): boolean {
-  const v = scene?.metric?.verified_by;
-  return v === "apriltag" || v === "lidar";
-}
 
 /** Max pairwise distance between tour stops (scene units). */
 export function tourFootprintRadius(scene: Scene | null): number {
@@ -58,42 +53,14 @@ export function tourFootprintRadius(scene: Scene | null): number {
 export function resolveOrbitLeashConfig(scene: Scene | null): OrbitLeashConfig {
   const o: SceneNavigation["orbit_leash"] | undefined =
     scene?.navigation?.orbit_leash;
-  const footprint = tourFootprintRadius(scene);
-  const trusted = metricScaleTrusted(scene);
-
-  let minZoomScale = DEFAULT_CONFIG.minZoomScale;
-  let maxZoomScale = DEFAULT_CONFIG.maxZoomScale;
-
-  if (o?.min_distance_scene != null || o?.max_distance_scene != null) {
-    const homeDist = viewerNavRegistry.home?.baseDistance ?? 2;
-    if (o.min_distance_scene != null) {
-      minZoomScale = Math.max(0.4, o.min_distance_scene / homeDist);
-    }
-    if (o.max_distance_scene != null) {
-      maxZoomScale = Math.min(2.5, o.max_distance_scene / homeDist);
-    }
-  } else if (trusted && (o?.min_distance_m != null || o?.max_distance_m != null)) {
-    const homeDist = viewerNavRegistry.home?.baseDistance ?? 2;
-    if (o.min_distance_m != null) {
-      minZoomScale = Math.max(0.4, o.min_distance_m / homeDist);
-    }
-    if (o.max_distance_m != null) {
-      maxZoomScale = Math.min(2.5, o.max_distance_m / homeDist);
-    }
-  } else {
-    const minDist = Math.max(0.08, 0.06 * footprint);
-    const maxDist = Math.max(minDist + 0.5, 0.32 * footprint);
-    const homeDist = viewerNavRegistry.home?.baseDistance ?? 2;
-    minZoomScale = Math.max(0.5, minDist / homeDist);
-    maxZoomScale = Math.min(2, maxDist / homeDist);
-  }
 
   return {
-    maxYawRad: THREE.MathUtils.degToRad(o?.max_yaw_deg ?? 22),
-    maxPitchRad: THREE.MathUtils.degToRad(o?.max_pitch_deg ?? 12),
+    maxYawRad: THREE.MathUtils.degToRad(o?.max_yaw_deg ?? 28),
+    maxPitchRad: THREE.MathUtils.degToRad(o?.max_pitch_deg ?? 16),
     releaseResetMs: o?.release_reset_ms ?? DEFAULT_CONFIG.releaseResetMs,
-    minZoomScale,
-    maxZoomScale,
+    // Tour mode: fixed radius around pivot (StorySplat-style). Zoom reserved for Author.
+    minZoomScale: 1,
+    maxZoomScale: 1,
   };
 }
 
@@ -138,14 +105,13 @@ export function clampTourLeashOffset(
     -config.maxPitchRad,
     config.maxPitchRad
   );
-  offset.zoomScale = THREE.MathUtils.clamp(
-    offset.zoomScale,
-    config.minZoomScale,
-    config.maxZoomScale
-  );
+  offset.zoomScale = 1;
 }
 
-/** Apply home + offset to camera; sync orbit target when controls exist. */
+/**
+ * Orbit on a fixed pivot (home.target) at fixed radius — rotation only, no dolly.
+ * Avoids the “rotate also zooms” artifact from re-aiming along a new view vector.
+ */
 export function applyTourLeashToCamera(
   camera: THREE.Camera,
   controls: OrbitControlsImpl | null,
@@ -154,13 +120,22 @@ export function applyTourLeashToCamera(
 ) {
   if (!(camera instanceof THREE.PerspectiveCamera)) return;
 
-  _euler.set(offset.pitch, offset.yaw, 0);
-  _offsetQuat.setFromEuler(_euler);
-  camera.quaternion.copy(home.quat).multiply(_offsetQuat);
+  _radiusVec.copy(home.pos).sub(home.target);
+  _spherical.setFromVector3(_radiusVec);
+  const radius = Math.max(0.05, _spherical.radius);
 
-  _viewDir.set(0, 0, -1).applyQuaternion(camera.quaternion).normalize();
-  const dist = home.baseDistance * offset.zoomScale;
-  camera.position.copy(home.target).addScaledVector(_viewDir, -dist);
+  _spherical.theta -= offset.yaw;
+  _spherical.phi -= offset.pitch;
+  _spherical.phi = THREE.MathUtils.clamp(
+    _spherical.phi,
+    0.08,
+    Math.PI - 0.08
+  );
+  _spherical.radius = radius;
+
+  _radiusVec.setFromSpherical(_spherical);
+  camera.position.copy(home.target).add(_radiusVec);
+  camera.lookAt(home.target);
 
   camera.fov = home.fov;
   camera.updateProjectionMatrix();

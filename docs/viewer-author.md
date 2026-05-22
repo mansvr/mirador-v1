@@ -36,7 +36,7 @@ Export is a **patch** only (`camera_default` + `waypoints`), not the full scene 
 
 While Author is enabled, draft waypoints sync to the live viewer (pills + tweens) so you can test before export.
 
-**Author = free orbit** (no snap-back) so you can frame captures. Closing the panel (**A**) tweens back to the active pill. Production tour mode uses **orbit leash**: limited drag + scroll zoom, release → tween home (~450 ms). Optional tuning in `scene.json` → `navigation.orbit_leash` (degrees / ms; zoom uses scene-relative units unless `metric.verified_by` is `apriltag` or `lidar`).
+**Author = free orbit** (no snap-back) so you can frame captures. Closing the panel (**A**) tweens back to the active pill. Production tour mode uses **orbit leash**: fixed-pivot rotation only (no scroll zoom), release → tween home (~450 ms). Optional tuning in `scene.json` → `navigation.orbit_leash` (`max_yaw_deg`, `max_pitch_deg`, `release_reset_ms`).
 
 ## Fresh start (no legacy waypoints)
 
