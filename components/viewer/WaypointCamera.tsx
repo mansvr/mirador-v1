@@ -11,7 +11,10 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { useViewerStore } from "@/lib/store";
 import { useNavigationMode } from "@/lib/navigation-mode";
-import { emitNavTweenComplete } from "@/lib/tour-autoplay";
+import {
+  emitNavTweenComplete,
+  resolveNavTransitionMs,
+} from "@/lib/tour-autoplay";
 import {
   captureTourHomeFromCamera,
   clearTourLeashState,
@@ -93,7 +96,10 @@ export function WaypointCamera() {
       const [qx, qy, qz, qw] = target.quat;
       targetPos.current.set(tx, ty, tz);
       targetQuat.current.set(qx, qy, qz, qw);
-      transitionMs.current = target.transition_ms ?? 1200;
+      transitionMs.current = resolveNavTransitionMs(
+        target.transition_ms,
+        useViewerStore.getState().isAutoplayNavTween
+      );
 
       animationProgress.current = 0;
       isAnimating.current = true;

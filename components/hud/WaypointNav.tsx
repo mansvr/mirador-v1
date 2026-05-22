@@ -28,6 +28,14 @@ const chromeBtnClass = cn(
   "disabled:pointer-events-none disabled:opacity-35"
 );
 
+/** Subdued — visible on glass but quieter than chevrons. */
+const autoplayBtnClass = cn(
+  chromeBtnClass,
+  "border-white/8 text-white/45",
+  "hover:bg-black/50 hover:text-white/60",
+  "focus-visible:ring-white/25"
+);
+
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!target || !(target instanceof HTMLElement)) return false;
   const tag = target.tagName;
@@ -103,7 +111,7 @@ export function WaypointNav({ scene }: WaypointNavProps) {
       {showAutoplay ? (
         <button
           type="button"
-          className={cn(chromeBtnClass, "pointer-events-auto")}
+          className={cn(autoplayBtnClass, "pointer-events-auto")}
           aria-label={autoplayActive ? "Pausar recorrido" : "Reproducir recorrido"}
           title={autoplayActive ? "Pausar" : "Reproducir"}
           onClick={toggleAutoplay}

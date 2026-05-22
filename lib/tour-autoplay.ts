@@ -3,6 +3,16 @@ import { navPillsForScene, navStepIndex, navStepSibling } from "@/lib/viewer-cam
 
 export const TOUR_AUTOPLAY_INITIAL_DELAY_MS = 2600;
 export const TOUR_AUTOPLAY_DWELL_MS = 2600;
+/** Autoplay nav tweens only — manual pill/chevron speed unchanged. */
+export const TOUR_AUTOPLAY_TWEEN_MULTIPLIER = 3;
+
+export function resolveNavTransitionMs(
+  baseMs: number | undefined,
+  isAutoplay: boolean
+): number {
+  const base = baseMs ?? 1200;
+  return isAutoplay ? base * TOUR_AUTOPLAY_TWEEN_MULTIPLIER : base;
+}
 
 export const NAV_TWEEN_COMPLETE_EVENT = "mirador-nav-tween-complete";
 
