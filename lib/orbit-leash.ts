@@ -15,6 +15,10 @@ export interface OrbitLeashConfig {
   releaseResetMs: number;
   minZoomScale: number;
   maxZoomScale: number;
+  /** `MathUtils.damp` lambda while dragging (higher = snappier). */
+  dragDamping: number;
+  /** `MathUtils.damp` lambda when springing back to home (lower = softer). */
+  releaseDamping: number;
 }
 
 const _viewDir = new THREE.Vector3();
@@ -25,9 +29,11 @@ const _spherical = new THREE.Spherical();
 const DEFAULT_CONFIG: OrbitLeashConfig = {
   maxYawRad: THREE.MathUtils.degToRad(28),
   maxPitchRad: THREE.MathUtils.degToRad(16),
-  releaseResetMs: 450,
+  releaseResetMs: 600,
   minZoomScale: 1,
   maxZoomScale: 1,
+  dragDamping: 10,
+  releaseDamping: 4.2,
 };
 
 /** Max pairwise distance between tour stops (scene units). */
@@ -58,10 +64,29 @@ export function resolveOrbitLeashConfig(scene: Scene | null): OrbitLeashConfig {
     maxYawRad: THREE.MathUtils.degToRad(o?.max_yaw_deg ?? 28),
     maxPitchRad: THREE.MathUtils.degToRad(o?.max_pitch_deg ?? 16),
     releaseResetMs: o?.release_reset_ms ?? DEFAULT_CONFIG.releaseResetMs,
-    // Tour mode: fixed radius around pivot (StorySplat-style). Zoom reserved for Author.
     minZoomScale: 1,
     maxZoomScale: 1,
+    dragDamping: DEFAULT_CONFIG.dragDamping,
+    releaseDamping: DEFAULT_CONFIG.releaseDamping,
   };
+}
+
+/** Exponential damp (Three.js-style); returns true when settled at dest. */
+export function dampTourLeashOffset(
+  smooth: TourLeashOffset,
+  destYaw: number,
+  destPitch: number,
+  lambda: number,
+  delta: number,
+  epsilon = 0.001
+): boolean {
+  smooth.yaw = THREE.MathUtils.damp(smooth.yaw, destYaw, lambda, delta);
+  smooth.pitch = THREE.MathUtils.damp(smooth.pitch, destPitch, lambda, delta);
+  smooth.zoomScale = 1;
+  return (
+    Math.abs(smooth.yaw - destYaw) < epsilon &&
+    Math.abs(smooth.pitch - destPitch) < epsilon
+  );
 }
 
 export function captureTourHomeFromCamera(

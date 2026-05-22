@@ -17,13 +17,19 @@ export interface TourLeashOffset {
 
 export const viewerNavRegistry = {
   home: null as TourHomePose | null,
+  /** Pointer target (clamped). */
   offset: { yaw: 0, pitch: 0, zoomScale: 1 } as TourLeashOffset,
+  /** Damped pose applied to the camera each frame. */
+  offsetSmooth: { yaw: 0, pitch: 0, zoomScale: 1 } as TourLeashOffset,
 };
 
 export function clearTourLeashOffset() {
   viewerNavRegistry.offset.yaw = 0;
   viewerNavRegistry.offset.pitch = 0;
   viewerNavRegistry.offset.zoomScale = 1;
+  viewerNavRegistry.offsetSmooth.yaw = 0;
+  viewerNavRegistry.offsetSmooth.pitch = 0;
+  viewerNavRegistry.offsetSmooth.zoomScale = 1;
 }
 
 export function setTourHomePose(home: TourHomePose | null) {
