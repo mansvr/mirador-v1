@@ -16,6 +16,7 @@ import { SparkInit } from "./SparkInit";
 import { SplatScene } from "./SplatScene";
 import { SplatLoadVerify } from "./SplatLoadVerify";
 import { ViewerControls } from "./ViewerControls";
+import { TourOrbitLeash } from "./TourOrbitLeash";
 import { WaypointCamera } from "./WaypointCamera";
 import { HotspotPin } from "./HotspotPin";
 import { HotspotPanel } from "./HotspotPanel";
@@ -134,6 +135,7 @@ export function SceneCanvas({ scene, heightClass = "size-full min-h-0" }: SceneC
 
         {/* Camera controls */}
         <ViewerControls />
+        <TourOrbitLeash />
         <WaypointCamera />
 
         {/* Hotspot pins (inside canvas, drei Html for depth) */}

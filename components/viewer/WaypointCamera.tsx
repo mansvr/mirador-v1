@@ -10,11 +10,17 @@ import { useFrame, useThree } from "@react-three/fiber";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { useViewerStore } from "@/lib/store";
+import { useNavigationMode } from "@/lib/navigation-mode";
+import {
+  captureTourHomeFromCamera,
+  clearTourLeashState,
+} from "@/lib/orbit-leash";
 import {
   OPENING_WAYPOINT_ID,
   resolveCameraNavTarget,
   syncOrbitControlsToCamera,
 } from "@/lib/viewer-camera";
+import { setTourHomePose } from "@/lib/viewer-navigation-registry";
 import type { SceneCameraDefault, SceneWaypoint } from "@/lib/types/scene";
 
 type NavTarget = SceneWaypoint & Partial<SceneCameraDefault>;
@@ -36,6 +42,8 @@ function applyCameraPose(
   if (controls) {
     syncOrbitControlsToCamera(controls, camera);
   }
+  const home = captureTourHomeFromCamera(camera, controls);
+  if (home) setTourHomePose(home);
 }
 
 export function WaypointCamera() {
@@ -45,6 +53,8 @@ export function WaypointCamera() {
       ? (controls as OrbitControlsImpl)
       : null;
   const setCameraTweening = useViewerStore((s) => s.setCameraTweening);
+  const navMode = useNavigationMode();
+  const prevNavMode = useRef(navMode);
 
   const targetPos = useRef(new THREE.Vector3());
   const targetQuat = useRef(new THREE.Quaternion());
@@ -91,6 +101,7 @@ export function WaypointCamera() {
       if (!target) return;
 
       prevWaypointId.current = id;
+      clearTourLeashState();
       if (opts?.tween === false) {
         isAnimating.current = false;
         setCameraTweening(false);
@@ -155,9 +166,19 @@ export function WaypointCamera() {
     applyNavTarget(OPENING_WAYPOINT_ID, { tween: false });
   }, [isLoaded, applyNavTarget]);
 
+  useEffect(() => {
+    if (prevNavMode.current === "author" && navMode === "tour") {
+      clearTourLeashState();
+      const id = useViewerStore.getState().activeWaypointId;
+      if (id) applyNavTarget(id, { tween: true });
+    }
+    prevNavMode.current = navMode;
+  }, [navMode, applyNavTarget]);
+
   useEffect(
     () => () => {
       useViewerStore.getState().setCameraTweening(false);
+      setTourHomePose(null);
     },
     []
   );

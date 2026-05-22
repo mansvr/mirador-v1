@@ -36,6 +36,8 @@ Export is a **patch** only (`camera_default` + `waypoints`), not the full scene 
 
 While Author is enabled, draft waypoints sync to the live viewer (pills + tweens) so you can test before export.
 
+**Author = free orbit** (no snap-back) so you can frame captures. Closing the panel (**A**) tweens back to the active pill. Production tour mode uses **orbit leash**: limited drag + scroll zoom, release → tween home (~450 ms). Optional tuning in `scene.json` → `navigation.orbit_leash` (degrees / ms; zoom uses scene-relative units unless `metric.verified_by` is `apriltag` or `lidar`).
+
 ## Fresh start (no legacy waypoints)
 
 Listing demos ship **without** `waypoints` in `scenes/*/scene.json` until you author them. The viewer still loads the splat; only the tour pills / tweens are absent until you paste exported JSON and upload `scene.json` to R2.

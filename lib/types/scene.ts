@@ -166,6 +166,20 @@ export interface SceneAttribution {
   converter?: string;
 }
 
+export interface SceneOrbitLeash {
+  max_yaw_deg?: number;
+  max_pitch_deg?: number;
+  release_reset_ms?: number;
+  max_distance_m?: number;
+  min_distance_m?: number;
+  max_distance_scene?: number;
+  min_distance_scene?: number;
+}
+
+export interface SceneNavigation {
+  orbit_leash?: SceneOrbitLeash;
+}
+
 /** Root scene.json structure */
 export interface Scene {
   schema_version: "1";
@@ -177,6 +191,7 @@ export interface Scene {
   /** Opening camera before the first waypoint tween (Author / SuperSplat handoff). */
   camera_default?: SceneCameraDefault;
   waypoints?: SceneWaypoint[];
+  navigation?: SceneNavigation;
   hotspots?: SceneHotspot[];
   portals?: ScenePortal[];
   listing?: SceneListing;
