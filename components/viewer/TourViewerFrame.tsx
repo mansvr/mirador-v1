@@ -2,7 +2,6 @@ import { SceneCanvas } from "@/components/viewer/SceneCanvas";
 import { ViewerViewport } from "@/components/viewer/ViewerViewport";
 import { WaypointNav } from "@/components/hud/WaypointNav";
 import { BrandingBadge } from "@/components/hud/BrandingBadge";
-import { MetricBadge } from "@/components/hud/MetricBadge";
 import type { Scene } from "@/lib/types/scene";
 
 interface TourViewerFrameProps {
@@ -20,7 +19,6 @@ export function TourViewerFrame({ scene }: TourViewerFrameProps) {
       className="aspect-[16/10] w-full min-w-0 max-w-full min-h-[200px] rounded-xl border border-mirador-border shadow-sm sm:min-h-[240px] max-h-[min(72dvh,720px)]"
     >
       <SceneCanvas scene={scene} heightClass="absolute inset-0 size-full min-h-0" />
-      <MetricBadge metric={scene.metric} />
       <WaypointNav scene={scene} />
       <BrandingBadge branding={scene.branding} />
     </ViewerViewport>

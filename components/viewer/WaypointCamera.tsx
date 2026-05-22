@@ -55,6 +55,7 @@ export function WaypointCamera() {
   const transitionMs = useRef(1200);
   const prevWaypointId = useRef<string | null>(null);
   const sceneIdRef = useRef<string | null>(null);
+  const openingLockedOnLoadRef = useRef(false);
 
   const finishTween = useCallback(
     (pose: NavTarget) => {
@@ -106,13 +107,13 @@ export function WaypointCamera() {
       const id = state.activeWaypointId;
       if (id === prevWaypointId.current) return;
 
-      const sceneChanged = state.scene?.id !== prev.scene?.id;
-      const openingLoad =
-        sceneChanged &&
-        id === OPENING_WAYPOINT_ID &&
-        Boolean(state.scene?.camera_default);
+      // Initial scene bootstrap is handled by layout effects (instant opening).
+      if (state.scene?.id !== prev.scene?.id) {
+        prevWaypointId.current = id;
+        return;
+      }
 
-      applyNavTarget(id, { tween: openingLoad ? false : true });
+      applyNavTarget(id, { tween: true });
     });
 
     return unsub;
@@ -120,11 +121,11 @@ export function WaypointCamera() {
 
   const sceneId = useViewerStore((s) => s.scene?.id ?? null);
   const isLoaded = useViewerStore((s) => s.isLoaded);
-  const activeWaypointId = useViewerStore((s) => s.activeWaypointId);
 
   useLayoutEffect(() => {
     if (!sceneId || sceneIdRef.current === sceneId) return;
     sceneIdRef.current = sceneId;
+    openingLockedOnLoadRef.current = false;
 
     const state = useViewerStore.getState();
     if (state.scene?.camera_default) {
@@ -140,13 +141,19 @@ export function WaypointCamera() {
     }
   }, [sceneId, applyNavTarget]);
 
-  // Re-lock opening when the splat becomes visible (orbit was off during load).
+  // Once per scene: lock opening when splat is visible (orbit was off during load).
   useLayoutEffect(() => {
-    if (!isLoaded || activeWaypointId !== OPENING_WAYPOINT_ID) return;
+    if (!isLoaded || openingLockedOnLoadRef.current) return;
     const state = useViewerStore.getState();
-    if (!state.scene?.camera_default) return;
+    if (
+      state.activeWaypointId !== OPENING_WAYPOINT_ID ||
+      !state.scene?.camera_default
+    ) {
+      return;
+    }
+    openingLockedOnLoadRef.current = true;
     applyNavTarget(OPENING_WAYPOINT_ID, { tween: false });
-  }, [isLoaded, activeWaypointId, applyNavTarget]);
+  }, [isLoaded, applyNavTarget]);
 
   useEffect(
     () => () => {

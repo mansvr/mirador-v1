@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { useViewerStore } from "@/lib/store";
 import { trackWaypointReached } from "@/lib/analytics";
 import { sceneAssetUrl } from "@/lib/scene-utils";
-import { navPillsForScene, OPENING_WAYPOINT_ID } from "@/lib/viewer-camera";
+import { navPillsForScene } from "@/lib/viewer-camera";
 import type { Scene } from "@/lib/types/scene";
 import type { SceneWaypoint } from "@/lib/types/scene";
 
@@ -34,7 +34,6 @@ export function WaypointNav({ scene }: WaypointNavProps) {
       >
         {pills.map((wp) => {
           const isActive = wp.id === activeWaypointId;
-          const isOpening = wp.id === OPENING_WAYPOINT_ID;
           return (
             <button
               key={wp.id}
@@ -47,7 +46,6 @@ export function WaypointNav({ scene }: WaypointNavProps) {
                 isActive
                   ? "bg-[var(--mirador-primary,#5e5956)] text-white"
                   : "text-white/70 hover:bg-white/10 hover:text-white",
-                isOpening && !isActive ? "border border-white/20" : "",
               ].join(" ")}
             >
               {wp.thumbnail_url && (

@@ -3,7 +3,6 @@ import { SceneCanvas } from "@/components/viewer/SceneCanvas";
 import { ViewerViewport } from "@/components/viewer/ViewerViewport";
 import { WaypointNav } from "@/components/hud/WaypointNav";
 import { BrandingBadge } from "@/components/hud/BrandingBadge";
-import { MetricBadge } from "@/components/hud/MetricBadge";
 
 interface Props {
   params: Promise<{ sceneId: string }>;
@@ -23,7 +22,6 @@ export default async function EmbedPage({ params }: Props) {
       className="h-dvh w-full min-h-0"
     >
       <SceneCanvas scene={scene} heightClass="absolute inset-0 size-full min-h-0" />
-      <MetricBadge metric={scene.metric} />
       <WaypointNav scene={scene} />
       <BrandingBadge branding={scene.branding} />
     </ViewerViewport>
