@@ -33,7 +33,7 @@ const DEFAULT_CONFIG: OrbitLeashConfig = {
   minZoomScale: 1,
   maxZoomScale: 1,
   dragDamping: 10,
-  releaseDamping: 4.2,
+  releaseDamping: 5.5,
 };
 
 /** Max pairwise distance between tour stops (scene units). */

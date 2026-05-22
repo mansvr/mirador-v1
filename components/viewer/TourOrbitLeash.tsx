@@ -47,11 +47,13 @@ export function TourOrbitLeash() {
   const lastPointer = useRef({ x: 0, y: 0 });
   const leashConfig = useRef(resolveOrbitLeashConfig(scene));
 
-  const tourActive =
+  const tourReady =
     mode === "tour" &&
-    !isCameraTweening &&
     (!hasOpening || isLoaded) &&
     viewerNavRegistry.home != null;
+
+  /** Pointer handlers off during pill tweens; leash frame loop stays on for release spring. */
+  const pointerActive = tourReady && !isCameraTweening;
 
   useEffect(() => {
     leashConfig.current = resolveOrbitLeashConfig(scene);
@@ -72,27 +74,30 @@ export function TourOrbitLeash() {
   }, [mode]);
 
   useEffect(() => {
-    if (!tourActive) return;
+    if (!pointerActive) return;
 
     const el = gl.domElement;
     const config = leashConfig.current;
 
     function beginReleaseReset() {
+      if (resetting.current) return;
       const smooth = viewerNavRegistry.offsetSmooth;
-      if (isTourLeashAtHome(smooth, HOME_EPSILON) || resetting.current) return;
+      const target = viewerNavRegistry.offset;
+      if (
+        isTourLeashAtHome(smooth, HOME_EPSILON) &&
+        isTourLeashAtHome(target, HOME_EPSILON)
+      ) {
+        return;
+      }
       viewerNavRegistry.offset.yaw = 0;
       viewerNavRegistry.offset.pitch = 0;
-      _dest.yaw = 0;
-      _dest.pitch = 0;
       resetting.current = true;
-      setCameraTweening(true);
     }
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
       dragging.current = true;
       resetting.current = false;
-      setCameraTweening(false);
       lastPointer.current = { x: e.clientX, y: e.clientY };
       el.setPointerCapture(e.pointerId);
     };
@@ -137,12 +142,13 @@ export function TourOrbitLeash() {
       el.removeEventListener("pointercancel", onPointerUp);
       el.removeEventListener("wheel", onWheel);
     };
-  }, [tourActive, gl, scene, setCameraTweening]);
+  }, [pointerActive, gl, scene]);
 
   useFrame((_, delta) => {
-    if (!tourActive) return;
+    if (!tourReady) return;
     const home = viewerNavRegistry.home;
     if (!home) return;
+    if (isCameraTweening && !resetting.current) return;
 
     const config = leashConfig.current;
     const target = viewerNavRegistry.offset;
@@ -183,7 +189,6 @@ export function TourOrbitLeash() {
       clearTourLeashOffset();
       applyTourLeashToCamera(camera, orbit, home, viewerNavRegistry.offsetSmooth);
       resetting.current = false;
-      setCameraTweening(false);
     }
   });
 
