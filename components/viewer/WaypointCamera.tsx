@@ -1,34 +1,49 @@
 "use client";
 
 /**
- * WaypointCamera — animates the camera to the active waypoint's pos/quat.
- * Ease-in-out cubic interpolation; only reacts when `activeWaypointId` changes.
- * Disables OrbitControls while tweening so the two don't fight.
+ * WaypointCamera — animates the camera to nav targets (opening + waypoints).
+ * Syncs OrbitControls target after each move so controls do not snap on re-enable.
  */
 
 import { useEffect, useRef, useCallback } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
+import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
-import { useViewerStore, getActiveWaypoint } from "@/lib/store";
+import { useViewerStore } from "@/lib/store";
+import {
+  OPENING_WAYPOINT_ID,
+  resolveCameraNavTarget,
+  syncOrbitControlsToCamera,
+} from "@/lib/viewer-camera";
 import type { SceneCameraDefault, SceneWaypoint } from "@/lib/types/scene";
+
+type NavTarget = SceneWaypoint & Partial<SceneCameraDefault>;
 
 function applyCameraPose(
   camera: THREE.Camera,
-  pose: SceneCameraDefault | SceneWaypoint
+  controls: OrbitControlsImpl | null,
+  pose: NavTarget
 ) {
   const [px, py, pz] = pose.pos;
   const [qx, qy, qz, qw] = pose.quat;
   camera.position.set(px, py, pz);
   camera.quaternion.set(qx, qy, qz, qw);
-  const fov = "fov" in pose ? pose.fov : undefined;
+  const fov = pose.fov;
   if (fov != null && camera instanceof THREE.PerspectiveCamera) {
     camera.fov = fov;
     camera.updateProjectionMatrix();
   }
+  if (controls) {
+    syncOrbitControlsToCamera(controls, camera);
+  }
 }
 
 export function WaypointCamera() {
-  const { camera } = useThree();
+  const { camera, controls } = useThree();
+  const orbit =
+    controls && "target" in controls
+      ? (controls as OrbitControlsImpl)
+      : null;
   const setCameraTweening = useViewerStore((s) => s.setCameraTweening);
 
   const targetPos = useRef(new THREE.Vector3());
@@ -39,17 +54,27 @@ export function WaypointCamera() {
   const startQuat = useRef(new THREE.Quaternion());
   const transitionMs = useRef(1200);
   const prevWaypointId = useRef<string | null>(null);
+  const sceneIdRef = useRef<string | null>(null);
 
-  const beginTweenToWaypoint = useCallback(
-    (wp: SceneWaypoint) => {
+  const finishTween = useCallback(
+    (pose: NavTarget) => {
+      isAnimating.current = false;
+      setCameraTweening(false);
+      applyCameraPose(camera, orbit, pose);
+    },
+    [camera, orbit, setCameraTweening]
+  );
+
+  const beginTweenToTarget = useCallback(
+    (target: NavTarget) => {
       startPos.current.copy(camera.position);
       startQuat.current.copy(camera.quaternion);
 
-      const [tx, ty, tz] = wp.pos;
-      const [qx, qy, qz, qw] = wp.quat;
+      const [tx, ty, tz] = target.pos;
+      const [qx, qy, qz, qw] = target.quat;
       targetPos.current.set(tx, ty, tz);
       targetQuat.current.set(qx, qy, qz, qw);
-      transitionMs.current = wp.transition_ms ?? 1200;
+      transitionMs.current = target.transition_ms ?? 1200;
 
       animationProgress.current = 0;
       isAnimating.current = true;
@@ -58,31 +83,60 @@ export function WaypointCamera() {
     [camera, setCameraTweening]
   );
 
+  const applyNavTarget = useCallback(
+    (id: string | null, opts?: { tween?: boolean }) => {
+      const state = useViewerStore.getState();
+      const target = resolveCameraNavTarget(state.scene, id);
+      if (!target) return;
+
+      prevWaypointId.current = id;
+      if (opts?.tween === false) {
+        isAnimating.current = false;
+        setCameraTweening(false);
+        applyCameraPose(camera, orbit, target);
+        return;
+      }
+      beginTweenToTarget(target);
+    },
+    [beginTweenToTarget, camera, orbit, setCameraTweening]
+  );
+
   useEffect(() => {
-    const unsub = useViewerStore.subscribe((state) => {
+    const unsub = useViewerStore.subscribe((state, prev) => {
       const id = state.activeWaypointId;
       if (id === prevWaypointId.current) return;
-      prevWaypointId.current = id;
-      const wp = getActiveWaypoint(state);
-      if (wp) beginTweenToWaypoint(wp);
+
+      const sceneChanged = state.scene?.id !== prev.scene?.id;
+      const openingLoad =
+        sceneChanged &&
+        id === OPENING_WAYPOINT_ID &&
+        Boolean(state.scene?.camera_default);
+
+      applyNavTarget(id, { tween: openingLoad ? false : true });
     });
 
-    const state = useViewerStore.getState();
-    const opening = state.scene?.camera_default;
-    const wp0 = getActiveWaypoint(state);
+    return unsub;
+  }, [applyNavTarget]);
 
-    if (opening) {
-      applyCameraPose(camera, opening);
-      prevWaypointId.current = null;
-    } else if (wp0) {
-      prevWaypointId.current = wp0.id;
-      beginTweenToWaypoint(wp0);
+  const sceneId = useViewerStore((s) => s.scene?.id ?? null);
+
+  useEffect(() => {
+    if (!sceneId || sceneIdRef.current === sceneId) return;
+    sceneIdRef.current = sceneId;
+
+    const state = useViewerStore.getState();
+    if (state.scene?.camera_default) {
+      applyNavTarget(OPENING_WAYPOINT_ID, { tween: false });
+      return;
+    }
+
+    const firstId = state.scene?.waypoints?.[0]?.id ?? null;
+    if (firstId) {
+      applyNavTarget(firstId, { tween: true });
     } else {
       prevWaypointId.current = null;
     }
-
-    return unsub;
-  }, [beginTweenToWaypoint, camera]);
+  }, [sceneId, applyNavTarget]);
 
   useEffect(
     () => () => {
@@ -108,10 +162,28 @@ export function WaypointCamera() {
       targetQuat.current,
       t
     );
+    if (orbit) {
+      syncOrbitControlsToCamera(orbit, camera);
+    }
 
     if (animationProgress.current >= 1) {
-      isAnimating.current = false;
-      setCameraTweening(false);
+      const id = prevWaypointId.current;
+      const pose = resolveCameraNavTarget(
+        useViewerStore.getState().scene,
+        id
+      );
+      if (pose) finishTween(pose);
+      else finishTween({
+        id: "snap",
+        label: "",
+        pos: [camera.position.x, camera.position.y, camera.position.z],
+        quat: [
+          camera.quaternion.x,
+          camera.quaternion.y,
+          camera.quaternion.z,
+          camera.quaternion.w,
+        ],
+      });
     }
   });
 

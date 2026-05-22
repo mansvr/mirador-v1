@@ -8,6 +8,7 @@ import {
   isViewerAuthorBuildEnabled,
   isViewerAuthorEnabled,
 } from "@/lib/viewer-author";
+import { OPENING_WAYPOINT_ID } from "@/lib/viewer-camera";
 import type { Scene } from "@/lib/types/scene";
 
 function useAuthorActive() {
@@ -137,7 +138,10 @@ export function ViewerAuthorPanel({ scene }: ViewerAuthorPanelProps) {
         </button>
         <button
           type="button"
-          disabled={!selectedWaypointId}
+          disabled={
+            !selectedWaypointId ||
+            selectedWaypointId === OPENING_WAYPOINT_ID
+          }
           className="rounded-lg bg-white/10 px-2.5 py-2 text-left hover:bg-white/15 disabled:opacity-40"
           onClick={() => {
             const cam = captureOrAlert();
@@ -160,7 +164,17 @@ export function ViewerAuthorPanel({ scene }: ViewerAuthorPanelProps) {
       </label>
 
       {cameraDefault ? (
-        <p className="mt-2 text-[10px] text-emerald-400/90">✓ Opening view set</p>
+        <button
+          type="button"
+          onClick={() => selectWaypoint(OPENING_WAYPOINT_ID)}
+          className={`mt-2 w-full rounded-md px-2 py-1.5 text-left text-[11px] ${
+            selectedWaypointId === OPENING_WAYPOINT_ID
+              ? "bg-[var(--mirador-primary,#5e5956)] text-white"
+              : "bg-white/5 text-emerald-400/90 hover:bg-white/10"
+          }`}
+        >
+          ✓ Inicio (opening view)
+        </button>
       ) : null}
 
       <ul className="mt-3 max-h-32 space-y-1 overflow-y-auto">

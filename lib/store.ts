@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { OPENING_WAYPOINT_ID, resolveCameraNavTarget } from "@/lib/viewer-camera";
 import type { Scene, SceneWaypoint } from "@/lib/types/scene";
 
 interface ViewerState {
@@ -44,7 +45,9 @@ export const useViewerStore = create<ViewerState>((set) => ({
       const wps = scene.waypoints ?? [];
       const stillValid =
         s.activeWaypointId != null &&
-        wps.some((w) => w.id === s.activeWaypointId);
+        (s.activeWaypointId === OPENING_WAYPOINT_ID
+          ? Boolean(scene.camera_default)
+          : wps.some((w) => w.id === s.activeWaypointId));
       const sameScene = s.scene?.id === scene.id;
 
       // With camera_default, stay on opening view until user picks a pill.
@@ -52,7 +55,7 @@ export const useViewerStore = create<ViewerState>((set) => ({
       if (stillValid) {
         activeWaypointId = s.activeWaypointId;
       } else if (scene.camera_default) {
-        activeWaypointId = null;
+        activeWaypointId = OPENING_WAYPOINT_ID;
       } else {
         activeWaypointId = wps[0]?.id ?? null;
       }
@@ -95,10 +98,8 @@ export const useViewerStore = create<ViewerState>((set) => ({
   setAwaitingGpuRender: (awaitingGpuRender) => set({ awaitingGpuRender }),
 }));
 
-/** Helper: get the active SceneWaypoint object from the store. */
+/** Helper: get the active nav target (opening pill or waypoint). */
 export function getActiveWaypoint(state: ViewerState): SceneWaypoint | null {
-  if (!state.scene || !state.activeWaypointId) return null;
-  return (
-    state.scene.waypoints?.find((w) => w.id === state.activeWaypointId) ?? null
-  );
+  const target = resolveCameraNavTarget(state.scene, state.activeWaypointId);
+  return target as SceneWaypoint | null;
 }

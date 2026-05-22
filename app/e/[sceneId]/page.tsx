@@ -24,7 +24,7 @@ export default async function EmbedPage({ params }: Props) {
     >
       <SceneCanvas scene={scene} heightClass="absolute inset-0 size-full min-h-0" />
       <MetricBadge metric={scene.metric} />
-      <WaypointNav waypoints={scene.waypoints ?? []} sceneId={scene.id} />
+      <WaypointNav scene={scene} />
       <BrandingBadge branding={scene.branding} />
     </ViewerViewport>
   );

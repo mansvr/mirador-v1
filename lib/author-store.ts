@@ -5,6 +5,7 @@ import type {
   SceneCameraDefault,
   SceneWaypoint,
 } from "@/lib/types/scene";
+import { OPENING_WAYPOINT_ID } from "@/lib/viewer-camera";
 import { useViewerStore } from "@/lib/store";
 
 interface AuthorState {
@@ -70,7 +71,9 @@ export const useAuthorStore = create<AuthorState>((set, get) => ({
       baseScene: scene,
       waypoints,
       cameraDefault,
-      selectedWaypointId: waypoints[0]?.id ?? null,
+      selectedWaypointId: cameraDefault
+        ? OPENING_WAYPOINT_ID
+        : waypoints[0]?.id ?? null,
       newLabel: "",
       copied: false,
     });
@@ -87,8 +90,9 @@ export const useAuthorStore = create<AuthorState>((set, get) => ({
   setCameraDefault: (cam) => {
     const { baseScene } = get();
     if (!baseScene) return;
-    set({ cameraDefault: cam });
+    set({ cameraDefault: cam, selectedWaypointId: OPENING_WAYPOINT_ID });
     applyPreview(baseScene, { ...get(), cameraDefault: cam });
+    useViewerStore.getState().setActiveWaypoint(OPENING_WAYPOINT_ID);
   },
 
   addWaypointFromCamera: (cam) => {
@@ -121,7 +125,13 @@ export const useAuthorStore = create<AuthorState>((set, get) => ({
 
   updateSelectedFromCamera: (cam) => {
     const { baseScene, waypoints, selectedWaypointId } = get();
-    if (!baseScene || !selectedWaypointId) return;
+    if (
+      !baseScene ||
+      !selectedWaypointId ||
+      selectedWaypointId === OPENING_WAYPOINT_ID
+    ) {
+      return;
+    }
     const next = waypoints.map((w) =>
       w.id === selectedWaypointId
         ? {
