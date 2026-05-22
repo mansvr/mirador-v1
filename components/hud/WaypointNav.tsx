@@ -43,8 +43,6 @@ export function WaypointNav({ scene }: WaypointNavProps) {
 
   const pills = useMemo(() => navPillsForScene(scene), [scene]);
   const activeIndex = navStepIndex(pills, activeWaypointId);
-  const prevWp = navStepSibling(pills, activeWaypointId, -1);
-  const nextWp = navStepSibling(pills, activeWaypointId, 1);
   const canStep = pills.length > 1;
 
   const goTo = useCallback(
@@ -88,10 +86,13 @@ export function WaypointNav({ scene }: WaypointNavProps) {
         <button
           type="button"
           className={stepBtnClass}
-          disabled={!canStep || !prevWp}
+          disabled={!canStep}
           aria-label="Vista anterior"
           title="Anterior (←)"
-          onClick={() => prevWp && goTo(prevWp)}
+          onClick={() => {
+            const wp = navStepSibling(pills, activeWaypointId, -1);
+            if (wp) goTo(wp);
+          }}
         >
           <ChevronLeft className="size-4" strokeWidth={1.75} aria-hidden />
         </button>
@@ -136,10 +137,13 @@ export function WaypointNav({ scene }: WaypointNavProps) {
         <button
           type="button"
           className={stepBtnClass}
-          disabled={!canStep || !nextWp}
+          disabled={!canStep}
           aria-label="Vista siguiente"
           title="Siguiente (→)"
-          onClick={() => nextWp && goTo(nextWp)}
+          onClick={() => {
+            const wp = navStepSibling(pills, activeWaypointId, 1);
+            if (wp) goTo(wp);
+          }}
         >
           <ChevronRight className="size-4" strokeWidth={1.75} aria-hidden />
         </button>

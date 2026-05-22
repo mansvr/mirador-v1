@@ -72,15 +72,22 @@ export function navStepIndex(
   return pills.findIndex((p) => p.id === activeWaypointId);
 }
 
-/** Previous or next pill in tour order (opening first when present). */
+/** Previous or next pill in tour order; wraps Inicio ↔ last waypoint. */
 export function navStepSibling(
   pills: SceneWaypoint[],
   activeWaypointId: string | null,
-  dir: -1 | 1
+  dir: -1 | 1,
+  wrap = true
 ): SceneWaypoint | null {
+  if (pills.length < 2) return null;
   const i = navStepIndex(pills, activeWaypointId);
   if (i < 0) return null;
-  const j = i + dir;
-  if (j < 0 || j >= pills.length) return null;
+
+  let j = i + dir;
+  if (wrap) {
+    j = ((j % pills.length) + pills.length) % pills.length;
+  } else if (j < 0 || j >= pills.length) {
+    return null;
+  }
   return pills[j] ?? null;
 }
