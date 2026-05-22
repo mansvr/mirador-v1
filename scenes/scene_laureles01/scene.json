@@ -18,6 +18,27 @@
     "yaw_correction_deg": 0,
     "pitch_correction_deg": 0
   },
+  "camera_default": {
+    "pos": [-0.0011, 1.5989, 0.8747],
+    "quat": [0.0197, 0.0523, -0.001, 0.9984],
+    "fov": 60
+  },
+  "waypoints": [
+    {
+      "id": "w_vista2",
+      "label": "Vista2",
+      "pos": [0.7221, 1.5526, -7.2575],
+      "quat": [0.0027, 0.9889, -0.0181, 0.1478],
+      "transition_ms": 1200
+    },
+    {
+      "id": "w_vista3",
+      "label": "Vista3",
+      "pos": [-0.5185, 1.0951, -2.0609],
+      "quat": [-0.0001, 0.9899, -0.0008, -0.1421],
+      "transition_ms": 1200
+    }
+  ],
   "hotspots": [],
   "listing": {
     "neighborhood": "Laureles",
