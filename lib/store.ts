@@ -7,13 +7,28 @@ interface ViewerState {
   /** Replaces scene; picks a valid `activeWaypointId` when the current id is missing from the new scene. */
   setScene: (scene: Scene) => void;
 
-  /** True while WaypointCamera is tweening — OrbitControls should yield. */
+  /** True while WaypointCamera is tweening — blocks manual pointer during nav. */
   isCameraTweening: boolean;
   setCameraTweening: (v: boolean) => void;
+  /** Autoplay nav tween: orbit leash stays interactive. */
+  isAutoplayNavTween: boolean;
 
-  // Active waypoint
+  /** Pill highlight (manual: on click; autoplay: on arrival). */
   activeWaypointId: string | null;
+  /** Drives WaypointCamera tween target. */
+  navTweenTargetId: string | null;
   setActiveWaypoint: (id: string | null) => void;
+  /** Manual pill/chevron — highlight immediately, interrupt autoplay. */
+  goToWaypoint: (id: string) => void;
+  /** Autoplay-only — tween without changing highlight until arrival. */
+  autoplayTweenTo: (id: string) => void;
+  setArrivedWaypoint: (id: string) => void;
+
+  tourAutoplayPaused: boolean;
+  tourAutoplaySuppressed: boolean;
+  setTourAutoplayPaused: (paused: boolean) => void;
+  suppressTourAutoplay: () => void;
+  resumeTourAutoplay: () => void;
 
   // Active hotspot (which panel is open)
   activeHotspotId: string | null;
@@ -63,15 +78,49 @@ export const useViewerStore = create<ViewerState>((set) => ({
       return {
         scene,
         activeWaypointId,
+        navTweenTargetId: activeWaypointId,
         activeHotspotId: sameScene ? s.activeHotspotId : null,
+        tourAutoplayPaused: false,
+        tourAutoplaySuppressed: false,
+        isAutoplayNavTween: false,
       };
     }),
 
   isCameraTweening: false,
   setCameraTweening: (isCameraTweening) => set({ isCameraTweening }),
+  isAutoplayNavTween: false,
 
   activeWaypointId: null,
-  setActiveWaypoint: (id) => set({ activeWaypointId: id, activeHotspotId: null }),
+  navTweenTargetId: null,
+  setActiveWaypoint: (id) =>
+    set({
+      activeWaypointId: id,
+      navTweenTargetId: id,
+      activeHotspotId: null,
+      isAutoplayNavTween: false,
+      tourAutoplaySuppressed: true,
+    }),
+  goToWaypoint: (id) =>
+    set({
+      activeWaypointId: id,
+      navTweenTargetId: id,
+      activeHotspotId: null,
+      isAutoplayNavTween: false,
+      tourAutoplaySuppressed: true,
+    }),
+  autoplayTweenTo: (id) =>
+    set({
+      navTweenTargetId: id,
+      isAutoplayNavTween: true,
+    }),
+  setArrivedWaypoint: (id) => set({ activeWaypointId: id }),
+
+  tourAutoplayPaused: false,
+  tourAutoplaySuppressed: false,
+  setTourAutoplayPaused: (tourAutoplayPaused) => set({ tourAutoplayPaused }),
+  suppressTourAutoplay: () => set({ tourAutoplaySuppressed: true }),
+  resumeTourAutoplay: () =>
+    set({ tourAutoplaySuppressed: false, tourAutoplayPaused: false }),
 
   activeHotspotId: null,
   setActiveHotspot: (id) => set({ activeHotspotId: id }),

@@ -11,6 +11,7 @@ import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
 import { useViewerStore } from "@/lib/store";
 import { useNavigationMode } from "@/lib/navigation-mode";
+import { emitNavTweenComplete } from "@/lib/tour-autoplay";
 import {
   captureTourHomeFromCamera,
   clearTourLeashState,
@@ -53,6 +54,8 @@ export function WaypointCamera() {
       ? (controls as OrbitControlsImpl)
       : null;
   const setCameraTweening = useViewerStore((s) => s.setCameraTweening);
+  const goToWaypoint = useViewerStore((s) => s.goToWaypoint);
+  const setArrivedWaypoint = useViewerStore((s) => s.setArrivedWaypoint);
   const navMode = useNavigationMode();
   const prevNavMode = useRef(navMode);
 
@@ -63,17 +66,22 @@ export function WaypointCamera() {
   const startPos = useRef(new THREE.Vector3());
   const startQuat = useRef(new THREE.Quaternion());
   const transitionMs = useRef(1200);
-  const prevWaypointId = useRef<string | null>(null);
+  const prevNavTweenTargetId = useRef<string | null>(null);
   const sceneIdRef = useRef<string | null>(null);
   const openingLockedOnLoadRef = useRef(false);
 
   const finishTween = useCallback(
-    (pose: NavTarget) => {
+    (pose: NavTarget, arrivedId: string | null) => {
       isAnimating.current = false;
       setCameraTweening(false);
+      useViewerStore.setState({ isAutoplayNavTween: false });
       applyCameraPose(camera, orbit, pose);
+      if (arrivedId) {
+        setArrivedWaypoint(arrivedId);
+        emitNavTweenComplete(arrivedId);
+      }
     },
-    [camera, orbit, setCameraTweening]
+    [camera, orbit, setArrivedWaypoint, setCameraTweening]
   );
 
   const beginTweenToTarget = useCallback(
@@ -98,37 +106,48 @@ export function WaypointCamera() {
     (id: string | null, opts?: { tween?: boolean }) => {
       const state = useViewerStore.getState();
       const target = resolveCameraNavTarget(state.scene, id);
-      if (!target) return;
+      if (!target || !id) return;
 
-      prevWaypointId.current = id;
+      prevNavTweenTargetId.current = id;
       clearTourLeashState();
       if (opts?.tween === false) {
         isAnimating.current = false;
         setCameraTweening(false);
+        useViewerStore.setState({
+          isAutoplayNavTween: false,
+          navTweenTargetId: id,
+        });
         applyCameraPose(camera, orbit, target);
+        setArrivedWaypoint(id);
         return;
       }
       beginTweenToTarget(target);
     },
-    [beginTweenToTarget, camera, orbit, setCameraTweening]
+    [beginTweenToTarget, camera, orbit, setArrivedWaypoint, setCameraTweening]
   );
 
   useEffect(() => {
     const unsub = useViewerStore.subscribe((state, prev) => {
-      const id = state.activeWaypointId;
-      if (id === prevWaypointId.current) return;
+      const id = state.navTweenTargetId;
+      if (id === prevNavTweenTargetId.current) return;
 
-      // Initial scene bootstrap is handled by layout effects (instant opening).
       if (state.scene?.id !== prev.scene?.id) {
-        prevWaypointId.current = id;
+        prevNavTweenTargetId.current = id;
         return;
       }
 
-      applyNavTarget(id, { tween: true });
+      prevNavTweenTargetId.current = id;
+      if (!id) return;
+
+      const target = resolveCameraNavTarget(state.scene, id);
+      if (!target) return;
+
+      clearTourLeashState();
+      beginTweenToTarget(target);
     });
 
     return unsub;
-  }, [applyNavTarget]);
+  }, [beginTweenToTarget]);
 
   const sceneId = useViewerStore((s) => s.scene?.id ?? null);
   const isLoaded = useViewerStore((s) => s.isLoaded);
@@ -146,13 +165,15 @@ export function WaypointCamera() {
 
     const firstId = state.scene?.waypoints?.[0]?.id ?? null;
     if (firstId) {
-      applyNavTarget(firstId, { tween: true });
+      useViewerStore.setState({
+        navTweenTargetId: firstId,
+        isAutoplayNavTween: false,
+      });
     } else {
-      prevWaypointId.current = null;
+      prevNavTweenTargetId.current = null;
     }
   }, [sceneId, applyNavTarget]);
 
-  // Once per scene: lock opening when splat is visible (orbit was off during load).
   useLayoutEffect(() => {
     if (!isLoaded || openingLockedOnLoadRef.current) return;
     const state = useViewerStore.getState();
@@ -170,10 +191,10 @@ export function WaypointCamera() {
     if (prevNavMode.current === "author" && navMode === "tour") {
       clearTourLeashState();
       const id = useViewerStore.getState().activeWaypointId;
-      if (id) applyNavTarget(id, { tween: true });
+      if (id) goToWaypoint(id);
     }
     prevNavMode.current = navMode;
-  }, [navMode, applyNavTarget]);
+  }, [navMode, goToWaypoint]);
 
   useEffect(
     () => () => {
@@ -205,23 +226,27 @@ export function WaypointCamera() {
     }
 
     if (animationProgress.current >= 1) {
-      const id = prevWaypointId.current;
+      const id = prevNavTweenTargetId.current;
       const pose = resolveCameraNavTarget(
         useViewerStore.getState().scene,
         id
       );
-      if (pose) finishTween(pose);
-      else finishTween({
-        id: "snap",
-        label: "",
-        pos: [camera.position.x, camera.position.y, camera.position.z],
-        quat: [
-          camera.quaternion.x,
-          camera.quaternion.y,
-          camera.quaternion.z,
-          camera.quaternion.w,
-        ],
-      });
+      if (pose && id) finishTween(pose, id);
+      else
+        finishTween(
+          {
+            id: "snap",
+            label: "",
+            pos: [camera.position.x, camera.position.y, camera.position.z],
+            quat: [
+              camera.quaternion.x,
+              camera.quaternion.y,
+              camera.quaternion.z,
+              camera.quaternion.w,
+            ],
+          },
+          id
+        );
     }
   });
 

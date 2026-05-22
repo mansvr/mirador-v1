@@ -84,7 +84,7 @@ export const useAuthorStore = create<AuthorState>((set, get) => ({
 
   selectWaypoint: (id) => {
     set({ selectedWaypointId: id });
-    if (id) useViewerStore.getState().setActiveWaypoint(id);
+    if (id) useViewerStore.getState().goToWaypoint(id);
   },
 
   setCameraDefault: (cam) => {
@@ -92,7 +92,7 @@ export const useAuthorStore = create<AuthorState>((set, get) => ({
     if (!baseScene) return;
     set({ cameraDefault: cam, selectedWaypointId: OPENING_WAYPOINT_ID });
     applyPreview(baseScene, { ...get(), cameraDefault: cam });
-    useViewerStore.getState().setActiveWaypoint(OPENING_WAYPOINT_ID);
+    useViewerStore.getState().goToWaypoint(OPENING_WAYPOINT_ID);
   },
 
   addWaypointFromCamera: (cam) => {
@@ -120,7 +120,7 @@ export const useAuthorStore = create<AuthorState>((set, get) => ({
       cameraDefault: get().cameraDefault,
       waypoints: next,
     });
-    useViewerStore.getState().setActiveWaypoint(id);
+    useViewerStore.getState().goToWaypoint(id);
   },
 
   updateSelectedFromCamera: (cam) => {
@@ -158,7 +158,7 @@ export const useAuthorStore = create<AuthorState>((set, get) => ({
       cameraDefault: get().cameraDefault,
       waypoints: next,
     });
-    useViewerStore.getState().setActiveWaypoint(nextId);
+    useViewerStore.getState().goToWaypoint(nextId);
   },
 
   moveSelected: (dir) => {

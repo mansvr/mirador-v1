@@ -38,8 +38,9 @@ export function TourOrbitLeash() {
   const scene = useViewerStore((s) => s.scene);
   const isLoaded = useViewerStore((s) => s.isLoaded);
   const isCameraTweening = useViewerStore((s) => s.isCameraTweening);
+  const isAutoplayNavTween = useViewerStore((s) => s.isAutoplayNavTween);
   const activeWaypointId = useViewerStore((s) => s.activeWaypointId);
-  const setCameraTweening = useViewerStore((s) => s.setCameraTweening);
+  const suppressTourAutoplay = useViewerStore((s) => s.suppressTourAutoplay);
   const hasOpening = Boolean(scene?.camera_default);
 
   const dragging = useRef(false);
@@ -52,8 +53,9 @@ export function TourOrbitLeash() {
     (!hasOpening || isLoaded) &&
     viewerNavRegistry.home != null;
 
-  /** Pointer handlers off during pill tweens; leash frame loop stays on for release spring. */
-  const pointerActive = tourReady && !isCameraTweening;
+  /** Manual nav tweens block drag; autoplay tweens keep orbit leash live. */
+  const pointerActive =
+    tourReady && (!isCameraTweening || isAutoplayNavTween);
 
   useEffect(() => {
     leashConfig.current = resolveOrbitLeashConfig(scene);
@@ -96,6 +98,7 @@ export function TourOrbitLeash() {
 
     const onPointerDown = (e: PointerEvent) => {
       if (e.button !== 0) return;
+      suppressTourAutoplay();
       dragging.current = true;
       resetting.current = false;
       lastPointer.current = { x: e.clientX, y: e.clientY };
@@ -142,13 +145,13 @@ export function TourOrbitLeash() {
       el.removeEventListener("pointercancel", onPointerUp);
       el.removeEventListener("wheel", onWheel);
     };
-  }, [pointerActive, gl, scene]);
+  }, [pointerActive, gl, scene, suppressTourAutoplay]);
 
   useFrame((_, delta) => {
     if (!tourReady) return;
     const home = viewerNavRegistry.home;
     if (!home) return;
-    if (isCameraTweening && !resetting.current) return;
+    if (isCameraTweening && !isAutoplayNavTween && !resetting.current) return;
 
     const config = leashConfig.current;
     const target = viewerNavRegistry.offset;
