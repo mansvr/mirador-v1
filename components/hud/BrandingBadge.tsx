@@ -12,7 +12,7 @@ export function BrandingBadge({ branding }: BrandingBadgeProps) {
   if (!showBadge && !logoUrl) return null;
 
   return (
-    <div className="absolute bottom-10 left-2 z-10 flex max-w-[40%] items-center gap-1.5 select-none pointer-events-none sm:bottom-4 sm:left-4 sm:max-w-none">
+    <div className="absolute top-2 left-2 z-10 flex max-w-[40%] items-center gap-1.5 select-none pointer-events-none sm:top-auto sm:bottom-4 sm:left-4 sm:max-w-none">
       {logoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={logoUrl} alt="Brand" className="h-9 object-contain" />

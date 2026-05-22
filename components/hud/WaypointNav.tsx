@@ -20,7 +20,8 @@ interface WaypointNavProps {
 }
 
 const chromeBtnClass = cn(
-  "flex size-7 shrink-0 items-center justify-center rounded-full sm:size-9",
+  "flex size-7 shrink-0 items-center justify-center rounded-full",
+  "group-data-[fullscreen=true]/viewport:size-9",
   "border border-white/10 bg-black/45 text-white/85 backdrop-blur-sm",
   "transition-[opacity,background-color] duration-200",
   "hover:bg-black/60 hover:text-white",
@@ -28,7 +29,8 @@ const chromeBtnClass = cn(
   "disabled:pointer-events-none disabled:opacity-35"
 );
 
-const chromeIconClass = "size-3.5 sm:size-4";
+const chromeIconClass =
+  "size-3.5 group-data-[fullscreen=true]/viewport:size-4";
 
 /** Subdued — visible on glass but quieter than chevrons. */
 const autoplayBtnClass = cn(
@@ -109,7 +111,7 @@ export function WaypointNav({ scene }: WaypointNavProps) {
   if (!pills.length) return null;
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-2 z-10 flex flex-col items-center gap-1 px-2 sm:bottom-4 sm:gap-2 sm:px-3">
+    <div className="pointer-events-none absolute inset-x-0 bottom-2 z-10 flex flex-col items-center gap-1 px-2 group-data-[fullscreen=true]/viewport:bottom-4 group-data-[fullscreen=true]/viewport:gap-2 group-data-[fullscreen=true]/viewport:px-3">
       {showAutoplay ? (
         <button
           type="button"
@@ -127,7 +129,7 @@ export function WaypointNav({ scene }: WaypointNavProps) {
       ) : null}
 
       <div
-        className="pointer-events-auto flex max-w-full items-center gap-1 sm:gap-2"
+        className="pointer-events-auto flex max-w-full items-center gap-1 group-data-[fullscreen=true]/viewport:gap-2"
         role="group"
         aria-label="Navegación del recorrido"
       >
@@ -146,7 +148,7 @@ export function WaypointNav({ scene }: WaypointNavProps) {
         </button>
 
         <div
-          className="flex max-w-[min(100vw-6rem,28rem)] gap-0.5 overflow-x-auto overscroll-x-contain rounded-full bg-black/50 p-1 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none] sm:max-w-[min(100vw-8rem,32rem)] sm:gap-1.5 sm:p-2 [&::-webkit-scrollbar]:hidden"
+          className="flex max-w-[min(100vw-6rem,28rem)] gap-0.5 overflow-x-auto overscroll-x-contain rounded-full bg-black/50 p-1 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none] group-data-[fullscreen=true]/viewport:max-w-[min(100vw-8rem,32rem)] group-data-[fullscreen=true]/viewport:gap-1.5 group-data-[fullscreen=true]/viewport:p-2 [&::-webkit-scrollbar]:hidden"
           role="tablist"
           aria-label="Puntos del recorrido"
         >
@@ -160,7 +162,7 @@ export function WaypointNav({ scene }: WaypointNavProps) {
                 aria-selected={isActive}
                 onClick={() => goTo(wp)}
                 className={[
-                  "flex shrink-0 items-center gap-1 rounded-full px-2 py-1 text-[10px] font-medium transition-all duration-200 sm:gap-2 sm:px-3 sm:py-1.5 sm:text-sm",
+                  "flex shrink-0 items-center gap-1 rounded-full px-2 py-1 text-[10px] font-medium transition-all duration-200 group-data-[fullscreen=true]/viewport:gap-2 group-data-[fullscreen=true]/viewport:px-3 group-data-[fullscreen=true]/viewport:py-1.5 group-data-[fullscreen=true]/viewport:text-sm",
                   isActive
                     ? "bg-[var(--mirador-primary,#5e5956)] text-white"
                     : "text-white/70 hover:bg-white/10 hover:text-white",
@@ -171,10 +173,10 @@ export function WaypointNav({ scene }: WaypointNavProps) {
                   <img
                     src={sceneAssetUrl(scene.id, wp.thumbnail_url)}
                     alt=""
-                    className="h-4 w-4 rounded-full object-cover sm:h-5 sm:w-5"
+                    className="h-4 w-4 rounded-full object-cover group-data-[fullscreen=true]/viewport:h-5 group-data-[fullscreen=true]/viewport:w-5"
                   />
                 )}
-                <span className="max-w-[8rem] truncate sm:max-w-none">
+                <span className="max-w-[8rem] truncate group-data-[fullscreen=true]/viewport:max-w-none">
                   {wp.label}
                 </span>
               </button>

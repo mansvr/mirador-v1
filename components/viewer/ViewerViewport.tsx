@@ -30,19 +30,19 @@ export function ViewerViewport({ children, className, label }: ViewerViewportPro
         "fullscreen:aspect-auto fullscreen:h-full fullscreen:max-h-none fullscreen:w-full fullscreen:rounded-none fullscreen:border-0",
         className
       )}
+      data-fullscreen={isFullscreen ? "true" : undefined}
       aria-label={label}
     >
       <button
         type="button"
         onClick={() => void toggle()}
         className={cn(
-          "absolute top-2 left-2 z-20 flex size-9 items-center justify-center rounded-full",
+          "absolute top-2 right-2 left-auto z-20 flex size-7 items-center justify-center rounded-full sm:top-3 sm:left-3 sm:right-auto sm:size-9",
           "border border-white/10 bg-black/45 text-white/85 backdrop-blur-sm",
           "opacity-0 transition-[opacity,background-color] duration-200",
           "hover:bg-black/60 hover:text-white focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
           "group-hover/viewport:opacity-100 group-focus-within/viewport:opacity-100",
-          isFullscreen && "opacity-100",
-          "sm:top-3 sm:left-3"
+          isFullscreen && "opacity-100"
         )}
         aria-label={isFullscreen ? "Salir de pantalla completa" : "Pantalla completa"}
         title={isFullscreen ? "Salir (Esc)" : "Pantalla completa"}
