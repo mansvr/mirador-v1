@@ -63,3 +63,24 @@ export function navPillsForScene(scene: Scene): SceneWaypoint[] {
 export function isOpeningWaypointId(id: string | null): boolean {
   return id === OPENING_WAYPOINT_ID;
 }
+
+export function navStepIndex(
+  pills: SceneWaypoint[],
+  activeWaypointId: string | null
+): number {
+  if (!activeWaypointId) return -1;
+  return pills.findIndex((p) => p.id === activeWaypointId);
+}
+
+/** Previous or next pill in tour order (opening first when present). */
+export function navStepSibling(
+  pills: SceneWaypoint[],
+  activeWaypointId: string | null,
+  dir: -1 | 1
+): SceneWaypoint | null {
+  const i = navStepIndex(pills, activeWaypointId);
+  if (i < 0) return null;
+  const j = i + dir;
+  if (j < 0 || j >= pills.length) return null;
+  return pills[j] ?? null;
+}

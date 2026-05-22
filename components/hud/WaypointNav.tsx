@@ -1,10 +1,16 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useViewerStore } from "@/lib/store";
 import { trackWaypointReached } from "@/lib/analytics";
 import { sceneAssetUrl } from "@/lib/scene-utils";
-import { navPillsForScene } from "@/lib/viewer-camera";
+import {
+  navPillsForScene,
+  navStepIndex,
+  navStepSibling,
+} from "@/lib/viewer-camera";
+import { cn } from "@/lib/utils";
 import type { Scene } from "@/lib/types/scene";
 import type { SceneWaypoint } from "@/lib/types/scene";
 
@@ -12,57 +18,137 @@ interface WaypointNavProps {
   scene: Scene;
 }
 
+const stepBtnClass = cn(
+  "flex size-9 shrink-0 items-center justify-center rounded-full",
+  "border border-white/10 bg-black/45 text-white/85 backdrop-blur-sm",
+  "transition-[opacity,background-color] duration-200",
+  "hover:bg-black/60 hover:text-white",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40",
+  "disabled:pointer-events-none disabled:opacity-35"
+);
+
+function isTypingTarget(target: EventTarget | null): boolean {
+  if (!target || !(target instanceof HTMLElement)) return false;
+  const tag = target.tagName;
+  return (
+    tag === "INPUT" ||
+    tag === "TEXTAREA" ||
+    target.isContentEditable
+  );
+}
+
 export function WaypointNav({ scene }: WaypointNavProps) {
   const activeWaypointId = useViewerStore((s) => s.activeWaypointId);
   const setActiveWaypoint = useViewerStore((s) => s.setActiveWaypoint);
 
   const pills = useMemo(() => navPillsForScene(scene), [scene]);
+  const activeIndex = navStepIndex(pills, activeWaypointId);
+  const prevWp = navStepSibling(pills, activeWaypointId, -1);
+  const nextWp = navStepSibling(pills, activeWaypointId, 1);
+  const canStep = pills.length > 1;
+
+  const goTo = useCallback(
+    (wp: SceneWaypoint) => {
+      setActiveWaypoint(wp.id);
+      trackWaypointReached(scene.id, wp.id, wp.label);
+    },
+    [scene.id, setActiveWaypoint]
+  );
+
+  useEffect(() => {
+    if (!canStep) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (isTypingTarget(event.target)) return;
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+
+      const sibling =
+        event.key === "ArrowLeft"
+          ? navStepSibling(pills, activeWaypointId, -1)
+          : navStepSibling(pills, activeWaypointId, 1);
+      if (!sibling) return;
+
+      event.preventDefault();
+      goTo(sibling);
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [canStep, pills, activeWaypointId, goTo]);
 
   if (!pills.length) return null;
-
-  function handleSelect(wp: SceneWaypoint) {
-    setActiveWaypoint(wp.id);
-    trackWaypointReached(scene.id, wp.id, wp.label);
-  }
 
   return (
     <div className="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex justify-center px-2 sm:bottom-4 sm:px-3">
       <div
-        className="pointer-events-auto flex max-w-full gap-1 overflow-x-auto overscroll-x-contain rounded-full bg-black/50 p-1.5 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-1.5 sm:p-2"
-        role="tablist"
-        aria-label="Puntos del recorrido"
+        className="pointer-events-auto flex max-w-full items-center gap-1.5 sm:gap-2"
+        role="group"
+        aria-label="Navegación del recorrido"
       >
-        {pills.map((wp) => {
-          const isActive = wp.id === activeWaypointId;
-          return (
-            <button
-              key={wp.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => handleSelect(wp)}
-              className={[
-                "flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition-all duration-200 sm:gap-2 sm:px-3 sm:text-sm",
-                isActive
-                  ? "bg-[var(--mirador-primary,#5e5956)] text-white"
-                  : "text-white/70 hover:bg-white/10 hover:text-white",
-              ].join(" ")}
-            >
-              {wp.thumbnail_url && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={sceneAssetUrl(scene.id, wp.thumbnail_url)}
-                  alt=""
-                  className="h-5 w-5 rounded-full object-cover"
-                />
-              )}
-              <span className="max-w-[8rem] truncate sm:max-w-none">
-                {wp.label}
-              </span>
-            </button>
-          );
-        })}
+        <button
+          type="button"
+          className={stepBtnClass}
+          disabled={!canStep || !prevWp}
+          aria-label="Vista anterior"
+          title="Anterior (←)"
+          onClick={() => prevWp && goTo(prevWp)}
+        >
+          <ChevronLeft className="size-4" strokeWidth={1.75} aria-hidden />
+        </button>
+
+        <div
+          className="flex max-w-[min(100vw-7rem,28rem)] gap-1 overflow-x-auto overscroll-x-contain rounded-full bg-black/50 p-1.5 backdrop-blur-sm [-ms-overflow-style:none] [scrollbar-width:none] sm:max-w-[min(100vw-8rem,32rem)] sm:gap-1.5 sm:p-2 [&::-webkit-scrollbar]:hidden"
+          role="tablist"
+          aria-label="Puntos del recorrido"
+        >
+          {pills.map((wp) => {
+            const isActive = wp.id === activeWaypointId;
+            return (
+              <button
+                key={wp.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                onClick={() => goTo(wp)}
+                className={[
+                  "flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-xs font-medium transition-all duration-200 sm:gap-2 sm:px-3 sm:text-sm",
+                  isActive
+                    ? "bg-[var(--mirador-primary,#5e5956)] text-white"
+                    : "text-white/70 hover:bg-white/10 hover:text-white",
+                ].join(" ")}
+              >
+                {wp.thumbnail_url && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={sceneAssetUrl(scene.id, wp.thumbnail_url)}
+                    alt=""
+                    className="h-5 w-5 rounded-full object-cover"
+                  />
+                )}
+                <span className="max-w-[8rem] truncate sm:max-w-none">
+                  {wp.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          className={stepBtnClass}
+          disabled={!canStep || !nextWp}
+          aria-label="Vista siguiente"
+          title="Siguiente (→)"
+          onClick={() => nextWp && goTo(nextWp)}
+        >
+          <ChevronRight className="size-4" strokeWidth={1.75} aria-hidden />
+        </button>
       </div>
+      {canStep && activeIndex >= 0 ? (
+        <span className="sr-only" aria-live="polite">
+          {activeIndex + 1} de {pills.length}
+        </span>
+      ) : null}
     </div>
   );
 }
