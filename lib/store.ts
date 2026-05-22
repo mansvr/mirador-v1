@@ -46,9 +46,20 @@ export const useViewerStore = create<ViewerState>((set) => ({
         s.activeWaypointId != null &&
         wps.some((w) => w.id === s.activeWaypointId);
       const sameScene = s.scene?.id === scene.id;
+
+      // With camera_default, stay on opening view until user picks a pill.
+      let activeWaypointId: string | null;
+      if (stillValid) {
+        activeWaypointId = s.activeWaypointId;
+      } else if (scene.camera_default) {
+        activeWaypointId = null;
+      } else {
+        activeWaypointId = wps[0]?.id ?? null;
+      }
+
       return {
         scene,
-        activeWaypointId: stillValid ? s.activeWaypointId : (wps[0]?.id ?? null),
+        activeWaypointId,
         activeHotspotId: sameScene ? s.activeHotspotId : null,
       };
     }),

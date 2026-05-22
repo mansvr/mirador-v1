@@ -8,9 +8,13 @@
 import { useEffect, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useViewerStore } from "@/lib/store";
+import { isMobileClient } from "@/lib/scene-utils";
 import { viewerDebugRegistry } from "@/lib/viewer-debug-registry";
 
-const VERIFY_FRAMES = 150; // ~2.5s at 60fps
+/** iOS needs a shorter window; desktop SPZ can take longer before activeSplats > 0. */
+function verifyFrameBudget(): number {
+  return isMobileClient() ? 180 : 420;
+}
 
 export function SplatLoadVerify() {
   const { gl } = useThree();
@@ -60,10 +64,13 @@ export function SplatLoadVerify() {
       return;
     }
 
-    if (framesRef.current >= VERIFY_FRAMES) {
+    if (framesRef.current >= verifyFrameBudget()) {
       setAwaitingGpuRender(false);
+      const deviceHint = isMobileClient()
+        ? "en este dispositivo móvil"
+        : "en este navegador";
       setLoadError(
-        "El recorrido cargó pero no se puede mostrar en este iPhone (archivo muy pesado o WebGL). Prueba un SOG/SPZ más pequeño o vuelve más tarde."
+        `El recorrido cargó pero no se puede mostrar ${deviceHint} (archivo pesado o WebGL). Recarga la página, cierra otras pestañas, o usa un splat más pequeño.`
       );
     }
   });

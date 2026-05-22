@@ -73,13 +73,10 @@ export function WaypointCamera() {
 
     if (opening) {
       applyCameraPose(camera, opening);
-    }
-
-    if (wp0) {
+      prevWaypointId.current = null;
+    } else if (wp0) {
       prevWaypointId.current = wp0.id;
-      if (!opening) {
-        beginTweenToWaypoint(wp0);
-      }
+      beginTweenToWaypoint(wp0);
     } else {
       prevWaypointId.current = null;
     }
