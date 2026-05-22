@@ -54,7 +54,7 @@ export function MiradorWordmark({
         "inline-flex items-center font-display font-bold leading-none tracking-[0.02em]",
         size === "lg" && "gap-2.5 text-[1.75rem] md:text-[2rem]",
         size === "md" && "gap-2.5 text-[1.375rem]",
-        size === "sm" && "gap-1.5 text-xs",
+        size === "sm" && "gap-2 text-[1.125rem]",
         onDark ? "text-white/80" : subdued ? "text-white/60" : "text-mirador-text",
         className
       )}
@@ -65,7 +65,7 @@ export function MiradorWordmark({
           onDark || subdued ? "text-current" : "text-mirador-accent",
           size === "lg" && "h-9 w-9 md:h-10 md:w-10",
           size === "md" && "h-7 w-7",
-          size === "sm" && "h-4 w-4"
+          size === "sm" && "h-6 w-6"
         )}
         accent="currentColor"
       />
