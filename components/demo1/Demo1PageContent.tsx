@@ -11,6 +11,7 @@ import { Demo1MotionProvider } from "@/components/demo1/Demo1MotionProvider";
 import { Demo1ScrollReveal } from "@/components/demo1/Demo1ScrollReveal";
 import { FloatingNav } from "@/components/demo1/FloatingNav";
 import { HeroCopyCard } from "@/components/demo1/HeroCopyCard";
+import { HeroScrollIndicator } from "@/components/demo1/HeroScrollIndicator";
 import { HeroScrollScrub } from "@/components/demo1/HeroScrollScrub";
 import { SpecStrip } from "@/components/demo1/SpecStrip";
 import { useDemo1Locale } from "@/components/demo1/Demo1LocaleProvider";
@@ -53,7 +54,7 @@ function Demo1PageInner() {
   });
 
   const heroCardClassName =
-    "inline-block w-full max-w-[32rem] overflow-hidden rounded-2xl bg-gradient-to-t from-hero-scrim/75 via-hero-scrim/18 to-transparent px-4 py-6 sm:max-w-xl sm:px-6 sm:py-8";
+    "inline-block w-full max-w-[32rem] overflow-hidden rounded-2xl bg-gradient-to-t from-hero-scrim/75 via-hero-scrim/18 to-transparent px-4 py-5 sm:max-w-xl sm:px-6 sm:py-8";
 
   return (
     <>
@@ -76,18 +77,23 @@ function Demo1PageInner() {
                 scrubReady={scrubReady}
                 className={heroCardClassName}
               >
-                <p className="text-xs uppercase tracking-[0.25em] text-hero-glass-text/75 sm:text-sm">
-                  {property.hero.eyebrow}
-                </p>
-                <h1 className="mt-3 font-display text-4xl leading-none text-hero-glass-text sm:text-7xl">
+                <h1 className="font-display text-4xl leading-none text-hero-glass-text sm:text-7xl">
                   {property.hero.title}
                 </h1>
                 <p className="mt-4 text-sm text-hero-glass-text/90 sm:text-lg">
                   {property.hero.description}
                 </p>
-                <p className="mt-6 text-xs text-hero-glass-text/70 sm:text-sm">
-                  {specsLine}
-                </p>
+                <div className="mt-5 border-t border-hero-glass-text/10 pt-4">
+                  <p className="text-xs uppercase tracking-[0.25em] text-hero-glass-text/75 sm:text-sm">
+                    {property.hero.eyebrow}
+                  </p>
+                  <div className="mt-3 flex items-end justify-between gap-4">
+                    <p className="min-w-0 flex-1 text-xs text-hero-glass-text/70 sm:text-sm">
+                      {specsLine}
+                    </p>
+                    <HeroScrollIndicator variant="inline" />
+                  </div>
+                </div>
               </HeroCopyCard>
             </div>
           </div>

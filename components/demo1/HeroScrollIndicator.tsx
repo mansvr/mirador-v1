@@ -1,12 +1,12 @@
 "use client";
 
 import { useDemo1Locale } from "@/components/demo1/Demo1LocaleProvider";
+import { useHeroScrub } from "@/components/demo1/HeroScrubContext";
 
 type HeroScrollIndicatorProps = {
-  /** 0–1 from hero ScrollTrigger; hidden only when scrub completes (≈100%). */
-  progress: number;
-  /** Hide until video scrub is ready. */
-  show: boolean;
+  variant?: "inline" | "floating";
+  progress?: number;
+  show?: boolean;
 };
 
 function scrollHeroHint() {
@@ -14,39 +14,19 @@ function scrollHeroHint() {
   window.scrollBy({ top: step, behavior: "smooth" });
 }
 
-/** Bottom-right hero hint — Sacred glass text, 500ms motion, Solar-style stroke chevron. */
-export function HeroScrollIndicator({
-  progress,
-  show,
-}: HeroScrollIndicatorProps) {
-  const { messages } = useDemo1Locale();
-  const scrubComplete = progress >= 1;
-  const opacity = show && !scrubComplete ? 1 : 0;
-
-  if (!show && opacity <= 0) return null;
-
+function ScrollGlyph({ compact }: { compact?: boolean }) {
   return (
-    <button
-      type="button"
-      onClick={scrollHeroHint}
-      aria-label={messages.hero.scrollAria}
-      tabIndex={scrubComplete ? -1 : 0}
-      className={`hero-scroll-indicator pointer-events-auto absolute bottom-14 right-4 z-20 flex flex-col items-center gap-2 p-2 transition-sacred sm:bottom-16 sm:right-6 ${
-        scrubComplete ? "pointer-events-none" : ""
-      }`}
-      style={{ opacity }}
-    >
-      <span className="text-[10px] font-medium uppercase tracking-[0.22em] text-hero-glass-text/55">
-        {messages.hero.scrollLabel}
-      </span>
+    <>
       <span
-        className="hero-scroll-indicator__track h-10 w-px bg-gradient-to-b from-hero-glass-text/0 via-hero-glass-text/35 to-hero-glass-text/65"
+        className={`hero-scroll-indicator__track bg-gradient-to-b from-hero-glass-text/0 via-hero-glass-text/35 to-hero-glass-text/65 ${
+          compact ? "h-7 w-px" : "h-10 w-px"
+        }`}
         aria-hidden
       />
       <span className="hero-scroll-indicator__chevron text-hero-glass-text/75" aria-hidden>
         <svg
-          width="18"
-          height="18"
+          width={compact ? 16 : 18}
+          height={compact ? 16 : 18}
           viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -61,6 +41,62 @@ export function HeroScrollIndicator({
           />
         </svg>
       </span>
+    </>
+  );
+}
+
+export function HeroScrollIndicator({
+  variant = "inline",
+  progress: progressProp,
+  show: showProp,
+}: HeroScrollIndicatorProps) {
+  const { messages } = useDemo1Locale();
+  const ctx = useHeroScrub();
+  const progress = progressProp ?? ctx.progress;
+  const show = showProp ?? ctx.show;
+
+  const scrubComplete = progress >= 1;
+  const visible = show && !scrubComplete;
+  const opacity = visible ? 1 : 0;
+
+  if (!show && opacity <= 0) return null;
+
+  const labelClass =
+    "text-[10px] font-medium uppercase tracking-[0.22em] text-hero-glass-text/55";
+
+  if (variant === "inline") {
+    return (
+      <button
+        type="button"
+        onClick={scrollHeroHint}
+        aria-label={messages.hero.scrollAria}
+        tabIndex={scrubComplete ? -1 : 0}
+        className={`hero-scroll-indicator pointer-events-auto flex shrink-0 flex-col items-center gap-1 transition-sacred ${
+          scrubComplete ? "pointer-events-none" : ""
+        }`}
+        style={{ opacity }}
+      >
+        <span className={labelClass}>{messages.hero.scrollLabel}</span>
+        <span className="flex flex-col items-center gap-0.5">
+          <ScrollGlyph compact />
+        </span>
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={scrollHeroHint}
+      aria-label={messages.hero.scrollAria}
+      tabIndex={scrubComplete ? -1 : 0}
+      className={`hero-scroll-indicator pointer-events-auto absolute bottom-14 right-4 z-20 flex flex-col items-center gap-2 p-2 transition-sacred sm:bottom-16 sm:right-6 ${
+        scrubComplete ? "pointer-events-none" : ""
+      }`}
+      style={{ opacity }}
+    >
+      <span className={labelClass}>{messages.hero.scrollLabel}</span>
+      <ScrollGlyph />
     </button>
   );
 }
