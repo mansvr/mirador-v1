@@ -4,8 +4,6 @@ import {
   demo1OpenGraphImages,
   demo1TwitterImage,
 } from "@/lib/demo1/share-metadata";
-import "./demo-globals.css";
-
 const cormorant = Cormorant_Garamond({
   variable: "--font-demo-display",
   subsets: ["latin"],

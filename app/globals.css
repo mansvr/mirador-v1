@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+/* Demo1 Sacred @theme + .demo1-root — must load here so Tailwind emits hero-glass/scrim utilities */
+@import "./demo1/demo-globals.css";
 
 @custom-variant dark (&:is(.dark *));
 

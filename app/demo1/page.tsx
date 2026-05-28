@@ -20,7 +20,7 @@ export default function Demo1Page() {
           srcMp4={getHeroScrubMp4Url()}
           posterUrl={property.posterUrl}
           title={property.hero.title}
-          secondsPerViewport={3.5}
+          secondsPerViewport={4}
         >
           <div className="flex min-h-[100svh] flex-col justify-end px-4 pb-16 pt-28">
             <div className="mx-auto w-full max-w-5xl">

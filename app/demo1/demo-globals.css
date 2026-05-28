@@ -1,5 +1,6 @@
 /* Demo1 Sacred palette — no @import "tailwindcss" (root globals.css already does).
-   No --font-* in @theme: that was leaking to :root and breaking mirador.lat typography. */
+   @theme uses literal hex (not var()) so Tailwind does not resolve tokens on :root
+   where .demo1-root vars are absent — that broke hero-glass-text / nav glass. */
 
 .demo1-root {
   --viewer: #121212;
@@ -30,23 +31,23 @@
   scroll-behavior: smooth;
 }
 
-/* Color tokens only — never map --font-sans / --font-display here (global :root leak). */
+/* Literal values only — never --font-* here (global :root font leak on marketing). */
 @theme inline {
-  --color-viewer: var(--viewer);
-  --color-bg: var(--bg);
-  --color-surface: var(--surface);
-  --color-surface-alt: var(--surface-alt);
-  --color-text: var(--text);
-  --color-text-muted: var(--text-muted);
-  --color-text-emphasis: var(--text-emphasis);
-  --color-border: var(--border);
-  --color-border-subtle: var(--border-subtle);
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-tertiary: var(--accent-tertiary);
-  --color-chip: var(--chip);
-  --color-hero-scrim: var(--hero-scrim);
-  --color-hero-glass-text: var(--hero-glass-text);
+  --color-viewer: #121212;
+  --color-bg: #d3cdc3;
+  --color-surface: #bdb4a6;
+  --color-surface-alt: #b0a191;
+  --color-text: #554f44;
+  --color-text-muted: #726a5c;
+  --color-text-emphasis: #37332d;
+  --color-border: #a39783;
+  --color-border-subtle: #bdb4a6;
+  --color-accent: #a39783;
+  --color-accent-hover: #8c8271;
+  --color-accent-tertiary: #a0ae83;
+  --color-chip: #a39783;
+  --color-hero-scrim: #37332d;
+  --color-hero-glass-text: #e2ded7;
 }
 
 .demo1-root .font-display {

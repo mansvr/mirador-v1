@@ -13,7 +13,7 @@ Handoff checklist for Step 10 (pipeline QA + deploy).
 | Piece | Location |
 |-------|----------|
 | Route | `app/demo1/page.tsx` |
-| Scoped Sacred theme | `app/demo1/demo-globals.css` (`.demo1-root` — colors via `@theme`; **no** `--font-sans` / `--font-display` in `@theme`, or marketing `/` inherits broken fonts after visiting `/demo1`) |
+| Scoped Sacred theme | `app/demo1/demo-globals.css` imported from **`app/globals.css`** (not only demo layout) so Tailwind emits `text-hero-glass-text` / `from-hero-scrim/*` utilities; `@theme` uses **literal hex** |
 | Data | `content/demo1/property.json` |
 | Hero MP4 (prod) | Cloudflare R2 public URL (see below) |
 | Gallery stills | `public/demo1/gallery/*.webp` (git) |
@@ -57,7 +57,7 @@ Local fallback: same URL (no need to ship ~25 MB MP4 in git if R2 is always up).
 The hero uses **MP4 + GSAP ScrollTrigger** (`HeroScrollScrub`), not HLS. If scrub feels jumpy:
 
 1. **Encode for seeks** — short GOP (`-g 8`), no B-frames (`-bf 0`), `+faststart`. See `O:\microsites\docs\AI67-SCROLL-SCRUB-RUNBOOK.md`.
-2. **Pacing** — `secondsPerViewport` on `app/demo1/page.tsx` (higher = more scroll per second of video = smoother). Default in component is `4`; page uses `3.5`.
+2. **Pacing** — `secondsPerViewport` on `app/demo1/page.tsx` (higher = more scroll per second of video = smoother). Default in component is `4`; page uses `4` (try `5` if still fast).
 3. **Warmup** — component waits for `canplay`, runs buffer priming seeks (0 / 25% / 50% / 75% / end), then enables scroll. Poster shows until ready.
 4. **File size** — ~10 Mbps / 20s MP4 is heavy on mobile over R2; re-encode ~4–6 Mbps if production still stutters.
 

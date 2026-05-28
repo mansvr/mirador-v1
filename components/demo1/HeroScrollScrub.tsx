@@ -17,7 +17,7 @@ function clamp01(x: number) {
   return Math.max(0, Math.min(1, x));
 }
 
-const SEEK_EPSILON = 0.045;
+const SEEK_EPSILON = 0.06;
 const WARMUP_MARKS = [0, 0.25, 0.5, 0.75, 0.98] as const;
 
 function seekVideoTo(video: HTMLVideoElement, time: number): Promise<void> {
