@@ -2,6 +2,10 @@ export interface PropertyGalleryItem {
   title: string;
   imageUrl: string;
   aspect: "16/9" | "4/3" | "3/4" | "4/5" | "9/16" | "1/1";
+  /** `contain` for plans/diagrams; default `cover` for photos. */
+  fit?: "cover" | "contain";
+  /** Full-width row below the photo grid (floor plans, etc.). */
+  layout?: "tile" | "wide";
 }
 
 export interface PropertyMicrosite {

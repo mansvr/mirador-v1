@@ -26,8 +26,15 @@ function aspectClass(aspect: PropertyGalleryItem["aspect"]): string {
   }
 }
 
-function GalleryCard({ item }: { item: PropertyGalleryItem }) {
+function GalleryCard({
+  item,
+  wide = false,
+}: {
+  item: PropertyGalleryItem;
+  wide?: boolean;
+}) {
   const [failed, setFailed] = useState(false);
+  const contain = item.fit === "contain";
   const alt =
     item.title ||
     item.imageUrl
@@ -37,15 +44,25 @@ function GalleryCard({ item }: { item: PropertyGalleryItem }) {
 
   return (
     <figure
-      className={`group relative overflow-hidden rounded-2xl border border-text-muted/20 bg-surface-alt ${aspectClass(item.aspect)}`}
+      className={`group relative overflow-hidden rounded-2xl border border-text-muted/20 ${
+        contain ? "bg-viewer" : "bg-surface-alt"
+      } ${aspectClass(item.aspect)} ${
+        wide ? "col-span-2 md:col-span-3 lg:col-span-4" : ""
+      }`}
     >
       {!failed ? (
         <Image
           src={item.imageUrl}
           alt={alt}
           fill
-          className="object-cover transition-sacred group-hover:scale-[1.02]"
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className={`transition-sacred ${
+            contain ? "object-contain p-2 sm:p-3" : "object-cover group-hover:scale-[1.02]"
+          }`}
+          sizes={
+            wide
+              ? "(max-width: 1024px) 100vw, 1152px"
+              : "(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          }
           onError={() => setFailed(true)}
         />
       ) : (
@@ -57,7 +74,7 @@ function GalleryCard({ item }: { item: PropertyGalleryItem }) {
         </div>
       )}
       {item.title ? (
-        <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent px-4 py-3 text-sm font-medium text-white">
+        <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 py-3 text-sm font-medium text-white">
           {item.title}
         </figcaption>
       ) : null}
@@ -66,6 +83,9 @@ function GalleryCard({ item }: { item: PropertyGalleryItem }) {
 }
 
 export function BentoGallery({ items }: BentoGalleryProps) {
+  const tiles = items.filter((item) => item.layout !== "wide");
+  const wideItems = items.filter((item) => item.layout === "wide");
+
   return (
     <section id="galeria" className="bg-bg px-4 py-16 sm:py-24">
       <div className="mx-auto max-w-6xl">
@@ -77,8 +97,11 @@ export function BentoGallery({ items }: BentoGalleryProps) {
           Galería
         </h2>
         <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
-          {items.map((item) => (
+          {tiles.map((item) => (
             <GalleryCard key={item.imageUrl} item={item} />
+          ))}
+          {wideItems.map((item) => (
+            <GalleryCard key={item.imageUrl} item={item} wide />
           ))}
         </div>
       </div>
