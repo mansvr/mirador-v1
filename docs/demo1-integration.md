@@ -228,12 +228,40 @@ Nav toggle (next to Contacto) updates `?lang=` without reload. Copy lives in `co
 
 ---
 
+## Motion polish
+
+| Feature | Default on `/demo1` | Notes |
+|---------|---------------------|--------|
+| **Loading + prefetch** | Yes | Overlay until scrub MP4 warmup; preload scrub + first gallery stills |
+| **GSAP hero entrance** | Yes | Hero glass card blur → sharp (`power3.out`, ~550ms) when scrub ready |
+| **Section reveals** | No | Opt-in only — see below |
+
+Resolver: `lib/demo1/motion-mode.ts`. Components: `Demo1LoadingScreen`, `HeroCopyCard`, `Demo1ScrollReveal`, `useDemo1Prefetch`.
+
+### Query overrides
+
+| URL | Behavior |
+|-----|----------|
+| `/demo1` | Loading + hero entrance (shipped default) |
+| `/demo1?motion=reveal` | Default **plus** scroll reveals on spec / gallery / contact |
+| `/demo1?motion=all` | Same as `reveal` (default + section reveals) |
+| `/demo1?motion=off` | Disable all motion (scroll-scrub + hint only) |
+| `/demo1?motion=loading` | Loading only (isolated preview) |
+| `/demo1?motion=hero` | Hero entrance only (isolated preview) |
+
+Combine with locale: `/demo1?lang=en&motion=reveal`.
+
+**Not shipped:** cycling specs (`?motion=cycle` reserved). **Parallax** was tried and removed.
+
+---
+
 ## Not in v1 (per product decision)
 
 - Homepage link to `/demo1` (add later in `MarketingSections`)
 - Hero HLS loop (`HeroHls`) — scroll-scrub only
 - Gallery room labels
 - 3D tour CTA in hero
+- Section scroll reveals on default `/demo1` (use `?motion=reveal` to preview); see [Motion polish](#motion-polish)
 
 ---
 

@@ -12,6 +12,7 @@ type HeroScrollScrubProps = {
   /** Viewport heights of scroll per 1s of video — higher = longer scroll track = smoother. */
   secondsPerViewport?: number;
   children?: React.ReactNode;
+  onScrubReadyChange?: (ready: boolean) => void;
 };
 
 function clamp01(x: number) {
@@ -69,6 +70,7 @@ export function HeroScrollScrub({
   title,
   secondsPerViewport = 4,
   children,
+  onScrubReadyChange,
 }: HeroScrollScrubProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -235,6 +237,10 @@ export function HeroScrollScrub({
       st.kill();
     };
   }, [duration, prefersReducedMotion, scrubReady, secondsPerViewport]);
+
+  useEffect(() => {
+    onScrubReadyChange?.(scrubReady || prefersReducedMotion);
+  }, [onScrubReadyChange, prefersReducedMotion, scrubReady]);
 
   return (
     <section ref={sectionRef} className="relative bg-viewer">

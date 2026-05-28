@@ -1,43 +1,81 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { AgentBlock } from "@/components/demo1/AgentBlock";
 import { BentoGallery } from "@/components/demo1/BentoGallery";
 import { Demo1Analytics } from "@/components/demo1/Demo1Analytics";
 import { Demo1Footer } from "@/components/demo1/Demo1Footer";
+import { Demo1LoadingScreen } from "@/components/demo1/Demo1LoadingScreen";
 import { Demo1LocaleProvider } from "@/components/demo1/Demo1LocaleProvider";
+import { Demo1MotionProvider } from "@/components/demo1/Demo1MotionProvider";
+import { Demo1ScrollReveal } from "@/components/demo1/Demo1ScrollReveal";
 import { FloatingNav } from "@/components/demo1/FloatingNav";
+import { HeroCopyCard } from "@/components/demo1/HeroCopyCard";
 import { HeroScrollScrub } from "@/components/demo1/HeroScrollScrub";
 import { SpecStrip } from "@/components/demo1/SpecStrip";
 import { useDemo1Locale } from "@/components/demo1/Demo1LocaleProvider";
+import { useDemo1Motion } from "@/components/demo1/Demo1MotionProvider";
+import { useDemo1Prefetch } from "@/components/demo1/useDemo1Prefetch";
 import { formatMessage } from "@/lib/demo1/messages";
 import { getHeroScrubMp4Url } from "@/lib/demo1/property";
 import type { PropertyMicrosite } from "@/lib/demo1/types";
 import type { Demo1Locale } from "@/lib/demo1/locale";
 
+const HERO_READY_TIMEOUT_MS = 12_000;
+
 function Demo1PageInner() {
   const { property, messages } = useDemo1Locale();
+  const { motion } = useDemo1Motion();
+  const [scrubReady, setScrubReady] = useState(false);
+  const scrubMp4 = getHeroScrubMp4Url();
+
+  const galleryUrls = useMemo(
+    () => property.gallery.map((item) => item.imageUrl),
+    [property.gallery],
+  );
+
+  useDemo1Prefetch(motion.loading, scrubMp4, galleryUrls);
+
+  const onScrubReadyChange = useCallback((ready: boolean) => {
+    setScrubReady(ready);
+  }, []);
+
+  useEffect(() => {
+    if (!motion.loading || scrubReady) return;
+    const timeoutId = window.setTimeout(() => setScrubReady(true), HERO_READY_TIMEOUT_MS);
+    return () => window.clearTimeout(timeoutId);
+  }, [motion.loading, scrubReady]);
+
   const specsLine = formatMessage(messages.hero.specsLine, {
     beds: property.specs.beds,
     baths: property.specs.baths,
     sqm: property.specs.sqm,
   });
 
+  const heroCardClassName =
+    "inline-block w-full max-w-[32rem] overflow-hidden rounded-2xl bg-gradient-to-t from-hero-scrim/75 via-hero-scrim/18 to-transparent px-4 py-6 sm:max-w-xl sm:px-6 sm:py-8";
+
   return (
     <>
       <Demo1Analytics />
+      <Demo1LoadingScreen show={motion.loading && !scrubReady} />
       <FloatingNav />
 
       <section className="relative bg-viewer text-hero-glass-text">
         <HeroScrollScrub
-          srcMp4={getHeroScrubMp4Url()}
+          srcMp4={scrubMp4}
           posterUrl={property.posterUrl}
           title={property.hero.title}
           secondsPerViewport={4}
+          onScrubReadyChange={onScrubReadyChange}
         >
           <div className="flex min-h-[100svh] flex-col justify-end px-4 pb-16 pt-28">
             <div className="mx-auto w-full max-w-5xl">
-              <div className="inline-block w-full max-w-[32rem] overflow-hidden rounded-2xl bg-gradient-to-t from-hero-scrim/75 via-hero-scrim/18 to-transparent px-4 py-6 sm:max-w-xl sm:px-6 sm:py-8">
+              <HeroCopyCard
+                motionHero={motion.hero}
+                scrubReady={scrubReady}
+                className={heroCardClassName}
+              >
                 <p className="text-xs uppercase tracking-[0.25em] text-hero-glass-text/75 sm:text-sm">
                   {property.hero.eyebrow}
                 </p>
@@ -50,15 +88,21 @@ function Demo1PageInner() {
                 <p className="mt-6 text-xs text-hero-glass-text/70 sm:text-sm">
                   {specsLine}
                 </p>
-              </div>
+              </HeroCopyCard>
             </div>
           </div>
         </HeroScrollScrub>
       </section>
 
-      <SpecStrip specs={property.specs} />
-      <BentoGallery items={property.gallery} />
-      <AgentBlock />
+      <Demo1ScrollReveal afterHero>
+        <SpecStrip specs={property.specs} />
+      </Demo1ScrollReveal>
+      <Demo1ScrollReveal>
+        <BentoGallery items={property.gallery} />
+      </Demo1ScrollReveal>
+      <Demo1ScrollReveal>
+        <AgentBlock />
+      </Demo1ScrollReveal>
       <Demo1Footer propertyTitle={property.hero.title} />
     </>
   );
@@ -71,14 +115,18 @@ function Demo1PageFallback() {
 export function Demo1PageContent({
   property,
   initialLocale,
+  initialMotionQuery,
 }: {
   property: PropertyMicrosite;
   initialLocale: Demo1Locale;
+  initialMotionQuery?: string | null;
 }) {
   return (
     <Suspense fallback={<Demo1PageFallback />}>
       <Demo1LocaleProvider property={property} initialLocale={initialLocale}>
-        <Demo1PageInner />
+        <Demo1MotionProvider initialMotionQuery={initialMotionQuery}>
+          <Demo1PageInner />
+        </Demo1MotionProvider>
       </Demo1LocaleProvider>
     </Suspense>
   );
