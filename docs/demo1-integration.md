@@ -4,7 +4,109 @@
 **Source (iterate):** `O:\microsites\apartment01\web`  
 **Deployed copy:** `mirador/app/demo1`, `mirador/components/demo1`, `mirador/content/demo1`, `mirador/public/demo1`
 
-Handoff checklist for Step 10 (pipeline QA + deploy).
+Handoff checklist for Step 10 (pipeline QA + deploy).  
+**Last status pass:** 2026-05-28 · live at `https://mirador.lat/demo1` (also `mirador.homes/demo1` when routed).
+
+---
+
+## Handoff status vs pipeline + Blender docs
+
+Source checklists: `O:\microsites\docs\AI67-HERO-TO-MICROSITE-PIPELINE.md` (Step 10), `BLENDER-ARCHVIZ-MICROSITE-HANDOFF.md`, `AI67-MICROSITE-GAP-ANALYSIS.md`.
+
+### Your read (mostly right)
+
+For **product UX on the live microsite**, the two highest **impact × ROI** gaps left are:
+
+1. **3D tour CTA block** — `property.json` still has `ctas.primary` (“Ver recorrido 3D”) but nothing on the page links to the splat tour (`/v/scene_best50000`). Without this, the listing story stops at scroll-scrub + stills.
+2. **Stakeholder handoff package** — operational closure (URLs, assets, share playbook), not a page feature.
+
+Everything else from the original handoff is either **shipped**, **resolved with a deliberate substitute**, or **Phase 2+ / low ROI** for v1.
+
+### Implemented on `/demo1`
+
+| Handoff item | Where / notes |
+|--------------|----------------|
+| Nav pill + WhatsApp | `FloatingNav` (compact 3-column layout) |
+| Spec strip | `SpecStrip` + verified line |
+| Bento gallery | 12 WebPs incl. wide floor plan (`0014`, `fit: contain`) |
+| Agent + phone + WhatsApp | Real agent (Mansur Arevalo, `573043362502`) |
+| Agent headshot | `public/demo1/assets/agent-headshot.webp` |
+| Mobile sticky CTA | `AgentBlock` bottom bar (secondary CTA copy) |
+| Hero video | **Scroll-scrub MP4** on R2 (`HeroScrollScrub` + GSAP ScrollTrigger) |
+| Hero scroll hint | `HeroScrollIndicator` (“Deslizar”) |
+| Loading + prefetch | Default on `/demo1` (`Demo1LoadingScreen`, `useDemo1Prefetch`) |
+| GSAP hero entrance | Default on `/demo1` (`HeroCopyCard`, blur → sharp) |
+| ES / EN locale | Nav toggle + `copy.es` / `copy.en`; `?lang=en` |
+| OG 1200×630 for WhatsApp | Baked `public/demo1/og-card.jpg` + `share/demo1.html` |
+| Listings hub OG | `mirador.homes` share page + metadata (separate commit) |
+| PostHog funnel | `demo1_section_viewed`, `demo1_outbound_click` |
+| Client footer + disclaimer | `Demo1Footer` |
+| Deploy | Vercel · `main` → production |
+
+### Resolved differently (not missing — document the choice)
+
+| Original handoff | What we shipped instead |
+|------------------|-------------------------|
+| HLS loop hero (`HeroHls`, Cloudflare Stream `.m3u8`) | **Scroll-scrub MP4** only — better interaction; `hlsUrl` remains `null`. Stream UID optional for archive/Reels, not required for current hero. |
+| `LoadingScreen` 000→100 counter (2.7s) | Branded Mirador loader tied to **real** scrub warmup (not fake progress) |
+| Framer `whileInView` on every section | **Not default** — tried, felt jumpy; available via `?motion=reveal` only |
+| **Parallax gallery** (Hyliox-style) | **Removed** after preview — scope/perf; do not reintroduce without new brief |
+| **Cycling specs** in hero | Static spec line (cleaner for listings) |
+| Cormorant + Source Sans 3 | Cormorant + **Manrope** (Sacred tokens) |
+| Asymmetric 7/5/5/7 bento | Uniform responsive bento grid |
+| Agent **form** | WhatsApp + `tel:` only (conversion path for v1) |
+| `FooterMarquee` + footer HLS echo | Text footer only |
+| `SplatViewerGate` / `R3FViewerGate` inline | **Deferred** — use full-page tour at `/v/scene_best50000` when CTA ships |
+| Similar units / journal sections | Out of v1 scope |
+
+### Still open — priority
+
+| Item | ROI | Notes |
+|------|-----|--------|
+| **3D CTA section** (hero and/or `#recorrido` + link to tour) | **High** | Tour exists: `https://mirador.lat/v/scene_best50000`. Wire `ctas.primary`; optional click-to-load gate later. |
+| **Handoff package** (below) | **High (ops)** | One-pager for stakeholder + archive pointers |
+| Gallery **room labels** | Low–medium | All `title: ""` in `property.json` |
+| **`hero_reels_9x16.mp4`** | Medium (marketing) | Social/Reels/Stories; `hlsUrlVertical` still `null` |
+| Homepage → `/demo1` link | Medium (distribution) | `MarketingSections` — deliberate v1 omit |
+| Dedicated **Stream asset UID** in handoff | Low for current hero | Only needed if you publish HLS loop or host Reels on Stream |
+| Custom **demo1 favicon** | Low | Site uses global `app/icon.svg` |
+| Inline **contact form** | Low for v1 | Handoff Pro tier |
+
+### Stakeholder handoff package (checklist)
+
+Deliver when closing the AI67 demo (copy into a one-pager or `docs/ai67-stakeholder-handoff.md`):
+
+**Live & product**
+
+- [x] Live microsite URL: `https://mirador.lat/demo1`
+- [x] English preview: `https://mirador.lat/demo1?lang=en`
+- [ ] 3D tour URL (link from microsite once CTA ships): `https://mirador.lat/v/scene_best50000`
+- [x] WhatsApp share URL (preview card): `https://mirador.lat/share/demo1.html`
+- [x] Listings hub (if using homes): `https://mirador.homes/home` · tour deep link `/v/scene_best50000`
+
+**Share playbook**
+
+- [x] WhatsApp link preview — static `share/demo1.html` + baked JPEG; see [Open Graph](#open-graph-1200630--whatsapp-share)
+- [ ] **Reels / Stories** — `hero_reels_9x16.mp4` not in repo (encode per pipeline Step 6; center-safe crop from master)
+- [ ] **UTM template** for agent campaigns: `?utm_source=whatsapp&utm_campaign={agent-slug}`
+- [x] PostHog — events documented in [Analytics](#analytics-posthog)
+
+**Archive masters (paths / cloud)**
+
+- [x] Hero scrub MP4 (production): R2 `pub-8d93aaffda7e41a99f7984129f0a3674.r2.dev/hero-scrub.mp4`
+- [ ] `hero_loop.mp4` master (16:9 loop for Stream) — if encoded separately from scrub
+- [ ] Cloudflare **Stream asset UID** + `.m3u8` URL — if/when HLS is published
+- [x] `poster.webp` — `public/demo1/assets/poster.webp`
+- [x] Gallery WebPs — `public/demo1/gallery/*.webp`
+- [x] OG card — `public/demo1/og-card.jpg`
+- [x] Source of truth — `content/demo1/property.json`
+- [ ] Blender scene + render settings — `O:\microsites\docs\AI67-SCROLL-SCRUB-RUNBOOK.md` + `.blend` path on disk
+
+**QA sign-off**
+
+- [x] Mobile scroll-scrub + WhatsApp CTA smoke-tested on production
+- [ ] iOS/Android scroll-scrub regression when 3D CTA adds new scroll targets
+- [x] WhatsApp OG validated (Sharing Debugger + fresh chat)
 
 ---
 
@@ -258,10 +360,13 @@ Combine with locale: `/demo1?lang=en&motion=reveal`.
 ## Not in v1 (per product decision)
 
 - Homepage link to `/demo1` (add later in `MarketingSections`)
-- Hero HLS loop (`HeroHls`) — scroll-scrub only
-- Gallery room labels
-- 3D tour CTA in hero
+- Hero HLS loop (`HeroHls`) — scroll-scrub only; see [Resolved differently](#resolved-differently-not-missing--document-the-choice)
+- Gallery room labels (copy-only; low priority)
+- **3D tour CTA** — primary remaining product gap; tour at `/v/scene_best50000`
+- **Stakeholder handoff one-pager** — ops checklist above
+- `hero_reels_9x16.mp4` / vertical Stream derivative
 - Section scroll reveals on default `/demo1` (use `?motion=reveal` to preview); see [Motion polish](#motion-polish)
+- Parallax gallery, inline splat gate, footer HLS marquee, agent form, similar listings
 
 ---
 
