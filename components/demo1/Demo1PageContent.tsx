@@ -83,8 +83,8 @@ function Demo1PageInner() {
                 <p className="mt-3 text-sm leading-snug text-hero-glass-text/90 sm:mt-4 sm:text-lg">
                   {property.hero.description}
                 </p>
-                <div className="mt-4 border-t border-hero-glass-text/10 pt-2.5 sm:pt-3">
-                  <div className="flex items-end justify-between gap-3 sm:gap-4">
+                <div className="mt-4 border-t border-hero-glass-text/10 pt-2 sm:pt-2.5">
+                  <div className="flex items-start justify-between gap-3 sm:gap-4">
                     <div className="min-w-0 flex-1">
                       <p className="text-[11px] uppercase tracking-[0.22em] text-hero-glass-text/75 sm:text-xs sm:tracking-[0.25em]">
                         {property.hero.eyebrow}

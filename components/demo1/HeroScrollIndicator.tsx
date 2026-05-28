@@ -71,7 +71,7 @@ export function HeroScrollIndicator({
         onClick={scrollHeroHint}
         aria-label={messages.hero.scrollAria}
         tabIndex={scrubComplete ? -1 : 0}
-        className={`hero-scroll-indicator pointer-events-auto flex shrink-0 flex-col items-center gap-0.5 py-0.5 transition-sacred ${
+        className={`hero-scroll-indicator pointer-events-auto flex shrink-0 flex-col items-center gap-0.5 transition-sacred ${
           scrubComplete ? "pointer-events-none" : ""
         }`}
         style={{ opacity }}
