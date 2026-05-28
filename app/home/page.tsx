@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import { getPublishedListingCards } from "@/lib/listings/get-listings";
+import { listingsHubMetadata } from "@/lib/listings/home-metadata";
 import { ListingCard } from "@/components/listing/ListingCard";
 import { HomeFooter, HomeHeader, SitePageShell } from "@/components/home/HomeShell";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return listingsHubMetadata();
+}
 
 export default async function HomeListingsPage() {
   const listings = await getPublishedListingCards();

@@ -129,6 +129,8 @@ Tap opens the listing: link goes to `https://mirador.lat/demo1`.
 
 If Debugger shows **403**, see `docs/whatsapp-og-troubleshooting.md` (Vercel bot protection / Meta crawler).
 
+**mirador.homes listings:** Tour links are `/v/{sceneId}` (OG already uses baked `/og/{sceneId}-card.jpg`). The grid homepage had no `og:image` until `listingsHubMetadata()` — for WhatsApp prefer `https://mirador.homes/share/mirador-homes.html` or a specific `/v/…` URL, not a stale cached `/` link.
+
 ---
 
 ## Analytics (PostHog)
