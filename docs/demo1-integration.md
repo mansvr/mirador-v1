@@ -33,7 +33,7 @@ Everything else from the original handoff is either **shipped**, **resolved with
 | Agent headshot | `public/demo1/assets/agent-headshot.webp` |
 | Mobile sticky CTA | `AgentBlock` bottom bar (secondary CTA copy) |
 | Hero video | **Scroll-scrub MP4** on R2 (`HeroScrollScrub` + GSAP ScrollTrigger) |
-| Hero scroll hint | `HeroScrollIndicator` (“Deslizar”) |
+| Hero scroll hint | `HeroScrollIndicator` inline in glass card footer (see [Hero copy card](#hero-copy-card-glass-block)) |
 | Loading + prefetch | Default on `/demo1` (`Demo1LoadingScreen`, `useDemo1Prefetch`) |
 | GSAP hero entrance | Default on `/demo1` (`HeroCopyCard`, blur → sharp) |
 | ES / EN locale | Nav toggle + `copy.es` / `copy.en`; `?lang=en` |
@@ -179,6 +179,57 @@ Verify:
 ```powershell
 npx wrangler r2 bucket cors list ai67-assets
 ```
+
+### Hero copy card (glass block)
+
+Bottom-left overlay on the scroll-scrub hero. **Do not** float “Deslizar” over the card corner on mobile — it overlapped copy. The approved layout keeps meta + scroll hint in **one row** directly under the divider.
+
+**Code**
+
+| Piece | Location |
+|-------|----------|
+| Card shell + layout | `components/demo1/Demo1PageContent.tsx` (`heroCardClassName`, footer row) |
+| GSAP entrance | `components/demo1/HeroCopyCard.tsx` |
+| Scroll hint | `components/demo1/HeroScrollIndicator.tsx` (`variant="inline"`) |
+| Scrub progress for hint | `components/demo1/HeroScrubContext.tsx` ← `HeroScrollScrub` provider |
+| Copy / specs | `content/demo1/property.json` → `hero.*`, `specs.*`; specs line from `lib/demo1/messages.ts` |
+
+**Layout (top → bottom)**
+
+```
+┌─────────────────────────────────────────────┐
+│  AI67                          (hero.title) │
+│  Apartamento con acabados…   (description)│
+├─────────────────────────────────────────────┤  ← border-t (margin)
+│  PROYECTO · MEDELLÍN    │      DESLIZAR    │  ← items-start: same top line
+│  1 hab · 2 ba · 92 m²    │         ↓        │
+│       (left column)      │    (right col.)  │
+└─────────────────────────────────────────────┘
+```
+
+| Zone | Source | Notes |
+|------|--------|--------|
+| Title | `property.hero.title` | No eyebrow above title (listing name leads) |
+| Description | `property.hero.description` | |
+| Divider | `border-t border-hero-glass-text/10` | Tight padding: `pt-2` / `sm:pt-2.5` |
+| Left column | `property.hero.eyebrow` then formatted `specsLine` | Stacked; `flex-1 min-w-0` |
+| Right column | `HeroScrollIndicator` inline | Tap scrolls ~40vh; fades when scrub `progress >= 1` |
+
+**Tailwind / alignment**
+
+- Footer row: `flex items-start justify-between gap-3` — **`items-start`** so eyebrow lines up with “Deslizar” at the margin (avoid `items-end`, which pinned the left stack to the bottom of the taller arrow column).
+- Card padding: `px-4 py-4` / `sm:px-5 sm:py-6`; description `mt-3` / `sm:mt-4`.
+
+**History (avoid regressions)**
+
+| Attempt | Outcome |
+|---------|---------|
+| Floating `HeroScrollIndicator` (bottom-right of viewport) | Overlapped glass card on mobile |
+| Inline hint in same row as specs only | Eyebrow felt too low |
+| Deslizar on its own row above eyebrow | Too much vertical space |
+| **Current** — one row, two columns, top-aligned | Shipped default (2026-05-28) |
+
+**Mobile nav (separate)** — `FloatingNav`: below `sm`, hide Galería/Contacto; center ES/EN; Mirador left, WhatsApp right.
 
 ---
 
