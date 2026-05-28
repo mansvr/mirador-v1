@@ -13,12 +13,12 @@ export function SpecStrip({ specs }: SpecStripProps) {
 
   const items = [
     {
-      label: messages.specs.beds,
+      label: specs.beds === 1 ? messages.specs.bed : messages.specs.beds,
       value: String(specs.beds),
       icon: "solar:bed-linear",
     },
     {
-      label: messages.specs.baths,
+      label: specs.baths === 1 ? messages.specs.bath : messages.specs.baths,
       value: String(specs.baths),
       icon: "solar:bath-linear",
     },

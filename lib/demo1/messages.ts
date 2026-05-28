@@ -15,7 +15,9 @@ const messages = {
     },
     specs: {
       beds: "Habitaciones",
+      bed: "Habitación",
       baths: "Baños",
+      bath: "Baño",
       area: "Área",
       verified: "Propiedad verificada · Mirador",
     },
@@ -48,7 +50,9 @@ const messages = {
     },
     specs: {
       beds: "Bedrooms",
+      bed: "Bedroom",
       baths: "Bathrooms",
+      bath: "Bathroom",
       area: "Area",
       verified: "Verified listing · Mirador",
     },
