@@ -1,6 +1,6 @@
-@import "tailwindcss";
+/* Demo1 Sacred palette — no @import "tailwindcss" (root globals.css already does).
+   No --font-* in @theme: that was leaking to :root and breaking mirador.lat typography. */
 
-/* Scoped Sacred palette — does not override marketing :root tokens */
 .demo1-root {
   --viewer: #121212;
   --bg: #d3cdc3;
@@ -30,6 +30,7 @@
   scroll-behavior: smooth;
 }
 
+/* Color tokens only — never map --font-sans / --font-display here (global :root leak). */
 @theme inline {
   --color-viewer: var(--viewer);
   --color-bg: var(--bg);
@@ -46,8 +47,6 @@
   --color-chip: var(--chip);
   --color-hero-scrim: var(--hero-scrim);
   --color-hero-glass-text: var(--hero-glass-text);
-  --font-sans: var(--font-demo-sans);
-  --font-display: var(--font-demo-display);
 }
 
 .demo1-root .font-display {

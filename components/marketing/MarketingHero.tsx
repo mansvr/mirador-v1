@@ -33,7 +33,7 @@ export function MarketingHero() {
 
           <MiradorMark className="mb-6 h-12 w-12 text-mirador-accent md:h-14 md:w-14" />
 
-          <h1 className="text-balance text-3xl font-medium tracking-tight md:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
+          <h1 className="font-sans text-balance text-3xl font-medium tracking-tight md:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
             El mirador que tu listing necesitaba
           </h1>
 
@@ -42,7 +42,7 @@ export function MarketingHero() {
             compartir en WhatsApp y embeber en tu web.
           </p>
 
-          <p className="mt-2 text-sm text-mirador-text-muted/80">
+          <p className="mt-2 font-sans text-sm text-mirador-text-muted/80">
             The viewpoint your listing was missing.
           </p>
 
