@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MiradorWordmark } from "@/components/brand/MiradorMark";
 import { OutboundLink } from "@/components/demo1/OutboundLink";
 import type { PropertyMicrosite } from "@/lib/demo1/types";
 import { whatsappHref } from "@/lib/demo1/property";
@@ -18,9 +19,13 @@ export function FloatingNav({ property }: FloatingNavProps) {
       <nav className="mx-auto flex max-w-5xl items-center justify-between gap-4 rounded-full border border-hero-glass-text/15 bg-hero-scrim/48 px-4 py-2.5 backdrop-blur-md">
         <Link
           href="/"
-          className="text-sm font-medium tracking-wide text-hero-glass-text transition-sacred hover:text-hero-glass-text"
+          className="transition-sacred hover:opacity-90"
+          aria-label="Mirador — inicio"
         >
-          Mirador
+          <MiradorWordmark
+            size="sm"
+            className="text-hero-glass-text [&_svg]:text-hero-glass-text"
+          />
         </Link>
         <div className="hidden items-center gap-6 text-sm text-hero-glass-text/85 sm:flex">
           <a
