@@ -73,3 +73,45 @@
     transition-duration: 0.01ms;
   }
 }
+
+/* Hero scroll hint — expressive 2s loop, Sacred ease (## Motion.txt) */
+@keyframes hero-scroll-nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+}
+
+.demo1-root .hero-scroll-indicator__chevron {
+  display: flex;
+  animation: hero-scroll-nudge 2s var(--ease-sacred) infinite;
+}
+
+.demo1-root .hero-scroll-indicator__track {
+  transform-origin: top;
+  animation: hero-scroll-track 2s var(--ease-sacred) infinite;
+}
+
+@keyframes hero-scroll-track {
+  0%,
+  100% {
+    transform: scaleY(0.85);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 0.85;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo1-root .hero-scroll-indicator__chevron,
+  .demo1-root .hero-scroll-indicator__track {
+    animation: none;
+  }
+}

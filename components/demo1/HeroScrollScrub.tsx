@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import { HeroScrollIndicator } from "@/components/demo1/HeroScrollIndicator";
 
 type HeroScrollScrubProps = {
   srcMp4: string;
@@ -77,6 +78,7 @@ export function HeroScrollScrub({
   const [duration, setDuration] = useState<number | null>(null);
   const [scrubReady, setScrubReady] = useState(false);
   const [unlocked, setUnlocked] = useState(false);
+  const [scrubProgress, setScrubProgress] = useState(0);
 
   const prefersReducedMotion = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -215,7 +217,9 @@ export function HeroScrollScrub({
         anticipatePin: 1,
         invalidateOnRefresh: true,
         onUpdate(self) {
-          targetTimeRef.current = clamp01(self.progress) * duration;
+          const p = clamp01(self.progress);
+          setScrubProgress(p);
+          targetTimeRef.current = p * duration;
           scheduleSeek();
         },
       });
@@ -256,6 +260,10 @@ export function HeroScrollScrub({
         {children ? (
           <div className="pointer-events-none absolute inset-0 z-10">{children}</div>
         ) : null}
+        <HeroScrollIndicator
+          progress={scrubProgress}
+          show={scrubReady && !prefersReducedMotion}
+        />
       </div>
     </section>
   );

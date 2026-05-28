@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { PropertyMicrosite } from "@/lib/demo1/types";
 import { OutboundLink } from "@/components/demo1/OutboundLink";
 import { SacredIcon } from "@/components/demo1/SacredIcon";
@@ -17,7 +18,22 @@ export function AgentBlock({ property }: AgentBlockProps) {
     <section id="contacto" className="bg-surface px-4 py-16 sm:py-20">
       <div className="mx-auto max-w-5xl rounded-3xl border border-border bg-bg p-8 sm:p-12">
         <p className="label-sacred text-text-muted">Contacto</p>
-        <h2 className="mt-2 font-display text-3xl text-text">{property.agent.name}</h2>
+        <div className="mt-4 flex items-center gap-4 sm:gap-5">
+          {property.agent.photoUrl ? (
+            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-border-subtle bg-surface-alt sm:h-20 sm:w-20">
+              <Image
+                src={property.agent.photoUrl}
+                alt={property.agent.name}
+                fill
+                className="object-cover"
+                sizes="80px"
+              />
+            </div>
+          ) : null}
+          <h2 className="font-display text-3xl text-text sm:text-4xl">
+            {property.agent.name}
+          </h2>
+        </div>
         <p className="mt-3 max-w-lg text-text-muted">{property.hero.description}</p>
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <OutboundLink

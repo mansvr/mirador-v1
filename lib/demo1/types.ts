@@ -27,6 +27,7 @@ export interface PropertyMicrosite {
     name: string;
     phone: string;
     whatsapp: string;
+    photoUrl?: string;
   };
   ctas: {
     primary: string;
