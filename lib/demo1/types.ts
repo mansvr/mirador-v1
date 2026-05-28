@@ -1,3 +1,5 @@
+import type { Demo1Locale } from "@/lib/demo1/locale";
+
 export interface PropertyGalleryItem {
   title: string;
   imageUrl: string;
@@ -38,4 +40,12 @@ export interface PropertyMicrosite {
     secondary: string;
   };
   gallery: PropertyGalleryItem[];
+  copy: Record<
+    Demo1Locale,
+    {
+      hero: { eyebrow: string; description: string };
+      ctas: { primary: string; secondary: string };
+      whatsapp: { nav: string; agent: string };
+    }
+  >;
 }

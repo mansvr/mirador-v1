@@ -27,6 +27,36 @@
     "primary": "Ver recorrido 3D",
     "secondary": "Contactar agente"
   },
+  "copy": {
+    "es": {
+      "hero": {
+        "eyebrow": "PROYECTO · MEDELLÍN",
+        "description": "Apartamento con acabados contemporáneos, cocina integrada y espacios luminosos."
+      },
+      "ctas": {
+        "primary": "Ver recorrido 3D",
+        "secondary": "Contactar agente"
+      },
+      "whatsapp": {
+        "nav": "Hola, me interesa {title}",
+        "agent": "Hola {agent}, quiero agendar una visita a {title}."
+      }
+    },
+    "en": {
+      "hero": {
+        "eyebrow": "PROJECT · MEDELLÍN",
+        "description": "Apartment with contemporary finishes, an integrated kitchen, and bright open spaces."
+      },
+      "ctas": {
+        "primary": "View 3D tour",
+        "secondary": "Contact agent"
+      },
+      "whatsapp": {
+        "nav": "Hi, I'm interested in {title}",
+        "agent": "Hi {agent}, I'd like to schedule a visit to {title}."
+      }
+    }
+  },
   "gallery": [
     { "title": "", "imageUrl": "/demo1/gallery/0003.webp", "aspect": "4/5" },
     { "title": "", "imageUrl": "/demo1/gallery/closeup-003.webp", "aspect": "4/5" },

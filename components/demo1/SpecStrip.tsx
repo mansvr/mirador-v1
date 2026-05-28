@@ -1,24 +1,29 @@
-import type { PropertyMicrosite } from "@/lib/demo1/types";
+"use client";
+
 import { SacredIcon } from "@/components/demo1/SacredIcon";
+import { useDemo1Locale } from "@/components/demo1/Demo1LocaleProvider";
+import type { PropertyMicrosite } from "@/lib/demo1/types";
 
 interface SpecStripProps {
   specs: PropertyMicrosite["specs"];
 }
 
 export function SpecStrip({ specs }: SpecStripProps) {
+  const { messages } = useDemo1Locale();
+
   const items = [
     {
-      label: "Habitaciones",
+      label: messages.specs.beds,
       value: String(specs.beds),
       icon: "solar:bed-linear",
     },
     {
-      label: "Baños",
+      label: messages.specs.baths,
       value: String(specs.baths),
       icon: "solar:bath-linear",
     },
     {
-      label: "Área",
+      label: messages.specs.area,
       value: `${specs.sqm} m²`,
       icon: "solar:ruler-angular-linear",
     },
@@ -43,11 +48,11 @@ export function SpecStrip({ specs }: SpecStripProps) {
           </div>
         ))}
       </div>
-      {specs.verified && (
+      {specs.verified ? (
         <p className="border-t border-border bg-bg py-2 text-center text-xs tracking-wide text-text-muted">
-          Propiedad verificada · Mirador
+          {messages.specs.verified}
         </p>
-      )}
+      ) : null}
     </section>
   );
 }

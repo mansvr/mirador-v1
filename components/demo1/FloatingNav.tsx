@@ -1,55 +1,55 @@
+"use client";
+
 import Link from "next/link";
 import { MiradorWordmark } from "@/components/brand/MiradorMark";
 import { OutboundLink } from "@/components/demo1/OutboundLink";
-import type { PropertyMicrosite } from "@/lib/demo1/types";
+import { LocaleToggle } from "@/components/demo1/LocaleToggle";
+import { useDemo1Locale } from "@/components/demo1/Demo1LocaleProvider";
 import { whatsappHref } from "@/lib/demo1/property";
 
-interface FloatingNavProps {
-  property: PropertyMicrosite;
-}
+const navLinkClass =
+  "transition-sacred hover:text-hero-glass-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-hero-glass-text/40";
 
-export function FloatingNav({ property }: FloatingNavProps) {
-  const waLink = whatsappHref(
-    property.agent.whatsapp,
-    `Hola, me interesa ${property.hero.title}`,
-  );
+export function FloatingNav() {
+  const { property, messages } = useDemo1Locale();
+  const waLink = whatsappHref(property.agent.whatsapp, property.whatsappNavText);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-4 pt-4">
-      <nav className="mx-auto flex max-w-5xl items-center justify-between gap-4 rounded-full border border-hero-glass-text/15 bg-hero-scrim/48 px-4 py-2.5 backdrop-blur-md">
+      <nav
+        className="mx-auto grid w-full max-w-lg grid-cols-[1fr_auto_1fr] items-center gap-x-3 rounded-full border border-hero-glass-text/15 bg-hero-scrim/48 px-3 py-2.5 backdrop-blur-md sm:max-w-xl sm:gap-x-5 sm:px-4"
+        aria-label="Principal"
+      >
         <Link
           href="/"
-          className="transition-sacred hover:opacity-90"
-          aria-label="Mirador — inicio"
+          className="justify-self-start transition-sacred hover:opacity-90"
+          aria-label={messages.nav.homeAria}
         >
           <MiradorWordmark
             size="sm"
             className="text-hero-glass-text [&_svg]:text-hero-glass-text"
           />
         </Link>
-        <div className="hidden items-center gap-6 text-sm text-hero-glass-text/85 sm:flex">
-          <a
-            href="#galeria"
-            className="transition-sacred hover:text-hero-glass-text"
-          >
-            Galería
+
+        <div className="flex items-center justify-center gap-2.5 text-sm text-hero-glass-text/85 sm:gap-5">
+          <a href="#galeria" className={navLinkClass}>
+            {messages.nav.gallery}
           </a>
-          <a
-            href="#contacto"
-            className="transition-sacred hover:text-hero-glass-text"
-          >
-            Contacto
+          <a href="#contacto" className={navLinkClass}>
+            {messages.nav.contact}
           </a>
+          <LocaleToggle />
         </div>
+
         <OutboundLink
           href={waLink}
           channel="whatsapp"
           placement="nav"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-full bg-accent px-4 text-sm font-medium text-hero-glass-text transition-sacred hover:bg-text-emphasis"
+          className="justify-self-end inline-flex min-h-9 shrink-0 items-center justify-center rounded-full bg-accent px-3.5 text-sm font-medium text-hero-glass-text transition-sacred hover:bg-text-emphasis sm:min-h-11 sm:px-4"
         >
-          WhatsApp
+          {messages.nav.whatsapp}
         </OutboundLink>
       </nav>
     </header>

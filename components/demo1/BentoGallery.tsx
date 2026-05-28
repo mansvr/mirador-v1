@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { SacredIcon } from "@/components/demo1/SacredIcon";
+import { useDemo1Locale } from "@/components/demo1/Demo1LocaleProvider";
 import type { PropertyGalleryItem } from "@/lib/demo1/types";
 
 interface BentoGalleryProps {
@@ -85,6 +86,7 @@ function GalleryCard({
 }
 
 export function BentoGallery({ items }: BentoGalleryProps) {
+  const { messages } = useDemo1Locale();
   const tiles = items.filter((item) => item.layout !== "wide");
   const wideItems = items.filter((item) => item.layout === "wide");
 
@@ -93,10 +95,10 @@ export function BentoGallery({ items }: BentoGalleryProps) {
       <div className="mx-auto max-w-6xl">
         <div className="flex items-center gap-3">
           <SacredIcon name="solar:gallery-minimalistic-linear" size={24} />
-          <p className="label-sacred text-text-muted">Espacios</p>
+          <p className="label-sacred text-text-muted">{messages.gallery.eyebrow}</p>
         </div>
         <h2 className="mt-2 font-display text-3xl text-text sm:text-4xl">
-          Galería
+          {messages.gallery.title}
         </h2>
         <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
           {tiles.map((item) => (

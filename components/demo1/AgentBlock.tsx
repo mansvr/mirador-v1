@@ -1,23 +1,19 @@
+"use client";
+
 import Image from "next/image";
-import type { PropertyMicrosite } from "@/lib/demo1/types";
 import { OutboundLink } from "@/components/demo1/OutboundLink";
 import { SacredIcon } from "@/components/demo1/SacredIcon";
+import { useDemo1Locale } from "@/components/demo1/Demo1LocaleProvider";
 import { whatsappHref } from "@/lib/demo1/property";
 
-interface AgentBlockProps {
-  property: PropertyMicrosite;
-}
-
-export function AgentBlock({ property }: AgentBlockProps) {
-  const waLink = whatsappHref(
-    property.agent.whatsapp,
-    `Hola ${property.agent.name}, quiero agendar una visita a ${property.hero.title}.`,
-  );
+export function AgentBlock() {
+  const { property, messages } = useDemo1Locale();
+  const waLink = whatsappHref(property.agent.whatsapp, property.whatsappAgentText);
 
   return (
     <section id="contacto" className="bg-surface px-4 py-16 sm:py-20">
       <div className="mx-auto max-w-5xl rounded-3xl border border-border bg-bg p-8 sm:p-12">
-        <p className="label-sacred text-text-muted">Contacto</p>
+        <p className="label-sacred text-text-muted">{messages.contact.eyebrow}</p>
         <div className="mt-4 flex items-center gap-4 sm:gap-5">
           {property.agent.photoUrl ? (
             <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border-2 border-border-subtle bg-surface-alt sm:h-20 sm:w-20">

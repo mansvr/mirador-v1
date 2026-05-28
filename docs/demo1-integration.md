@@ -217,6 +217,17 @@ When you change the standalone app at `O:\microsites\apartment01\web`:
 
 ---
 
+## Locale (ES / EN)
+
+| Mode | How |
+|------|-----|
+| **Spanish (default)** | `/demo1` |
+| **English** | `/demo1?lang=en` |
+
+Nav toggle (next to Contacto) updates `?lang=` without reload. Copy lives in `content/demo1/property.json` → `copy.es` / `copy.en`; UI chrome in `lib/demo1/messages.ts`. Revert by using `/demo1` only (no `lang` param).
+
+---
+
 ## Not in v1 (per product decision)
 
 - Homepage link to `/demo1` (add later in `MarketingSections`)
