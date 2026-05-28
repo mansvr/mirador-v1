@@ -19,7 +19,7 @@ function ScrollGlyph({ compact }: { compact?: boolean }) {
     <>
       <span
         className={`hero-scroll-indicator__track bg-gradient-to-b from-hero-glass-text/0 via-hero-glass-text/35 to-hero-glass-text/65 ${
-          compact ? "h-7 w-px" : "h-10 w-px"
+          compact ? "h-6 w-px" : "h-10 w-px"
         }`}
         aria-hidden
       />
@@ -71,15 +71,13 @@ export function HeroScrollIndicator({
         onClick={scrollHeroHint}
         aria-label={messages.hero.scrollAria}
         tabIndex={scrubComplete ? -1 : 0}
-        className={`hero-scroll-indicator pointer-events-auto flex shrink-0 flex-col items-center gap-1 transition-sacred ${
+        className={`hero-scroll-indicator pointer-events-auto flex shrink-0 flex-col items-center gap-0.5 py-0.5 transition-sacred ${
           scrubComplete ? "pointer-events-none" : ""
         }`}
         style={{ opacity }}
       >
         <span className={labelClass}>{messages.hero.scrollLabel}</span>
-        <span className="flex flex-col items-center gap-0.5">
-          <ScrollGlyph compact />
-        </span>
+        <ScrollGlyph compact />
       </button>
     );
   }

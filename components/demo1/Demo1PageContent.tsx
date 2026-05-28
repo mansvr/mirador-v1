@@ -54,7 +54,7 @@ function Demo1PageInner() {
   });
 
   const heroCardClassName =
-    "inline-block w-full max-w-[32rem] overflow-hidden rounded-2xl bg-gradient-to-t from-hero-scrim/75 via-hero-scrim/18 to-transparent px-4 py-5 sm:max-w-xl sm:px-6 sm:py-8";
+    "inline-block w-full max-w-[32rem] overflow-hidden rounded-2xl bg-gradient-to-t from-hero-scrim/75 via-hero-scrim/18 to-transparent px-4 py-4 sm:max-w-xl sm:px-5 sm:py-6";
 
   return (
     <>
@@ -80,19 +80,19 @@ function Demo1PageInner() {
                 <h1 className="font-display text-4xl leading-none text-hero-glass-text sm:text-7xl">
                   {property.hero.title}
                 </h1>
-                <p className="mt-4 text-sm text-hero-glass-text/90 sm:text-lg">
+                <p className="mt-3 text-sm leading-snug text-hero-glass-text/90 sm:mt-4 sm:text-lg">
                   {property.hero.description}
                 </p>
-                <div className="mt-5 border-t border-hero-glass-text/10 pt-4">
-                  <p className="text-xs uppercase tracking-[0.25em] text-hero-glass-text/75 sm:text-sm">
-                    {property.hero.eyebrow}
-                  </p>
-                  <div className="mt-3 flex items-end justify-between gap-4">
-                    <p className="min-w-0 flex-1 text-xs text-hero-glass-text/70 sm:text-sm">
-                      {specsLine}
-                    </p>
+                <div className="mt-4 border-t border-hero-glass-text/10 pt-2.5 sm:mt-4 sm:pt-3">
+                  <div className="flex justify-end">
                     <HeroScrollIndicator variant="inline" />
                   </div>
+                  <p className="mt-2 text-[11px] uppercase tracking-[0.22em] text-hero-glass-text/75 sm:text-xs sm:tracking-[0.25em]">
+                    {property.hero.eyebrow}
+                  </p>
+                  <p className="mt-1 text-xs text-hero-glass-text/70 sm:text-sm">
+                    {specsLine}
+                  </p>
                 </div>
               </HeroCopyCard>
             </div>
