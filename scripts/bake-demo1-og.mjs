@@ -12,7 +12,7 @@ const baseUrl = (process.argv[2] ?? "http://localhost:3000").replace(/\/$/, "");
 const outDir = path.join("public", "demo1");
 const outPath = path.join(outDir, "og-card.jpg");
 
-const res = await fetch(`${baseUrl}/demo1/opengraph-image`);
+const res = await fetch(`${baseUrl}/api/og/demo1`);
 if (!res.ok) {
   throw new Error(
     `fetch failed: ${res.status} ${res.url}\nStart the app first: npm run dev`,

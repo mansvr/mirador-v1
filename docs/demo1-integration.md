@@ -80,22 +80,37 @@ npx wrangler r2 bucket cors list ai67-assets
 
 ---
 
-## Open Graph (1200×630)
+## Open Graph (1200×630) — WhatsApp share
 
-1. **Dynamic card** (Mirador frame + AI67 poster): `app/demo1/opengraph-image.tsx`
-2. **Bake for WhatsApp** (≤ ~300 KB JPEG):
+WhatsApp reads **`og:image`**, not `twitter:image`. It drops images **> ~300 KB** (dynamic PNG is too large).
+
+| Piece | Location |
+|-------|----------|
+| Baked JPEG (preferred) | `public/demo1/og-card.jpg` (~60 KB) |
+| Dynamic source (bake only) | `GET /api/og/demo1` |
+| Metadata | `app/demo1/layout.tsx` + `lib/demo1/share-metadata.ts` |
+
+**Do not** add `app/demo1/opengraph-image.tsx` — Next.js would inject a large PNG into `og:image` and override the baked JPEG.
+
+### Bake / refresh card
 
 ```powershell
 cd O:\Umbral\mirador
 npm run dev
 # other terminal:
 npm run og:bake:demo1
-# → public/demo1/og-card.jpg
+# or against prod (after /api/og/demo1 is deployed):
+node scripts/bake-demo1-og.mjs https://mirador.lat
+git add public/demo1/og-card.jpg && git commit -m "chore: refresh demo1 OG card"
 ```
 
-After bake, layout metadata prefers `/demo1/og-card.jpg`. Re-run bake when poster or copy changes.
+### Test preview
 
-Test share preview: [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) or send link in WhatsApp to yourself.
+1. [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) → URL `https://mirador.lat/demo1` → **Scrape Again** (twice).
+2. Confirm **og:image** = `https://mirador.lat/demo1/og-card.jpg` (JPEG, not `opengraph-image`).
+3. WhatsApp: paste `https://mirador.lat/demo1` in a **new** chat (cache is sticky). Optional cache-bust once: `?v=2`.
+
+If Debugger shows **403**, see `docs/whatsapp-og-troubleshooting.md` (Vercel bot protection / Meta crawler).
 
 ---
 

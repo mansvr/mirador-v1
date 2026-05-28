@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Manrope } from "next/font/google";
 import {
   demo1OpenGraphImages,
+  demo1SiteUrl,
   demo1TwitterImage,
 } from "@/lib/demo1/share-metadata";
+
+const siteUrl = demo1SiteUrl();
 const cormorant = Cormorant_Garamond({
   variable: "--font-demo-display",
   subsets: ["latin"],
@@ -25,14 +28,17 @@ export const metadata: Metadata = {
     description:
       "Apartamento con acabados contemporáneos y espacios luminosos.",
     type: "website",
-    images: demo1OpenGraphImages(),
+    url: `${siteUrl}/demo1`,
+    siteName: "Mirador",
+    locale: "es_CO",
+    images: demo1OpenGraphImages(siteUrl),
   },
   twitter: {
     card: "summary_large_image",
     title: "AI67 · Mirador",
     description:
       "Apartamento con acabados contemporáneos y espacios luminosos.",
-    images: demo1TwitterImage(),
+    images: demo1TwitterImage(siteUrl),
   },
 };
 
