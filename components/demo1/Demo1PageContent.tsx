@@ -83,16 +83,18 @@ function Demo1PageInner() {
                 <p className="mt-3 text-sm leading-snug text-hero-glass-text/90 sm:mt-4 sm:text-lg">
                   {property.hero.description}
                 </p>
-                <div className="mt-4 border-t border-hero-glass-text/10 pt-2.5 sm:mt-4 sm:pt-3">
-                  <div className="flex justify-end">
+                <div className="mt-4 border-t border-hero-glass-text/10 pt-2.5 sm:pt-3">
+                  <div className="flex items-end justify-between gap-3 sm:gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[11px] uppercase tracking-[0.22em] text-hero-glass-text/75 sm:text-xs sm:tracking-[0.25em]">
+                        {property.hero.eyebrow}
+                      </p>
+                      <p className="mt-1 text-xs text-hero-glass-text/70 sm:text-sm">
+                        {specsLine}
+                      </p>
+                    </div>
                     <HeroScrollIndicator variant="inline" />
                   </div>
-                  <p className="mt-2 text-[11px] uppercase tracking-[0.22em] text-hero-glass-text/75 sm:text-xs sm:tracking-[0.25em]">
-                    {property.hero.eyebrow}
-                  </p>
-                  <p className="mt-1 text-xs text-hero-glass-text/70 sm:text-sm">
-                    {specsLine}
-                  </p>
                 </div>
               </HeroCopyCard>
             </div>
