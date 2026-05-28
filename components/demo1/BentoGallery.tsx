@@ -44,8 +44,10 @@ function GalleryCard({
 
   return (
     <figure
-      className={`group relative overflow-hidden rounded-2xl border border-text-muted/20 ${
-        contain ? "bg-viewer" : "bg-surface-alt"
+      className={`group relative overflow-hidden rounded-2xl ${
+        contain
+          ? "border border-black/40 bg-black"
+          : "border border-text-muted/20 bg-surface-alt"
       } ${aspectClass(item.aspect)} ${
         wide ? "col-span-2 md:col-span-3 lg:col-span-4" : ""
       }`}
@@ -56,7 +58,7 @@ function GalleryCard({
           alt={alt}
           fill
           className={`transition-sacred ${
-            contain ? "object-contain p-2 sm:p-3" : "object-cover group-hover:scale-[1.02]"
+            contain ? "object-contain" : "object-cover group-hover:scale-[1.02]"
           }`}
           sizes={
             wide
