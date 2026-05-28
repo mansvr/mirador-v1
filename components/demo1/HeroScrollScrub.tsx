@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import { HeroScrubProvider } from "@/components/demo1/HeroScrubContext";
+import { HeroScrollIndicator } from "@/components/demo1/HeroScrollIndicator";
 
 type HeroScrollScrubProps = {
   srcMp4: string;
@@ -264,17 +264,12 @@ export function HeroScrollScrub({
           />
         ) : null}
         {children ? (
-          <HeroScrubProvider
-            value={{
-              progress: scrubProgress,
-              show: scrubReady && !prefersReducedMotion,
-            }}
-          >
-            <div className="pointer-events-none absolute inset-0 z-10 [&_.hero-scroll-indicator]:pointer-events-auto">
-              {children}
-            </div>
-          </HeroScrubProvider>
+          <div className="pointer-events-none absolute inset-0 z-10">{children}</div>
         ) : null}
+        <HeroScrollIndicator
+          progress={scrubProgress}
+          show={scrubReady && !prefersReducedMotion}
+        />
       </div>
     </section>
   );
