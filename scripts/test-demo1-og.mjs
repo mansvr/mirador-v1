@@ -3,7 +3,8 @@
  * Usage: node scripts/test-demo1-og.mjs [baseUrl]
  */
 const baseUrl = (process.argv[2] ?? "https://mirador.lat").replace(/\/$/, "");
-const pageUrl = `${baseUrl}/demo1`;
+const pathArg = process.argv[3] ?? "/demo1";
+const pageUrl = `${baseUrl}${pathArg.startsWith("/") ? pathArg : `/${pathArg}`}`;
 
 const htmlRes = await fetch(pageUrl, {
   headers: { "User-Agent": "facebookexternalhit/1.1" },

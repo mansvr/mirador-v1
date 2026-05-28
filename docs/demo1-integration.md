@@ -106,9 +106,26 @@ git add public/demo1/og-card.jpg && git commit -m "chore: refresh demo1 OG card"
 
 ### Test preview
 
-1. [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) → URL `https://mirador.lat/demo1` → **Scrape Again** (twice).
-2. Confirm **og:image** = `https://mirador.lat/demo1/og-card.jpg` (JPEG, not `opengraph-image`).
-3. WhatsApp: paste `https://mirador.lat/demo1` in a **new** chat (cache is sticky). Optional cache-bust once: `?v=2`.
+**Facebook Sharing Debugger** (validates tags; does **not** refresh WhatsApp cache):
+
+1. [Sharing Debugger](https://developers.facebook.com/tools/debug/) → **Scrape Again** (twice).
+2. Confirm **og:image** = `https://mirador.lat/demo1/og-card.jpg` (JPEG).
+
+**WhatsApp** (separate cache — Debugger “OK” does not fix a stale WA preview):
+
+| Paste this link | Why |
+|-----------------|-----|
+| **`https://mirador.lat/share/demo1.html`** | Static HTML (same pattern as scene shares). **Preferred for WhatsApp.** |
+| `https://mirador.lat/demo1` | Full app page; OK after cache clears |
+
+Steps:
+
+1. Scrape `https://mirador.lat/share/demo1.html` in Sharing Debugger once.
+2. Send that URL in a **new** WhatsApp chat (not a thread where you already sent `/demo1`).
+3. Wait ~30s for the preview card to build.
+4. If still blank: try `https://mirador.lat/share/demo1.html?v=2` once, or Android → Settings → Storage → Clear cache.
+
+Tap opens the listing: link goes to `https://mirador.lat/demo1`.
 
 If Debugger shows **403**, see `docs/whatsapp-og-troubleshooting.md` (Vercel bot protection / Meta crawler).
 
