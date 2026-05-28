@@ -51,7 +51,9 @@ Known issue: Meta’s datacenter IPs are sometimes blocked by Vercel DDoS mitiga
 
 WhatsApp drops `og:image` when the file is too large (often **> ~300 KB**). The dynamic PNG at `/api/og/scene_best50000` is ~1.4 MB.
 
-**Fix:** baked JPEG in `public/og/<sceneId>-card.jpg` (run `npm run og:bake` after changing the overlay).
+**Fix:** baked JPEG in `public/og/<sceneId>-card.jpg` (run `npm run og:bake` after changing `lib/og-copy.ts`, `lib/og-card.tsx`, or `/api/og`).
+
+Scene cards use the same template as `app/opengraph-image.tsx` (via `lib/og-copy.ts`); only the **title** and **photo** differ per scene.
 
 Share page and `/v/` metadata should point at:
 

@@ -33,6 +33,12 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# secrets pasted for local setup (use .env.local instead)
+/docs/posthog-details.txt
+
+# demo1 hero — production uses R2 (see lib/demo1/property.ts)
+/public/demo1/assets/hero-scrub.mp4
+
 # vercel
 .vercel
 

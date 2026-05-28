@@ -1,0 +1,43 @@
+{
+  "slug": "ai67",
+  "locale": "es",
+  "hlsUrl": null,
+  "posterUrl": "/demo1/assets/poster.webp",
+  "hlsUrlVertical": null,
+  "durationSec": 20,
+  "aspectRatio": "16/9",
+  "hero": {
+    "eyebrow": "PROYECTO · MEDELLÍN",
+    "title": "AI67",
+    "description": "Apartamento con acabados contemporáneos, cocina integrada y espacios luminosos."
+  },
+  "specs": {
+    "beds": 3,
+    "baths": 2,
+    "sqm": 92,
+    "verified": true
+  },
+  "agent": {
+    "name": "Mansur Arevalo",
+    "phone": "+57 304 336 2502",
+    "whatsapp": "573043362502"
+  },
+  "ctas": {
+    "primary": "Ver recorrido 3D",
+    "secondary": "Contactar agente"
+  },
+  "gallery": [
+    { "title": "", "imageUrl": "/demo1/gallery/0003.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/closeup-003.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/0007.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/0011.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/0012.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/0004.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/0008.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/0005.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/0010.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/0006.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/0013.webp", "aspect": "4/5" },
+    { "title": "", "imageUrl": "/demo1/gallery/closeup-001.webp", "aspect": "4/5" }
+  ]
+}

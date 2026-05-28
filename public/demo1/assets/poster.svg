@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2560" height="1440" viewBox="0 0 2560 1440" role="img" aria-label="AI67 poster placeholder">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2a2826"/>
+      <stop offset="100%" stop-color="#121212"/>
+    </linearGradient>
+  </defs>
+  <rect width="2560" height="1440" fill="url(#g)"/>
+  <text x="50%" y="48%" fill="#f5f6f2" font-family="Georgia, serif" font-size="120" text-anchor="middle">AI67</text>
+  <text x="50%" y="54%" fill="#85837b" font-family="system-ui, sans-serif" font-size="36" text-anchor="middle">Poster · reemplazar con poster.webp</text>
+</svg>

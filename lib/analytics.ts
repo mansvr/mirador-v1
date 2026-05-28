@@ -68,3 +68,27 @@ export function trackVREntered(sceneId: string) {
 export function trackEmbedCopied(sceneId: string) {
   capture("embed_copied", { scene_id: sceneId });
 }
+
+// ─── Demo1 listing microsite (mirador.lat/demo1) ─────────────────────────────
+
+const DEMO1_SLUG = "ai67";
+
+export function trackDemo1Outbound(props: {
+  channel: "whatsapp" | "phone";
+  placement: "nav" | "agent" | "sticky";
+}) {
+  capture("demo1_outbound_click", {
+    demo_slug: DEMO1_SLUG,
+    channel: props.channel,
+    placement: props.placement,
+  });
+}
+
+export function trackDemo1SectionViewed(
+  section: "galeria" | "contacto",
+) {
+  capture("demo1_section_viewed", {
+    demo_slug: DEMO1_SLUG,
+    section,
+  });
+}

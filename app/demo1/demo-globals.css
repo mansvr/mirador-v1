@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+/* Scoped Sacred palette — does not override marketing :root tokens */
+.demo1-root {
+  --viewer: #121212;
+  --bg: #d3cdc3;
+  --surface: #bdb4a6;
+  --surface-alt: #b0a191;
+  --text: #554f44;
+  --text-muted: #726a5c;
+  --text-emphasis: #37332d;
+  --border: #a39783;
+  --border-subtle: #bdb4a6;
+  --accent: #a39783;
+  --accent-hover: #8c8271;
+  --accent-tertiary: #a0ae83;
+  --chip: #a39783;
+  --hero-scrim: #37332d;
+  --hero-glass-text: #e2ded7;
+  --motion-fast: 150ms;
+  --motion-base: 300ms;
+  --motion-slow: 500ms;
+  --ease-sacred: cubic-bezier(0.4, 0, 0.2, 1);
+
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-demo-sans), system-ui, sans-serif;
+  font-weight: 300;
+  scroll-behavior: smooth;
+}
+
+@theme inline {
+  --color-viewer: var(--viewer);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-emphasis: var(--text-emphasis);
+  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-tertiary: var(--accent-tertiary);
+  --color-chip: var(--chip);
+  --color-hero-scrim: var(--hero-scrim);
+  --color-hero-glass-text: var(--hero-glass-text);
+  --font-sans: var(--font-demo-sans);
+  --font-display: var(--font-demo-display);
+}
+
+.demo1-root .font-display {
+  font-family: var(--font-demo-display), Georgia, serif;
+}
+
+.demo1-root .label-sacred {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.demo1-root .transition-sacred {
+  transition-property: color, border-color, background-color, opacity, transform;
+  transition-duration: var(--motion-slow);
+  transition-timing-function: var(--ease-sacred);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo1-root .transition-sacred {
+    transition-duration: 0.01ms;
+  }
+}
