@@ -5,6 +5,7 @@ import { PropertyStrip } from "@/components/listing/PropertyStrip";
 import { AgentCTA } from "@/components/listing/AgentCTA";
 import { EmbedSnippet } from "@/components/listing/EmbedSnippet";
 import { getPriceLabelForScene } from "@/lib/listings/get-listings";
+import { isPlayCanvasScene } from "@/lib/viewer-engine";
 import type { Scene } from "@/lib/types/scene";
 import { MIRADOR_DEFAULT_PRIMARY } from "@/lib/brand";
 
@@ -20,6 +21,7 @@ interface ViewerPageShellProps {
 export async function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) {
   const primary = scene.branding?.primary_color ?? MIRADOR_DEFAULT_PRIMARY;
   const priceLabel = await getPriceLabelForScene(scene.id);
+  const playCanvas = isPlayCanvasScene(scene);
 
   return (
     <SitePageShell style={{ "--mirador-primary": primary } as CSSProperties}>
@@ -30,7 +32,9 @@ export async function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) 
           <section className="min-w-0 max-w-full" aria-label="Tour 3D">
             <TourViewerFrame scene={scene} />
             <p className="mt-3 max-w-full text-pretty px-0.5 text-center text-xs text-mirador-text-muted sm:text-sm lg:text-left">
-              Arrastra para mirar · usa los puntos del recorrido en el visor
+              {playCanvas
+                ? "Recorrido guiado · arrastra para mirar · ‹ ▶ › en el visor"
+                : "Arrastra para mirar · usa los puntos del recorrido en el visor"}
             </p>
           </section>
 

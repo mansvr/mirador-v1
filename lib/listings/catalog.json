@@ -40,6 +40,32 @@
       "published": true,
       "sortOrder": 3,
       "thumbnailR2": "thumbnail.webp"
+    },
+    {
+      "id": "jardin-interno-smoke",
+      "sceneId": "scene_jardin-interno_01",
+      "title": "Jardín Interno — smoke test",
+      "neighborhood": "Chapinero",
+      "city": "Bogotá",
+      "beds": 1,
+      "areaM2": 80,
+      "priceLabel": "Prueba Mirador",
+      "published": true,
+      "sortOrder": 4,
+      "thumbnailR2": "thumbnail.webp"
+    },
+    {
+      "id": "cashita-it-pilot",
+      "sceneId": "scene_cashita01",
+      "title": "Cashita IT — apartamento piloto",
+      "neighborhood": "Chapinero",
+      "city": "Bogotá",
+      "beds": 2,
+      "areaM2": 80,
+      "priceLabel": "Tour piloto PlayCanvas",
+      "published": true,
+      "sortOrder": 5,
+      "thumbnailR2": "thumbnail.webp"
     }
   ]
 }

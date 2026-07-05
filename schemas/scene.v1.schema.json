@@ -107,6 +107,28 @@
         "roll_correction_deg_mobile": {
           "type": "number",
           "description": "Roll correction when url_mobile is loaded; defaults to roll_correction_deg."
+        },
+        "engine": {
+          "type": "string",
+          "enum": ["spark", "playcanvas"],
+          "default": "spark",
+          "description": "Viewer runtime. playcanvas iframes Editor publish URL; default spark uses Spark R3F."
+        },
+        "playcanvas": {
+          "type": "object",
+          "description": "PlayCanvas multi-room embed (manifest v2 on R2; splats in PC project until self-hosted build).",
+          "additionalProperties": false,
+          "properties": {
+            "embed_url": { "type": "string", "format": "uri" },
+            "publish_url": { "type": "string", "format": "uri" },
+            "launch_url": { "type": "string", "format": "uri" },
+            "project_id": { "type": "integer" },
+            "manifest_url": { "type": "string" },
+            "manifest_schema": { "type": "string", "enum": ["2"] },
+            "property_id": { "type": "string" },
+            "debug": { "type": "boolean" },
+            "self_host_url": { "type": "string", "format": "uri" }
+          }
         }
       }
     },

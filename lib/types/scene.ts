@@ -14,8 +14,40 @@ export interface SceneMetric {
 
 export type SceneRenderFormat = "sog" | "spz" | "ply";
 
+export type SceneRenderEngine = "spark" | "playcanvas";
+
+/** PlayCanvas multi-room embed (Editor publish or self-hosted build URL). */
+export interface ScenePlayCanvasConfig {
+  /** Primary iframe src — publish URL preferred in production. */
+  embed_url?: string;
+  /** Alias fields — `generate-scene-json` may set these; embed_url wins. */
+  publish_url?: string;
+  launch_url?: string;
+  project_id?: number;
+  /** R2-relative manifest v2 filename in scene folder, e.g. manifest.json */
+  manifest_url?: string;
+  manifest_schema?: "2";
+  property_id?: string;
+  /** Include ?debug=true on embed (default false in production). */
+  debug?: boolean;
+  /** Future: R2-hosted PlayCanvas build index.html (replaces iframe to playcanv.as). */
+  self_host_url?: string;
+  /** Editor asset ids — ops reference only, not used at runtime in iframe v1. */
+  editor_script_assets?: {
+    splat_portal_manager?: number;
+    tour_controller?: number;
+  };
+}
+
 export interface SceneRender {
   format: SceneRenderFormat;
+  /**
+   * Viewer runtime. Default spark when omitted.
+   * playcanvas requires render.playcanvas.embed_url (or publish/launch alias).
+   */
+  engine?: SceneRenderEngine;
+  /** Required when engine is playcanvas. */
+  playcanvas?: ScenePlayCanvasConfig;
   /**
    * Optional when `url_mobile` uses a different extension (e.g. desktop SOG, mobile SPZ).
    * Defaults to `format`.

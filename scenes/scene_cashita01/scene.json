@@ -1,0 +1,64 @@
+{
+  "$schema": "../../mirador/schemas/scene.v1.schema.json",
+  "schema_version": "1",
+  "id": "scene_cashita01",
+  "title": "Cashita IT — pilot apartment",
+  "metric": {
+    "area_m2": 80,
+    "rooms": 3,
+    "bathrooms": 1,
+    "verified_by": "unverified"
+  },
+  "render": {
+    "format": "sog",
+    "url": "manifest.json",
+    "engine": "playcanvas",
+    "playcanvas": {
+      "project_id": 2537063,
+      "embed_url": "https://playcanv.as/p/0L7pUZY0/",
+      "launch_url": "https://launch.playcanvas.com/2537063",
+      "publish_url": "https://playcanv.as/p/0L7pUZY0/",
+      "manifest_url": "manifest.json",
+      "manifest_schema": "2",
+      "property_id": "property_cashita_it",
+      "debug": false,
+      "editor_script_assets": {
+        "splat_portal_manager": 296709441,
+        "tour_controller": 296717619
+      }
+    }
+  },
+  "camera_default": {
+    "pos": [
+      0.5172647833824158,
+      0.03982163965702057,
+      -1.0932211875915527
+    ],
+    "quat": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "fov": 55
+  },
+  "listing": {
+    "neighborhood": "Chapinero",
+    "city": "Bogotá",
+    "description_md": "Apartamento piloto Cashita IT — tour multi-room PlayCanvas (portales + recorrido guiado).",
+    "agent_whatsapp": "+573043362502"
+  },
+  "branding": {
+    "tenant_id": "mirador",
+    "show_mirador_badge": true,
+    "primary_color": "#5e5956"
+  },
+  "access": {
+    "visibility": "public"
+  },
+  "attribution": {
+    "capture_date": "2026-06",
+    "pipeline": "Cashita IT — PlayCanvas portal viewer (19 stops)",
+    "converter": "aholo-out / PlayCanvas gsplat"
+  }
+}
