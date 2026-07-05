@@ -2,11 +2,11 @@
 
 /**
  * PlayCanvas multi-room tour — iframe embed (tour UI lives inside PlayCanvas).
- * Mirador shell provides listing chrome; GL + ‹ ▶ › bar are in the PC project.
+ * Uses iframeless publish URL (/e/p/) — no PlayCanvas footer bar.
+ * Single loader: PlayCanvas mirador-loading-screen.js only (no Mirador overlay).
  */
 
 import { useEffect, useMemo } from "react";
-import { LoadingOverlay } from "@/components/viewer/LoadingOverlay";
 import { resolvePlayCanvasEmbedUrl } from "@/lib/viewer-engine";
 import { useViewerStore } from "@/lib/store";
 import type { Scene } from "@/lib/types/scene";
@@ -22,9 +22,6 @@ export function PlayCanvasEmbed({
 }: PlayCanvasEmbedProps) {
   const setScene = useViewerStore((s) => s.setScene);
   const setLoaded = useViewerStore((s) => s.setLoaded);
-  const setLoadProgress = useViewerStore((s) => s.setLoadProgress);
-  const setLoadHint = useViewerStore((s) => s.setLoadHint);
-  const setLoadError = useViewerStore((s) => s.setLoadError);
 
   const embedUrl = useMemo(
     () => resolvePlayCanvasEmbedUrl(scene),
@@ -33,39 +30,13 @@ export function PlayCanvasEmbed({
 
   useEffect(() => {
     setScene(scene);
-    setLoaded(false);
-    setLoadProgress(0.05);
-    setLoadHint("Cargando tour PlayCanvas…");
-    setLoadError(null);
-  }, [
-    scene,
-    setScene,
-    setLoaded,
-    setLoadProgress,
-    setLoadHint,
-    setLoadError,
-  ]);
-
-  const handleLoad = () => {
-    setLoadProgress(0.92);
-    setLoadHint("Iniciando escena…");
-    window.setTimeout(() => {
-      setLoadProgress(1);
-      setLoadHint(null);
-      setLoaded(true);
-    }, 400);
-  };
-
-  const handleError = () => {
-    setLoadError(
-      "No se pudo cargar el visor PlayCanvas. Comprueba la URL de publicación en scene.json."
-    );
-    setLoadHint(null);
-  };
+    // Spark overlay skipped — PC loading screen handles preload UX inside iframe.
+    setLoaded(true);
+  }, [scene, setScene, setLoaded]);
 
   return (
     <div
-      className={`mirador-gl-root relative w-full overflow-hidden ${heightClass}`}
+      className={`mirador-gl-root relative w-full overflow-hidden bg-[#121212] ${heightClass}`}
       style={
         {
           "--mirador-primary": scene.branding?.primary_color ?? "#5e5956",
@@ -75,14 +46,11 @@ export function PlayCanvasEmbed({
       <iframe
         title={scene.title}
         src={embedUrl}
-        className="absolute inset-0 size-full border-0 bg-black"
+        className="absolute inset-0 size-full border-0 bg-[#121212]"
         allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer"
         allowFullScreen
         loading="eager"
-        onLoad={handleLoad}
-        onError={handleError}
       />
-      <LoadingOverlay />
     </div>
   );
 }

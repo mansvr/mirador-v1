@@ -59,10 +59,31 @@ export function resolvePlayCanvasConfig(
   return { ...pc, embed_url };
 }
 
-/** Iframe src — strips debug unless explicitly requested. */
+/** PlayCanvas publish URL without social/footer chrome — use for Mirador iframe embed. */
+export function toIframelessPublishUrl(url: string): string {
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return url;
+  }
+  const host = parsed.hostname;
+  if (host !== "playcanv.as" && !host.endsWith(".playcanv.as")) {
+    return url;
+  }
+  if (parsed.pathname.startsWith("/e/p/")) {
+    return parsed.toString();
+  }
+  if (parsed.pathname.startsWith("/p/")) {
+    parsed.pathname = `/e${parsed.pathname}`;
+  }
+  return parsed.toString();
+}
+
+/** Iframe src — iframeless publish by default; strips debug unless requested. */
 export function resolvePlayCanvasEmbedUrl(
   scene: Scene,
-  opts?: { debug?: boolean }
+  opts?: { debug?: boolean; iframeless?: boolean }
 ): string {
   const pc = resolvePlayCanvasConfig(scene);
   if (!pc?.embed_url) {
@@ -71,7 +92,13 @@ export function resolvePlayCanvasEmbedUrl(
     );
   }
 
-  const url = new URL(pc.embed_url);
+  const iframeless = opts?.iframeless ?? true;
+  let href = pc.embed_url;
+  if (iframeless) {
+    href = toIframelessPublishUrl(href);
+  }
+
+  const url = new URL(href);
   const wantDebug = opts?.debug ?? pc.debug === true;
   if (wantDebug) {
     url.searchParams.set("debug", "true");
