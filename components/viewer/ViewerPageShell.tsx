@@ -33,7 +33,9 @@ export async function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) 
             <TourViewerFrame scene={scene} />
             <p className="mt-3 max-w-full text-pretty px-0.5 text-center text-xs text-mirador-text-muted sm:text-sm lg:text-left">
               {playCanvas
-                ? "Recorrido guiado · arrastra para mirar · ‹ ▶ › en el visor"
+                ? scene.id === "scene_pablos01"
+                  ? "Explora libre · arrastra para mirar · camina entre salas"
+                  : "Recorrido guiado · arrastra para mirar · ‹ ▶ › en el visor"
                 : "Arrastra para mirar · usa los puntos del recorrido en el visor"}
             </p>
           </section>

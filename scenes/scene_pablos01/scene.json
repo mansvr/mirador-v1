@@ -2,7 +2,7 @@
   "$schema": "../../mirador/schemas/scene.v1.schema.json",
   "schema_version": "1",
   "id": "scene_pablos01",
-  "title": "Pablo — Room A + Room B",
+  "title": "Loft de Pablo",
   "metric": {
     "area_m2": 80,
     "rooms": 2,
@@ -52,8 +52,9 @@
   "listing": {
     "neighborhood": "Chapinero",
     "city": "Bogotá",
-    "description_md": "Pablo — Room A + Room B. Navegación libre WASD + portales PlayCanvas.",
-    "agent_whatsapp": "+573043362502"
+    "agent_name": "Pablo",
+    "agent_whatsapp": "+573157885675",
+    "description_md": "Loft de dos ambientes en Chapinero — mucha madera, luz amplia y rincones para trabajar o simplemente quedarse un rato. Pablo es fotógrafo, diseñador de moda y artista; vive y crea entre estas dos salas conectadas.\n\nUn buen lugar para inspirarse, charlar sin apuro y ver si hay química. Está soltero, con ganas de conocer gente interesante, y el espacio invita a quedarse."
   },
   "branding": {
     "tenant_id": "mirador",
