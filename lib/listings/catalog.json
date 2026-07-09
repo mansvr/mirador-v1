@@ -66,6 +66,19 @@
       "published": true,
       "sortOrder": 5,
       "thumbnailR2": "thumbnail.webp"
+    },
+    {
+      "id": "pablos-ab",
+      "sceneId": "scene_pablos01",
+      "title": "Pablo — Room A + Room B",
+      "neighborhood": "Chapinero",
+      "city": "Bogotá",
+      "beds": 2,
+      "areaM2": 80,
+      "priceLabel": "Entrega cliente PlayCanvas",
+      "published": true,
+      "sortOrder": 6,
+      "thumbnailR2": "thumbnail.webp"
     }
   ]
 }

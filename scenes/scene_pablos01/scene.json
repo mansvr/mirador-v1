@@ -1,0 +1,71 @@
+{
+  "$schema": "../../mirador/schemas/scene.v1.schema.json",
+  "schema_version": "1",
+  "id": "scene_pablos01",
+  "title": "Pablo — Room A + Room B",
+  "metric": {
+    "area_m2": 80,
+    "rooms": 2,
+    "bathrooms": 1,
+    "verified_by": "unverified"
+  },
+  "render": {
+    "format": "sog",
+    "url": "manifest.json",
+    "engine": "playcanvas",
+    "playcanvas": {
+      "project_id": 1561432,
+      "embed_url": "https://playcanv.as/p/8t3TIc2M/",
+      "launch_url": "https://launch.playcanvas.com/1561432",
+      "publish_url": "https://playcanv.as/p/8t3TIc2M/",
+      "manifest_url": "manifest.json",
+      "manifest_schema": "2",
+      "property_id": "property_pablos_ab",
+      "debug": false,
+      "editor_script_assets": {
+        "splat_portal_manager": 298014374,
+        "tour_controller": 298014372,
+        "mirador_loading_screen": 298016564
+      }
+    }
+  },
+  "camera_default": {
+    "pos": [
+      402.9927673339844,
+      1.3460429906845093,
+      570.4589233398438
+    ],
+    "quat": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "fov": 55,
+    "focus_point": [
+      400.538596976316,
+      1.303753413077528,
+      568.73111296129
+    ],
+    "room": "room-b"
+  },
+  "listing": {
+    "neighborhood": "Chapinero",
+    "city": "Bogotá",
+    "description_md": "Pablo — Room A + Room B. Navegación libre WASD + portales PlayCanvas.",
+    "agent_whatsapp": "+573043362502"
+  },
+  "branding": {
+    "tenant_id": "mirador",
+    "show_mirador_badge": true,
+    "primary_color": "#5e5956"
+  },
+  "access": {
+    "visibility": "public"
+  },
+  "attribution": {
+    "capture_date": "2026-07",
+    "pipeline": "Pablo — Room A + Room B — PlayCanvas portal viewer (WASD + portals)",
+    "converter": "aholo-out / PlayCanvas gsplat"
+  }
+}
