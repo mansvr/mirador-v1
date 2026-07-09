@@ -71,11 +71,11 @@
       "id": "pablos-ab",
       "sceneId": "scene_pablos01",
       "title": "Pablo's Studio",
-      "neighborhood": "Chapinero",
+      "neighborhood": "La Macarena",
       "city": "Bogotá",
       "beds": 2,
       "areaM2": 80,
-      "priceLabel": "Fotógrafo · moda · artista",
+      "priceLabel": "Artista",
       "published": true,
       "sortOrder": 6,
       "thumbnailR2": "thumbnail.webp"

@@ -50,11 +50,11 @@
     "room": "room-b"
   },
   "listing": {
-    "neighborhood": "Chapinero",
+    "neighborhood": "La Macarena",
     "city": "Bogotá",
     "agent_name": "Pablo",
     "agent_whatsapp": "+573157885675",
-    "description_md": "Buen lugar para inspirarse, charlar sin apuro y ver si hay química: está soltero, con ganas de conocer gente interesante, y el espacio invita a quedarse."
+    "description_md": "Buen lugar para inspirarse y charlar sin apuro, el espacio invita a quedarse."
   },
   "branding": {
     "tenant_id": "mirador",
