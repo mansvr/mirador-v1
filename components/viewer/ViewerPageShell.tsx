@@ -4,8 +4,13 @@ import { TourViewerFrame } from "@/components/viewer/TourViewerFrame";
 import { PropertyStrip } from "@/components/listing/PropertyStrip";
 import { AgentCTA } from "@/components/listing/AgentCTA";
 import { EmbedSnippet } from "@/components/listing/EmbedSnippet";
+import { CaseStudyBody } from "@/components/listing/CaseStudyBody";
+import { LocationMap } from "@/components/listing/LocationMap";
+import { SceneGallery, type GalleryImage } from "@/components/listing/SceneGallery";
+import { CaptureMethodFicha } from "@/components/listing/CaptureMethodFicha";
 import { getPriceLabelForScene } from "@/lib/listings/get-listings";
 import { isPlayCanvasScene } from "@/lib/viewer-engine";
+import { resolvePublicAssetUrl } from "@/lib/r2";
 import type { Scene } from "@/lib/types/scene";
 import { MIRADOR_DEFAULT_PRIMARY } from "@/lib/brand";
 
@@ -22,6 +27,19 @@ export async function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) 
   const primary = scene.branding?.primary_color ?? MIRADOR_DEFAULT_PRIMARY;
   const priceLabel = await getPriceLabelForScene(scene.id);
   const playCanvas = isPlayCanvasScene(scene);
+
+  const galleryImages: GalleryImage[] = (scene.gallery ?? []).map((item) => ({
+    src: resolvePublicAssetUrl(scene.id, item.url),
+    caption: item.caption,
+    alt: item.alt,
+  }));
+  const locationLabel =
+    [scene.listing?.neighborhood, scene.listing?.city].filter(Boolean).join(" · ") || undefined;
+  const hasEnrichment =
+    Boolean(scene.listing?.story_md?.trim()) ||
+    galleryImages.length > 0 ||
+    Boolean(scene.context?.macro) ||
+    Boolean(scene.capture_method);
 
   return (
     <SitePageShell style={{ "--mirador-primary": primary } as CSSProperties}>
@@ -65,6 +83,15 @@ export async function ViewerPageShell({ scene, siteUrl }: ViewerPageShellProps) 
             </div>
           </aside>
         </div>
+
+        {hasEnrichment && (
+          <div className="mt-8 flex w-full min-w-0 max-w-full flex-col gap-6 sm:mt-10 sm:gap-8">
+            <CaseStudyBody storyMd={scene.listing?.story_md} />
+            <SceneGallery images={galleryImages} />
+            <LocationMap macro={scene.context?.macro} locationLabel={locationLabel} />
+            <CaptureMethodFicha captureMethod={scene.capture_method} />
+          </div>
+        )}
       </main>
 
       <HomeFooter />

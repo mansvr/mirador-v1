@@ -1,7 +1,7 @@
 import "server-only";
 
 import type { ListingCardProps } from "@/components/listing/ListingCard";
-import { ogThumbnailPublicPath } from "@/lib/og";
+import { ogPosterR2Url, ogThumbnailPublicPath } from "@/lib/og";
 import { r2Url } from "@/lib/r2";
 import { fetchScene } from "@/lib/scene";
 import type { ListingCatalogEntry } from "@/lib/listings/types";
@@ -22,7 +22,8 @@ async function r2AssetExists(url: string): Promise<boolean> {
  * Card thumbnail priority (see docs/mirador-operations-guide.md §6):
  * 1. catalog.thumbnailUrl (absolute override)
  * 2. public/og/{sceneId}.jpg (source still — also used for OG bake)
- * 3. R2 /{sceneId}/{thumbnailR2 || thumbnail.webp} — only if HEAD returns 200
+ * 3. R2 /{sceneId}/og-poster.jpg or og-poster.webp
+ * 4. R2 /{sceneId}/{thumbnailR2 || thumbnail.webp} — only if HEAD returns 200
  */
 async function resolveThumbnailUrl(
   entry: ListingCatalogEntry
@@ -37,6 +38,13 @@ async function resolveThumbnailUrl(
   const r2Public = process.env.NEXT_PUBLIC_R2_URL ?? process.env.R2_PUBLIC_URL ?? "";
   if (!r2Public || r2Public.includes("placeholder")) {
     return undefined;
+  }
+
+  for (const ext of ["jpg", "webp"] as const) {
+    const poster = ogPosterR2Url(entry.sceneId, ext);
+    if (poster && (await r2AssetExists(poster))) {
+      return poster;
+    }
   }
 
   const file = entry.thumbnailR2?.trim() || "thumbnail.webp";

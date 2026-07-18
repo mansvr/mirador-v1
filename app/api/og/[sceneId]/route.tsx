@@ -21,7 +21,7 @@ export async function GET(
 
   try {
     const scene = await fetchScene(sceneId);
-    const props = ogCardPropsForScene(sceneId, scene);
+    const props = await ogCardPropsForScene(sceneId, scene);
 
     return new ImageResponse(
       (

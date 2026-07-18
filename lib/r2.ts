@@ -35,7 +35,13 @@ export function resolvePublicAssetUrl(sceneId: string, filename: string): string
   if (isR2Configured()) {
     return r2Url(sceneId, filename);
   }
-  return `/api/scene-asset/${sceneId}/${encodeURIComponent(filename)}`;
+  // Encode each path segment so nested paths (e.g. gallery/01.jpg) survive to the
+  // catch-all dev asset route without collapsing the slash.
+  const encoded = filename
+    .split("/")
+    .map((seg) => encodeURIComponent(seg))
+    .join("/");
+  return `/api/scene-asset/${sceneId}/${encoded}`;
 }
 
 /**

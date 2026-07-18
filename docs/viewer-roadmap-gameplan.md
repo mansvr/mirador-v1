@@ -5,7 +5,7 @@
 
 > Synthesises your notes (vrestate, StorySplat, Dioramix beta, SuperSplat, Marble,
 > mirador3d.com) against **current Mirador v0** (`/v`, `/e`, waypoints, hotspots,
-> `scene.json`). Companion: [3dgs-viewer-system.md](../../umbral-notes/tech-notes/3dgs-viewer-system.md) §2–6.
+> `scene.json`). Companion: [3dgs-viewer-system.md](../../docs/canon/gtm/tech-notes/3dgs-viewer-system.md) §2–6.
 
 **Deferred by design:** Real Horizons macro/meso/micro + unit selector → **mirador.build** phase only.
 
@@ -402,6 +402,6 @@ flowchart TB
 ## Related docs
 
 - [mirador-operations-guide.md](./mirador-operations-guide.md) — URLs, R2, embed
-- [3dgs-viewer-system.md](../../umbral-notes/tech-notes/3dgs-viewer-system.md) — competitor audit §2
+- [3dgs-viewer-system.md](../../docs/canon/gtm/tech-notes/3dgs-viewer-system.md) — competitor audit §2
 - [mirador-home-setup.md](./mirador-home-setup.md) — catalog + grid
 - [viewer-debug.md](./viewer-debug.md) — debug `H` pattern (template for Author mode)

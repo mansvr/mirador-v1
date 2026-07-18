@@ -2,10 +2,10 @@
   "$schema": "../../mirador/schemas/scene.v1.schema.json",
   "schema_version": "1",
   "id": "scene_cashita01",
-  "title": "Cashita IT — pilot apartment",
+  "title": "Apartamento Acogedor",
   "metric": {
-    "area_m2": 80,
-    "rooms": 3,
+    "area_m2": 70,
+    "rooms": 1,
     "bathrooms": 1,
     "verified_by": "unverified"
   },
@@ -24,7 +24,8 @@
       "debug": false,
       "editor_script_assets": {
         "splat_portal_manager": 296709441,
-        "tour_controller": 296717619
+        "tour_controller": 296717619,
+        "mirador_loading_screen": 297364268
       }
     }
   },
@@ -42,11 +43,40 @@
     ],
     "fov": 55
   },
+  "context": {
+    "macro": { "type": "google3d", "lat": 4.611997566951366, "lng": -74.06569369220806, "zoom": 17 }
+  },
+  "gallery": [
+    { "url": "gallery/01.webp", "alt": "Apartamento Acogedor — vista 1" },
+    { "url": "gallery/02.webp", "alt": "Apartamento Acogedor — vista 2" },
+    { "url": "gallery/03.webp", "alt": "Apartamento Acogedor — vista 3" },
+    { "url": "gallery/04.webp", "alt": "Apartamento Acogedor — vista 4" },
+    { "url": "gallery/05.webp", "alt": "Apartamento Acogedor — vista 5" }
+  ],
+  "capture_method": {
+    "title": "Ficha técnica de captura",
+    "summary": "Este tour se construyó a partir de un recorrido guiado del interior y una reconstrucción 3D navegable, optimizada para abrirse directamente desde el navegador y compartirse por WhatsApp.",
+    "rows": [
+      { "label": "Método", "value": "Recorrido guiado en video / captura interior" },
+      { "label": "Reconstrucción", "value": "Gaussian Splat + ensamblaje PlayCanvas con portales" },
+      { "label": "Navegación", "value": "Recorrido guiado multi-ambiente (19 paradas)" },
+      { "label": "Galería", "value": "5 imágenes WebP optimizadas desde los renders de entrenamiento" },
+      { "label": "Equipo", "value": "Sin escáner dedicado; flujo de captura liviano" },
+      { "label": "Entrega", "value": "URL web, visor 3D, galería, mapa y CTA de WhatsApp" }
+    ],
+    "notes": "La ficha de captura es editorial: resume el método de producción sin exponer rutas internas ni detalles técnicos innecesarios para el cliente final."
+  },
   "listing": {
-    "neighborhood": "Chapinero",
+    "neighborhood": "La Macarena",
     "city": "Bogotá",
-    "description_md": "Apartamento piloto Cashita IT — tour multi-room PlayCanvas (portales + recorrido guiado).",
-    "agent_whatsapp": "+573043362502"
+    "description_md": "Apartamento acogedor con excelente iluminación natural, pisos de madera, cocina abierta y terraza, ubicado en un edificio moderno en un barrio tradicional de Bogotá.",
+    "story_md": "# Caso de estudio: un recorrido, un espacio interactivo\n\nA veces, menos es más.\n\nEste interior fue capturado con un solo video de recorrido guiado, grabado cuidadosamente para cubrir toda la propiedad. Tras pasar por nuestro proceso de reconstrucción, esa sencilla grabación se convirtió en una experiencia 3D completamente navegable, explorable directamente desde el navegador.\n\nSin equipos de escaneo costosos. Sin configuraciones complejas. Solo una captura inteligente y un potente proceso de reconstrucción.\n\nUn solo video puede convertirse en un gemelo digital inmersivo, listo para compartir, mostrar y explorar desde cualquier lugar.",
+    "agent_whatsapp": "+573018927141",
+    "stratum": 3,
+    "parking": 1,
+    "admin_fee_cop": 0,
+    "floor": 1,
+    "building_age": "Entre 5 y 10 años"
   },
   "branding": {
     "tenant_id": "mirador",

@@ -36,6 +36,7 @@ export interface ScenePlayCanvasConfig {
   editor_script_assets?: {
     splat_portal_manager?: number;
     tour_controller?: number;
+    mirador_loading_screen?: number;
   };
 }
 
@@ -154,11 +155,58 @@ export interface SceneListing {
   neighborhood?: string;
   city?: string;
   description_md?: string;
+  /**
+   * Longer case-study / blog-style body for the `/v` page (Markdown: paragraphs,
+   * ##/### headings, - lists, **bold**, *italic*, [links](url), `code`).
+   * `description_md` stays the short sidebar blurb; `story_md` is the rich body.
+   */
+  story_md?: string;
   agent_name?: string;
   /** E.164 phone number for wa.me link, e.g. +573001234567 */
   agent_whatsapp?: string;
   /** Filename relative to scene R2 folder */
   floorplan_svg_url?: string;
+
+  // --- Ficha técnica (optional; render only when set) — CO listing conventions ---
+  /** Estrato socioeconómico (1–6). */
+  stratum?: number;
+  /** Parqueaderos / garajes. */
+  parking?: number;
+  /** Administración mensual en COP (numeric; formatted at render). 0 renders as "Sin administración". */
+  admin_fee_cop?: number;
+  /** Piso, e.g. 3 or "PH". */
+  floor?: number | string;
+  /** Antigüedad — free text, e.g. "Entre 5 y 10 años" or "2018". */
+  building_age?: string;
+}
+
+/**
+ * One image in the property photo gallery. `url` is either an https URL or a
+ * filename relative to the scene R2 folder (e.g. "gallery/01.jpg") — resolved
+ * via resolvePublicAssetUrl().
+ */
+export interface SceneGalleryItem {
+  url: string;
+  caption?: string;
+  /** Optional alt text; falls back to caption or the scene title. */
+  alt?: string;
+}
+
+export interface SceneCaptureMethodRow {
+  label: string;
+  value: string;
+}
+
+/**
+ * Human-readable production provenance for the `/v` page. This is intentionally
+ * editorial/flexible: some tours come from phone MRNF, some from equirect+Blender,
+ * some from hand-authored PlayCanvas/Aholo pilots.
+ */
+export interface SceneCaptureMethod {
+  title?: string;
+  summary?: string;
+  rows?: SceneCaptureMethodRow[];
+  notes?: string;
 }
 
 export interface SceneBranding {
@@ -227,6 +275,10 @@ export interface Scene {
   hotspots?: SceneHotspot[];
   portals?: ScenePortal[];
   listing?: SceneListing;
+  /** Property photo gallery shown as a grid on the `/v` page. */
+  gallery?: SceneGalleryItem[];
+  /** Human-readable capture / reconstruction method shown near the bottom of `/v`. */
+  capture_method?: SceneCaptureMethod;
   branding?: SceneBranding;
   access?: SceneAccess;
   unit_selector?: SceneUnitSelector;

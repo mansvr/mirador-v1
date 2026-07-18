@@ -221,25 +221,23 @@ These are **different jobs**. Do not assume one file covers all.
 
 | Asset | Location | Aspect | Purpose |
 |-------|----------|--------|---------|
-| **Source still** | `public/og/{sceneId}.jpg` | any (≥ 16:10) | Underlay for OG composite; **listing card** if present (priority #2) |
+| **OG source still** | `R2/{sceneId}/og-poster.jpg` | any (≥ 1200×630) | Uploaded at **H-GATE approve** |
 | **Listing card** | `R2/{sceneId}/thumbnail.webp` | 16:10 WebP | Grid hero when no `public/og` still |
-| **Share card** | `public/og/{sceneId}-card.jpg` | 1200×630 JPEG | WhatsApp, iMessage, Twitter, LinkedIn link previews for **`/v/`** URLs |
+| **Share card** | `public/og/{sceneId}-card.jpg` | 1200×630 JPEG ≤300 KB | WhatsApp / social link previews |
+
+**Standard:** photo-only share cards (no text overlay on image). Full workflow: **[share-og-workflow.md](./share-og-workflow.md)**.
 
 **Listing cards (`/home`):** resolver order → `catalog.thumbnailUrl` → `public/og/{sceneId}.jpg` → R2 `thumbnail.webp` (HEAD must succeed) → gradient placeholder.
 
-**Share / OG (`/v/` metadata):** not the same as the listing card. Crawlers read Open Graph tags on the tour page:
+**Share / OG:** paste **`/share/{sceneId}.html`** in WhatsApp. After H-GATE publish, run `npm run og:bake -- {sceneId}` and `vercel deploy --prod`. Crawlers load **`/api/og-card/{sceneId}`** (HTTP 200 JPEG).
 
-1. Baked **`{sceneId}-card.jpg`** (best for WhatsApp — run `npm run og:bake -- <sceneId>`)
-2. Else dynamic **`/api/og/{sceneId}`** (PNG composite at request time)
+**Per-listing checklist**
 
-WhatsApp is the picky case (size limits, cache); OG is also used by iMessage, Slack, Facebook, etc. Listing thumbnails are **only** for the mirador.homes grid.
-
-**Per-listing image checklist**
-
-1. Capture one representative frame from the tour (or export from SuperSplat).
-2. Save as `public/og/{sceneId}.jpg` → redeploy → card + OG underlay.
-3. `npm run og:bake -- {sceneId}` → `{sceneId}-card.jpg` for share links.
-4. Optionally export WebP → upload `R2/{sceneId}/thumbnail.webp` if you prefer assets off-repo (CDN-only cards).
+1. H-GATE: upload **JPEG poster** (compress to ≤2 MB before upload).
+2. `npm run og:bake -- {sceneId}` → `{sceneId}-card.jpg`.
+3. `npm run og:share-page -- {sceneId}` if `public/share/{sceneId}.html` is missing.
+4. `vercel deploy --prod`.
+5. Test in a **new** WhatsApp chat.
 
 ---
 

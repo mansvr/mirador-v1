@@ -49,15 +49,11 @@ Known issue: Meta’s datacenter IPs are sometimes blocked by Vercel DDoS mitiga
 
 ## WhatsApp shows title but no image
 
-WhatsApp drops `og:image` when the file is too large (often **> ~300 KB**). The dynamic PNG at `/api/og/scene_best50000` is ~1.4 MB.
+WhatsApp drops `og:image` when the file is too large (often **> ~300 KB**) or when the crawler gets **206 Partial Content** on static files.
 
-**Fix:** baked JPEG in `public/og/<sceneId>-card.jpg` (run `npm run og:bake` after changing `lib/og-copy.ts`, `lib/og-card.tsx`, or `/api/og`).
+**Fix (standard):** photo-only baked JPEG via `npm run og:bake -- <sceneId>` → served at `/api/og-card/<sceneId>`. See **[share-og-workflow.md](./share-og-workflow.md)**.
 
-Scene cards use the same template as `app/opengraph-image.tsx` (via `lib/og-copy.ts`); only the **title** and **photo** differ per scene.
-
-Share page and `/v/` metadata should point at:
-
-`https://mirador.lat/og/scene_best50000-card.jpg` (~60–80 KB)
+Legacy branded overlay: `npm run og:bake:branded -- <sceneId>` (not used for new listings).
 
 ## Expected OG tags (when scrape succeeds)
 

@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "og:bake": "node scripts/bake-og-card.mjs",
+    "og:bake:branded": "node scripts/bake-og-branded.mjs",
+    "og:share-page": "node scripts/write-share-page.mjs",
     "og:bake:demo1": "node scripts/bake-demo1-og.mjs",
     "og:test:demo1": "node scripts/test-demo1-og.mjs",
     "og:test:demo1:share": "node scripts/test-demo1-og.mjs https://mirador.lat /share/demo1.html"

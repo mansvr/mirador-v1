@@ -1,0 +1,45 @@
+{
+  "$schema": "../../mirador/schemas/scene.v1.schema.json",
+  "schema_version": "1",
+  "id": "scene_jardin-interno_01",
+  "title": "Jardín Interno — smoke test",
+  "metric": {
+    "area_m2": 80,
+    "rooms": 1,
+    "bathrooms": 1,
+    "verified_by": "unverified"
+  },
+  "render": {
+    "format": "sog",
+    "url": "https://pub-709488f795594fd1bbdf827d49a5ff63.r2.dev/scene_jardin-interno_01/scene.sog",
+    "splat_budget_desktop": 2000000,
+    "splat_budget_mobile": 500000,
+    "up_axis": [0, 1, 0],
+    "yaw_correction_deg": 0,
+    "pitch_correction_deg": 180
+  },
+  "camera_default": {
+    "pos": [0, 1.5, 0],
+    "quat": [0, 0, 0, 1],
+    "fov": 60
+  },
+  "waypoints": [],
+  "hotspots": [],
+  "listing": {
+    "neighborhood": "Chapinero",
+    "city": "Bogotá",
+    "description_md": "Tour smoke test — Jardín Interno (Mirador prueba).",
+    "agent_whatsapp": "+573001234567"
+  },
+  "branding": {
+    "tenant_id": "mirador",
+    "show_mirador_badge": true,
+    "primary_color": "#5e5956"
+  },
+  "access": { "visibility": "public" },
+  "attribution": {
+    "capture_date": "2026-06-24",
+    "pipeline": "phone_draft_hq — EDGS draft + PGSR HQ",
+    "converter": "splat-transform SOG"
+  }
+}

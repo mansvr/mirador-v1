@@ -1,5 +1,26 @@
 import type { SceneListing, SceneMetric } from "@/lib/types/scene";
 
+const COP = new Intl.NumberFormat("es-CO");
+
+/** Ficha-técnica rows (estrato, parqueadero, administración, piso, antigüedad). */
+function fichaTecnica(listing: SceneListing): { label: string; value: string }[] {
+  const rows: { label: string; value: string }[] = [];
+  if (listing.stratum != null) rows.push({ label: "Estrato", value: String(listing.stratum) });
+  if (listing.parking != null)
+    rows.push({ label: "Parqueadero", value: listing.parking === 0 ? "No" : String(listing.parking) });
+  if (listing.admin_fee_cop != null)
+    rows.push({
+      label: "Administración",
+      value:
+        listing.admin_fee_cop === 0
+          ? "Sin administración"
+          : `$${COP.format(listing.admin_fee_cop)} /mes`,
+    });
+  if (listing.floor != null) rows.push({ label: "Piso", value: String(listing.floor) });
+  if (listing.building_age) rows.push({ label: "Antigüedad", value: listing.building_age });
+  return rows;
+}
+
 function formatListingLocation(listing: SceneListing): string | null {
   if (listing.address) {
     const tail = [listing.neighborhood, listing.city].filter(Boolean).join(" · ");
@@ -74,7 +95,8 @@ export function PropertyStrip({
           )}
           {metric.bathrooms != null && (
             <span className="flex items-center gap-1">
-              <span className="text-mirador-text-muted">🚿</span> {metric.bathrooms} baños
+              <span className="text-mirador-text-muted">🚿</span> {metric.bathrooms}{" "}
+              {metric.bathrooms === 1 ? "baño" : "baños"}
             </span>
           )}
           {metric.area_m2 != null && (
@@ -97,6 +119,17 @@ export function PropertyStrip({
         <p className="text-sm text-mirador-text-muted leading-relaxed whitespace-pre-line">
           {listing.description_md}
         </p>
+      )}
+
+      {listing && fichaTecnica(listing).length > 0 && (
+        <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-mirador-border pt-4 text-sm">
+          {fichaTecnica(listing).map((row) => (
+            <div key={row.label} className="flex flex-col">
+              <dt className="text-xs uppercase tracking-wide text-mirador-text-muted">{row.label}</dt>
+              <dd className="text-mirador-text">{row.value}</dd>
+            </div>
+          ))}
+        </dl>
       )}
     </div>
   );

@@ -4,8 +4,7 @@ import { fetchScene } from "@/lib/scene";
 import { getSiteUrl } from "@/lib/site-url";
 import {
   buildOpenGraphImages,
-  ogCardAbsoluteUrl,
-  ogCardApiUrl,
+  resolvePrimaryOgImageUrl,
   shareDescription,
   shareTitle,
 } from "@/lib/og";
@@ -26,8 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const siteUrl = await getSiteUrl();
     const title = shareTitle(scene);
     const description = shareDescription(scene);
-    const ogImage =
-      ogCardAbsoluteUrl(sceneId, siteUrl) ?? ogCardApiUrl(sceneId, siteUrl);
+    const ogImage = resolvePrimaryOgImageUrl(sceneId, siteUrl);
 
     return {
       title,
